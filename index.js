@@ -6,7 +6,6 @@ const path = require('path');
 app.use(express.static('static'));
 
 app.get('/', (req, res) => {
-  console.log(req.body);
   res.sendFile(path.resolve('pages/index.html'));
 });
 
