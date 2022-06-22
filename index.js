@@ -7,7 +7,7 @@ app.use(express.static('static'));
 
 app.get('/', (req, res) => {
   console.log("get /");
-  res.sendFile(path.resolve('pages/index.html'));
+  // res.sendFile(path.resolve('pages/index.html'));
 });
 
 app.listen(port, () => {
