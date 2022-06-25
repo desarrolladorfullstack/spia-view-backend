@@ -1,23 +1,22 @@
-const express = require('express');
-const app = express();
-const port = 3010;
-const path = require('path');
-var bodyParser = require('body-parser');
+const net = require('net');
+const port = 80;
+const server = net.createServer()
 
-app.use(express.static('static'));
-app.use(express.json());
-app.use(bodyParser.text());
+server.on('connection', (socket)=>{
+    socket.on('data', (data)=>{
+        console.log('\nEl cliente ' + socket.remoteAddress + " : " + socket.remotePort + " dice: " + data)
+        socket.write('Recibido!')
+    })
 
-app.get('/home', (req, res) => {
-  console.log("get /");
-  res.sendFile(path.resolve('pages/index.html'));
-});
+    socket.on('close', ()=>{
+        console.log('Comunicación finalizada')
+    })
 
-app.post('/', (req, res) => {
-  console.log("post /", req.body);
-  res.send(req.body);
-});
+    socket.on('error', (err)=>{
+        console.log(err.message)
+    })
+})
 
-app.listen(port, () => {
-  console.log(`Example app listening at port :${port}`);
-});
+server.listen(port, ()=>{
+    console.log('servidor esta escuchando en la puerta', server.address().port)
+})
