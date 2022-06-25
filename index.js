@@ -4,8 +4,8 @@ const server = net.createServer()
 
 server.on('connection', (socket)=>{
     socket.on('data', (data)=>{
-        console.log('\nEl cliente ' + socket.remoteAddress + " : " + socket.remotePort + " dice: " + data)
-        socket.write('Recibido!')
+        console.log('\nEl cliente ' + socket.remoteAddress + " : " + socket.remotePort +"\n"+new Date()+"\n" + " dice:" , data)
+        socket.write('Recibido!') 
     })
 
     socket.on('close', ()=>{
