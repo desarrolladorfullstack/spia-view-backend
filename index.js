@@ -1,6 +1,13 @@
 const net = require('net')
 const port = 80
 const server = net.createServer()
+String.prototype.getBytes = function () {
+  let bytes = []
+  for (let iter = 0; iter < this.length; ++iter) {
+    bytes.push(this.charCodeAt(iter))
+  }
+  return bytes
+}
 let response_value = (data) => { 
   response_any = default_response = '01'
   console.log('<<--', response_any)
@@ -8,13 +15,13 @@ let response_value = (data) => {
 }
 let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
   console.log(' \nREQ:', data.toString(dtype))
-  return new Blob([response_value(data)], options)
+  return response_value(data).getBytes()
 }
 server.on('connection', (socket) => {
   socket.on('data', (data) => {
     console.log('\nCliente: ' , `${socket.remoteAddress} : ${socket.remotePort}`)
     socket.write(response_write(data))
-    console.log( "\nAT: ", new Date() , "\nRES: ", response_write(data))
+    console.log( "\nAT: ", new Date() , "\nRES: ", response_write(data).getBytes())
   })
 
   socket.on('close', () => {
