@@ -6,7 +6,7 @@ String.prototype.getBytes = function () {
   for (let iter = 0; iter < this.length; ++iter) {
     bytes.push(this.charCodeAt(iter))
   }
-  return bytes
+  return Buffer.from(bytes)
 }
 let response_value = (data) => { 
   response_any = default_response = '01'
