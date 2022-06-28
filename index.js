@@ -9,7 +9,7 @@ String.prototype.getBytes = function () {
   return Buffer.from(bytes)
 }
 let response_value = (data) => { 
-  response_any = default_response = '01'
+  response_any = default_response = 0x01
   console.log('<<--', response_any)
   return default_response
 }
