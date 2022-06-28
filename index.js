@@ -8,6 +8,9 @@ String.prototype.getBytes = function () {
   }
   return Buffer.from(bytes)
 }
+Buffer.prototype.getBytes = function () {
+  return this.toString('hex')
+}
 let response_value = (data) => { 
   response_any = default_response = 0x01
   console.log('<<--', response_any)
