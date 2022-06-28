@@ -21,7 +21,7 @@ server.on('connection', (socket) => {
   socket.on('data', (data) => {
     console.log('\nCliente: ' , `${socket.remoteAddress} : ${socket.remotePort}`)
     socket.write(response_write(data))
-    console.log( "\nAT: ", new Date() , "\nRES: ", response_write(data).getBytes())
+    console.log( "\nAT: ", new Date() , "\nRES: ", response_write(data))
   })
 
   socket.on('close', () => {
