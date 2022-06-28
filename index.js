@@ -11,9 +11,12 @@ String.prototype.getBytes = function () {
 Buffer.prototype.getBytes = function () {
   return this.toString('hex')
 }
+Number.prototype.getBytes = function () {
+  return this.toString('hex')
+}
 let response_value = (data) => { 
   response_any = default_response = 0x01
-  console.log('<<--', response_any)
+  console.log('<<--', response_any, typeof response_any)
   return default_response
 }
 let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
