@@ -12,7 +12,7 @@ Buffer.prototype.getBytes = function () {
   return this.toString('hex')
 }
 Number.prototype.getBytes = function () {
-  return this
+  return Buffer.from([this])
 }
 let response_value = (data) => { 
   response_any = default_response = 0x01
