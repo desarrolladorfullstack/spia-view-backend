@@ -1,9 +1,13 @@
+const proto = require('./data/proto')
+String.prototype.getBytes = proto.StringBytes
+Buffer.prototype.getBytes = proto.BytesHex
+Number.prototype.getBytes = proto.getBytes
+Boolean.prototype.getBytes = proto.getBytes
 const parser_mod = require('./data/parser')
 const net = require('net')
 var KEEP_ALIVE = 3000
 const port = 80
 const server = net.createServer()
-import './data/proto'
 let response_value = (data) => { 
   response_any = default_response = 0x01
   response_any = parser_mod.blockParser(data)

@@ -1,17 +1,18 @@
-String.prototype.getBytes = function () {
+let ArrBytes = () => {
     let bytes = []
     for (let iter = 0; iter < this.length; ++iter) {
         bytes.push(this.charCodeAt(iter))
     }
     return Buffer.from(bytes)
 }
-Buffer.prototype.getBytes = function () {
+let getHex =  () => {
     return this.toString('hex')
 }
-Number.prototype.getBytes = function () {
+let getBytes = function () {
     return Buffer.from([this])
 }
-Boolean.prototype.getBytes = function () {
-    return Buffer.from([this])
+module.exports = {
+    "StringBytes":ArrBytes,
+    "BytesHex":getHex,
+    "getBytes":getBytes
 }
-export {}
