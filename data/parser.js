@@ -13,6 +13,11 @@ const analyse_block = (bufferBlock) => {
         return true
     }
     if (isCamIMEI){
+        try{
+            bufferBlock = Buffer.from(hexBlock.substring(8, 16))
+        }catch(e){
+            console.error("MOD::analyse_block[ERR] ", e)
+        }
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
         return 0x0008
