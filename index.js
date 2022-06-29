@@ -1,5 +1,6 @@
 const parser_mod = require('./data/parser')
 const net = require('net')
+var KEEP_ALIVE = 3000
 const port = 80
 const server = net.createServer()
 String.prototype.getBytes = function () {
@@ -29,6 +30,7 @@ let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
   return response_value(data).getBytes()
 }
 server.on('connection', (socket) => {
+  socket.setKeepAlive(true)
   socket.on('data', (data) => {
     console.log('\nCliente: ' , `${socket.remoteAddress} : ${socket.remotePort}`)
     socket.write(response_write(data))
