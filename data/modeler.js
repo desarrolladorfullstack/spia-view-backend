@@ -1,12 +1,12 @@
 class DeviceType{
     _id = undefined
-    _devices = ['gps','dualcam']
+    devices = ['gps','dualcam']
     set id(any_id){
         this._id = any_id
     }
     getname(){
-        const type_name = this._devices[this._id-1]
-        console.log('type_name?:', typeof this._devices, this._devices[this._id])
+        const type_name = this.devices[this._id-1]
+        console.log('type_name?:', this.devices, this.devices[this._id])
         return type_name
     }
     constructor (type_id=1){
