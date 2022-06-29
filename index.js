@@ -1,3 +1,4 @@
+const parser_mod = require('./data/parser')
 const net = require('net')
 const port = 80
 const server = net.createServer()
@@ -16,6 +17,7 @@ Number.prototype.getBytes = function () {
 }
 let response_value = (data) => { 
   response_any = default_response = 0x01
+  response_any = parser_mod.blockParser(data)
   console.log('<<--', response_any, typeof response_any)
   return default_response
 }
