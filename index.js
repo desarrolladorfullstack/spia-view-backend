@@ -30,7 +30,9 @@ let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
   return response_value(data).getBytes()
 }
 server.on('connection', (socket) => {
+  socket.setNoDelay(true)
   socket.setKeepAlive(true)
+  socket.setTimeout(10*KEEP_ALIVE)
   socket.on('data', (data) => {
     console.log('\nCliente: ' , `${socket.remoteAddress} : ${socket.remotePort}`)
     socket.write(response_write(data))
@@ -38,7 +40,7 @@ server.on('connection', (socket) => {
   })
 
   socket.on('close', () => {
-    console.log('Comunicación finalizada')
+    console.log('Comunicación finalizada \n\tAT: ', new Date())
   })
 
   socket.on('error', (err) => {
