@@ -1,9 +1,21 @@
-var IMEI_BLOCK_INDEX = '000f';
+var IMEI_BLOCK_INDEX = '000f'
+var IMEI_CAM_INDEX = '00000005'
+const mapper_mod = require('modeler')
+let recent_device = undefined
 const analyse_block = (bufferBlock) => {  
     let hexBlock = bufferBlock.toString('hex')
     console.log("MOD::analyse_block? ", typeof hexBlock)
-    if (hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0){
+    let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0;
+    isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0;
+    if (isIMEI){
+        recent_device = mapper_mod.DeviceData(bufferBlock)
+        console.log(recent_device)
         return true
+    }
+    if (isCamIMEI){
+        recent_device = mapper_mod.DeviceData(bufferBlock, 2)
+        console.log(recent_device)
+        return 0x0008
     }
     return bufferBlock[9]
 }
