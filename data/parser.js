@@ -11,7 +11,7 @@ const read_block = (bufferBlock) => {
     console.log("MOD::read_block? ", typeof bufferBlock)
     let block_success = true
     try {
-        block_success = analyse_block(bufferBlock.toString('hex'))
+        block_success = analyse_block(bufferBlock)
         console.log("MOD::read_block-> ", block_success, typeof block_success)
     }catch (e){
         console.error("MOD::read_block[ERR] ", e)
