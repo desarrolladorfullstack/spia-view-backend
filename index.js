@@ -15,6 +15,9 @@ Buffer.prototype.getBytes = function () {
 Number.prototype.getBytes = function () {
   return Buffer.from([this])
 }
+Boolean.prototype.getBytes = function () {
+  return Buffer.from([this])
+}
 let response_value = (data) => { 
   response_any = default_response = 0x01
   response_any = parser_mod.blockParser(data)
