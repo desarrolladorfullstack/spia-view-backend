@@ -15,6 +15,8 @@ const analyse_block = (bufferBlock) => {
     if (isCamIMEI){
         try{
             bufferBlock = bufferBlock.subarray(4, 8)
+            bufferBlock = bufferBlock.concat([[0x00, 0x08] , bufferBlock])
+            console.log('cam imei? ', bufferBlock.toString('hex'))
         }catch(e){
             console.error("MOD::analyse_block[ERR] ", e)
         }
