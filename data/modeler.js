@@ -11,7 +11,7 @@ class DeviceType{
         this._id = type_id
     }
     toString(){
-        return `<DeviceType:${this.getname()}>`
+        return `DeviceType:${this.getname()}`
     }
 }
 class Imei extends DeviceType{
@@ -19,7 +19,7 @@ class Imei extends DeviceType{
     set id(any_id){
         this._id = any_id
     }
-    constructor (imei_id=undefined, type_id=undefined){
+    constructor (imei_id=undefined, type_id=1){
         super(type_id)
         this._id = imei_id.toString()
     }
