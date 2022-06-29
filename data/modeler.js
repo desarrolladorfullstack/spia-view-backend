@@ -5,7 +5,9 @@ class DeviceType{
         this._id = any_id
     }
     getname(){
-        return this._devices[this._id-1]
+        const type_name = this._devices[this._id-1]
+        console.log('type_name?:', type_name)
+        return type_name
     }
     constructor (type_id=1){
         this._id = type_id
@@ -20,6 +22,7 @@ class Imei extends DeviceType{
         this._id = any_id
     }
     constructor (imei_id=undefined, type_id=1){
+        console.log('type_id?:', type_id)
         super(type_id)
         this._id = imei_id.toString()
     }
@@ -29,14 +32,17 @@ class Imei extends DeviceType{
 }
 class Device extends Imei{
     _imei = undefined
-    _type = 1
+    _type_id = 1
     set imei(any_imei){
         this._imei = any_imei
+    }
+    set type_id(any_type_id){
+        this._type_id = any_type_id
     }
     constructor (imei_id=undefined, type_id=1){
         super(imei_id, type_id)
         this._imei = imei_id
-        this._type = type_id
+        this._type_id = type_id
     }
     toString(){
         return `<Device:[${super.toString()}]>`
