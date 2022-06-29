@@ -6,7 +6,7 @@ class DeviceType{
     }
     getname(){
         const type_name = this._devices[this._id-1]
-        console.log('type_name?:', type_name)
+        console.log('type_name?:', typeof this._devices, this._devices[this._id])
         return type_name
     }
     constructor (type_id=1){
