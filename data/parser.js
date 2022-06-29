@@ -9,12 +9,12 @@ const analyse_block = (bufferBlock) => {
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0;
     if (isIMEI){
         recent_device = new mapper_mod.DeviceData(bufferBlock)
-        console.log(recent_device)
+        console.log(recent_device.toString())
         return true
     }
     if (isCamIMEI){
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
-        console.log(recent_device)
+        console.log(recent_device.toString())
         return 0x0008
     }
     return bufferBlock[9]

@@ -4,11 +4,14 @@ class DeviceType{
     set id(any_id){
         this._id = any_id
     }
+    getname(){
+        return this._devices[this._id-1]
+    }
     constructor (type_id=1){
-        this._id = type_id - 1
+        this._id = type_id
     }
     toString(){
-        return `<DeviceType:${this._devices[this._id]}>`
+        return `<DeviceType:${this.getname()}>`
     }
 }
 class Imei extends DeviceType{
@@ -32,6 +35,8 @@ class Device extends Imei{
     }
     constructor (imei_id=undefined, type_id=1){
         super(imei_id, type_id)
+        this._imei = imei_id
+        this._type = type_id
     }
     toString(){
         return `<Device:[${super.toString()}]>`
