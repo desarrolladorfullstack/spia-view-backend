@@ -14,3 +14,6 @@ Number.prototype.getBytes = function () {
 Boolean.prototype.getBytes = function () {
     return Buffer.from([this])
 }
+module.exports = {
+    String, Buffer, Number, Boolean
+}
