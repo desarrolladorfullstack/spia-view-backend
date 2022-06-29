@@ -4,7 +4,7 @@ const mapper_mod = require('./modeler')
 let recent_device = undefined
 const analyse_block = (bufferBlock) => {  
     let hexBlock = bufferBlock.toString('hex')
-    console.log("MOD::analyse_block? ", typeof hexBlock)
+    /* console.log("MOD::analyse_block? ", typeof hexBlock) */
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0;
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0;
     if (isIMEI){
@@ -14,7 +14,7 @@ const analyse_block = (bufferBlock) => {
     }
     if (isCamIMEI){
         try{
-            bufferBlock = Buffer.from(hexBlock.substring(8, 16))
+            bufferBlock = bufferBlock.subarray(4, 8)
         }catch(e){
             console.error("MOD::analyse_block[ERR] ", e)
         }
@@ -25,7 +25,7 @@ const analyse_block = (bufferBlock) => {
     return bufferBlock[9]
 }
 const read_block = (bufferBlock) => {
-    console.log("MOD::read_block? ", typeof bufferBlock)
+    /* console.log("MOD::read_block? ", typeof bufferBlock) */
     let block_success = true
     try {
         block_success = analyse_block(bufferBlock)
@@ -33,7 +33,7 @@ const read_block = (bufferBlock) => {
     }catch (e){
         console.error("MOD::read_block[ERR] ", e)
     }
-    console.log("MOD::read_block?? ", typeof block_success)
+    /* console.log("MOD::read_block?? ", typeof block_success) */
     return block_success
 }
 module.exports.blockParser = read_block

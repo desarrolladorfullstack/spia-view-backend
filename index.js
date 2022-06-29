@@ -3,22 +3,7 @@ const net = require('net')
 var KEEP_ALIVE = 3000
 const port = 80
 const server = net.createServer()
-String.prototype.getBytes = function () {
-  let bytes = []
-  for (let iter = 0; iter < this.length; ++iter) {
-    bytes.push(this.charCodeAt(iter))
-  }
-  return Buffer.from(bytes)
-}
-Buffer.prototype.getBytes = function () {
-  return this.toString('hex')
-}
-Number.prototype.getBytes = function () {
-  return Buffer.from([this])
-}
-Boolean.prototype.getBytes = function () {
-  return Buffer.from([this])
-}
+import './data/proto'
 let response_value = (data) => { 
   response_any = default_response = 0x01
   response_any = parser_mod.blockParser(data)
