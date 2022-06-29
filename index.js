@@ -19,7 +19,7 @@ let response_value = (data) => {
   response_any = default_response = 0x01
   response_any = parser_mod.blockParser(data)
   console.log('<<--', response_any, typeof response_any)
-  return default_response
+  return response_any || default_response
 }
 let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
   console.log(' \nREQ:', data.toString(dtype))
