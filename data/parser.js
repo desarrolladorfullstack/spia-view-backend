@@ -1,6 +1,6 @@
 let read_block = (bufferBlock) => {
     console.log("MOD::read_block? ", typeof bufferBlock)
-    block_success = true
+    let block_success = true
     try {
         block_success = bufferBlock[9]
         console.log("MOD::read_block-> ", block_success, typeof block_success)
