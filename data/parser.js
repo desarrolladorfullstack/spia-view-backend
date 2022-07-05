@@ -5,8 +5,8 @@ let recent_device = undefined
 const analyse_block = (bufferBlock) => {  
     let hexBlock = bufferBlock.toString('hex')
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
-    let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0;
-    isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0;
+    let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
+    isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
     if (isIMEI){
         recent_device = new mapper_mod.DeviceData(bufferBlock)
         console.log(recent_device.toString())
