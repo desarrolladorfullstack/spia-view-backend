@@ -38,3 +38,4 @@ const read_block = (bufferBlock) => {
     return block_success
 }
 module.exports.blockParser = read_block
+module.exports.deviceObject = recent_device

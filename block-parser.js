@@ -11,7 +11,7 @@ d3d408be -> lon
 0a3e -> height
 009e -> angle
 06 -> satelites
-0000 -> velocity
+0000 -> speed
 01f3 -> event_id
 000f -> n!(Property:keys)
 0008 -> n!(Property){0,2}
@@ -94,3 +94,113 @@ d3d406a9
 0a n! [END]
 00006427 -> CRC
 */
+const parser_mod = require('./data/parser')
+const mapper_mod = require('./data/modeler')
+const proto = require('./data/proto')
+let input_block = '000000000000046b8e0c00000181b0548ca001d3d408be02c1e4230a3e009e06000001f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5001100b6000f004234de0043000000440000000200f1000b2bc70010000004460000000000000181b08485e001d3d4072f02c1ebc10a1800c608000001f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5000e00b6000b004234b00043000000440000000200f1000b2bc70010000006a00000000000000181b0938d8801d3d406a902c1e6ce0a2700d709000001f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5000c00b600080042347e0043000000440000000200f1000b2bc70010000007890000000000000181b104e91001d3d40c3202c1ec250a17002908000001f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5000d00b6000a004234f60043000000440000000200f1000b2bc7001000000a270000000000000181b115a63801d3d4086b02c1e5810a3500170a000401f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5000c00b60009004234b50043000000440000000200f1000b2bc7001000000ac80000000000000181b14a911801d3d407d502c1eaa60a18002a0a000001f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5000b00b60007004234710043000000440000000200f1000b2bc7001000000b670000000000000181b187f3f001d3d405af02c1ec140a16012c0e000001f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5000a00b60006004234c30043000000440000000200f1000b2bc7001000000cbe0000000000000181b1946b5801d3d4052a02c1e4340a2d00d90d000501f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5000a00b60006004234870043000000440000000200f1000b2bc7001000000cfd0000000000000181b19ec3c801d3d4063502c1f6e30000000003000001f3000f000800f00100150500c80000450200010101f10301f20301f301000500b5003000b6002e004234f20043000000440000000200f1000b2bc70010000007d90000000000000181b1aa1e0801d3d4005902c1ec890a30011109000001f3000f000800f00100150000c80000450100010101f10301f20301f301000500b5000c00b60008004234ae0043000000440000000200f1000000000010000009410000000000000181cf52576801d3d3f20602c1dff80a0a00e905000800ef000f000800ef0100f00100150500c80000450100010001f10301f203000500b5002d00b600230042357e0043000000440000000200f1000b2bc70010000025d90000000000000181cf54572001d3d3fc0c02c1e5d409fd00f005000401f3000f000800f00100150500c80000450100010101f10301f20301f301000500b5002400b60023004238cd0043000000440000000200f1000b2bc7001000002607000000000c0000c941'
+console.log(input_block)
+input_block = Buffer.from(input_block, "hex")
+console.log('buffered: ', input_block)
+const block_length = input_block.length
+response_any = parser_mod.blockParser(input_block)
+let device = parser_mod.deviceObject
+console.log(response_any, device)
+let default_imei = '000f383630383936303530373934383538'
+if (device == undefined){
+    device = new mapper_mod.DeviceData(Buffer.from(default_imei, "hex"))
+    console.log("New DEVICE: ", device.toString())
+}
+const codec = input_block[8]
+const events = input_block[9]
+if (events == input_block[block_length-5]){
+    console.log('events:', events,
+         input_block.subarray(block_length-5,block_length-4))
+}
+const crc = input_block.subarray(block_length-2)
+console.log('codec:', Buffer.from([codec]), 'crc:', crc)
+let events_block = input_block.subarray(10, block_length-5)
+console.log('events.block:', events_block[events_block.length-1])
+let loop = 0, block_index = 0, block_complete = false
+while (loop < events){
+    const end_index = block_index+8
+    let timestamp = new Date(parseInt(
+        events_block.subarray(block_index,end_index).toString('hex'),16))
+    console.log(timestamp, loop+1, timestamp.getFullYear())
+    let isTimestamp = timestamp.toString() != 'Invalid Date'
+    isTimestamp &= timestamp.getFullYear() < new Date().getFullYear()+1
+    if (!isTimestamp){
+        break
+    }
+    console.log('adding Event:', loop+1)
+    const priority = parseInt(
+        events_block.subarray(block_index+8,block_index+9)
+            .toString('hex'),16)
+    console.log('priority', priority, 'loop:', loop+1)
+    const coordinates = {}
+    coordinates['longitude']=proto.coordinate(parseInt(
+        events_block.subarray(block_index+9,block_index+13)
+            .toString('hex'),16))
+    coordinates['latitude']=proto.coordinate(parseInt(
+        events_block.subarray(block_index+13,block_index+17)
+            .toString('hex'),16))  
+    coordinates['altitude']=parseInt(
+        events_block.subarray(block_index+17,block_index+19)
+            .toString('hex'),16) 
+    coordinates['angle']=parseInt(
+        events_block.subarray(block_index+19,block_index+21)
+            .toString('hex'),16) 
+    console.log('coordinates', coordinates, 'loop:', loop+1)
+    const satelites = parseInt(
+        events_block.subarray(block_index+21,block_index+22)
+            .toString('hex'),16) 
+    console.log('satelites', satelites, 'loop:', loop+1)
+    const speed = parseInt(
+        events_block.subarray(block_index+22,block_index+24)
+            .toString('hex'),16) 
+    console.log('speed', speed, 'loop:', loop+1)
+    const event_id = parseInt(
+        events_block.subarray(block_index+24,block_index+26)
+            .toString('hex'),16) 
+    console.log('event_id', event_id, 'loop:', loop+1)
+    let properties_keys = parseInt(
+        events_block.subarray(block_index+26,block_index+28)
+            .toString('hex'),16) 
+    console.log('properties', properties_keys, 'loop:', loop+1)
+    const properties = {}
+    if (properties_keys < 1){
+        loop ++
+        continue
+    }
+    loop_properties = 0
+    let property_start = block_index+28
+    while (loop_properties !== false) { 
+        let keys_for_properties = parseInt(
+            events_block.subarray(property_start,property_start+2)
+                .toString('hex'),16) 
+        let value_indexes = Math.pow(2,loop_properties)
+        property_start += 2
+        for (let property of Array(keys_for_properties).keys()){
+            prop_key = parseInt(
+                events_block.subarray(property_start,property_start+2)
+                    .toString('hex'),16)
+            property_start+=2
+            prop_value = parseInt(
+                events_block.subarray(property_start,property_start+value_indexes)
+                    .toString('hex'),16)
+            properties[prop_key]=prop_value
+            property_start+=value_indexes
+            console.log('{', prop_key, ":", prop_value, "} =>", property+1)
+        }
+        loop_properties ++
+        properties_keys -= keys_for_properties
+        console.log('left ?: >> ', events_block.subarray(property_start,property_start+4))
+        if (properties_keys <= 0){
+            block_index = property_start+4
+            break
+        }
+    }
+    console.log('properties', properties, 'loop:', loop+1)
+    // if(block_complete){        
+        loop ++;
+    //}
+}
