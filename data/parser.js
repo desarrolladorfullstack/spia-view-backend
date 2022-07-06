@@ -1,5 +1,6 @@
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
+const { response } = require('express')
 const mapper_mod = require('./modeler')
 let recent_device = undefined
 const analyse_block = (bufferBlock) => {  
@@ -21,7 +22,11 @@ const analyse_block = (bufferBlock) => {
         }
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
-        return 0x0008
+        let response_cam = Buffer.from(['00','08']),
+        response_length = Buffer.from(['06']),
+        response_payload = Buffer.from('videor')
+        response_cam = Buffer.concat([response_cam, response_length, response_payload])
+        return response_cam
     }
     return bufferBlock[9]
 }
