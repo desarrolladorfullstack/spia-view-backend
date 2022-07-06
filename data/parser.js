@@ -22,8 +22,8 @@ const analyse_block = (bufferBlock) => {
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
         let response_cam = Buffer.from(['00','08']),
-        response_length = Buffer.from(['06']),
-        response_payload = Buffer.from('videor')
+        response_length = Buffer.from(['07']),
+        response_payload = Buffer.from('%videor')
         response_cam = Buffer.concat([response_cam, response_length, response_payload])
         return response_cam
     }
