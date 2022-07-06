@@ -6,7 +6,7 @@ let ArrBytes = () => {
     return Buffer.from(bytes)
 }
 let getHex = () => {
-    return Buffer.from(this)
+    return this.toString('hex')
 }
 let getBytes = function () {
     return Buffer.from([this])
