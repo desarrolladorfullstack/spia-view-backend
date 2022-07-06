@@ -1,6 +1,5 @@
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
-const { response } = require('express')
 const mapper_mod = require('./modeler')
 let recent_device = undefined
 const analyse_block = (bufferBlock) => {  
