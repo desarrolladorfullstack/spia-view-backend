@@ -16,7 +16,9 @@ let response_value = (data) => {
 }
 let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
   console.log(' \nREQ:', data.toString(dtype))
-  return response_value(data).getBytes()
+  let responsed = response_value(data)
+  console.log('TYPE?:', typeof responsed)
+  return responsed.getBytes()
 }
 server.on('connection', (socket) => {
   socket.setNoDelay(true)
