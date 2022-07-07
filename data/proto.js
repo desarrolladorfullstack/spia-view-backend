@@ -7,9 +7,10 @@ let ArrBytes = () => {
 }
 let getHex = () => {
   let bytes = []
-  for (let iter = 0; iter < this.length; ++iter) {
-      bytes.push(this.toString(16)[iter])
+  for (let iter = 0; iter < this.length; iter+=2) {
+      bytes.push(this.toString(16).substring(iter, iter+2))
   }
+  console.log('getHex:', bytes)
   return Buffer.from(bytes)
 }
 let getBytes = function () {
