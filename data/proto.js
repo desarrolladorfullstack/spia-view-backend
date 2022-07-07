@@ -12,7 +12,7 @@ let getHex = () => {
     console.log(returned, typeof returned)
     returned = returned.toString()
     console.log(returned, typeof returned)
-    return returned
+    return this
 }
 let getBytes = function () {
     return Buffer.from([this])
