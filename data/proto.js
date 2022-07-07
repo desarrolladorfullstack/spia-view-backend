@@ -6,9 +6,11 @@ let ArrBytes = () => {
     return Buffer.from(bytes)
 }
 let getHex = () => {
+  let hex = this.toString('hex')
+  console.log('getHex?:', hex, hex.length)
   let bytes = []
-  for (let iter = 0; iter < this.length; iter+=2) {
-      bytes.push(this.toString(16).substring(iter, iter+2))
+  for (let iter = 0; iter < hex.length; iter+=2) {
+      bytes.push(hex.substring(iter, iter+2))
   }
   console.log('getHex:', bytes)
   return Buffer.from(bytes)
