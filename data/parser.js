@@ -25,7 +25,7 @@ const analyse_block = (bufferBlock) => {
         response_length = Buffer.from(['07']),
         response_payload = Buffer.from('%videor')
         response_cam = Buffer.concat([response_cam, response_length, response_payload])
-        return Buffer.from(response_cam)
+        return Buffer.from(response_cam,'hex')
     }
     return bufferBlock[9]
 }
