@@ -19,6 +19,7 @@ let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
   let responsed = response_value(data)
   console.log('TYPE?:', typeof responsed, responsed)
   if (typeof responsed == 'object'){
+    console.log('OBJECT ?:', responsed.getBytes())
     return responsed
   }
   return responsed.getBytes()
