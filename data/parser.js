@@ -1,5 +1,14 @@
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
+var CAM_COMMANDS = {
+    "00010006": () => {
+        let response_cam = Buffer.from(['00','02']),
+        response_length = Buffer.from(['00','04']),
+        response_payload = Buffer.from(['00','00','00','01'])
+        response_cam = Buffer.concat([response_cam, response_length, response_payload])
+        return Buffer.from(response_cam,'hex')
+    }
+}
 const mapper_mod = require('./modeler')
 let recent_device = undefined
 const analyse_block = (bufferBlock) => {  
@@ -7,6 +16,8 @@ const analyse_block = (bufferBlock) => {
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
+    let isCamCommand = hexBlock.substring(0,8) in CAM_COMMANDS
+    isCamCommand |= CAM_COMMANDS.hasOwnProperty(hexBlock.substring(0,8)) 
     if (isIMEI){
         recent_device = new mapper_mod.DeviceData(bufferBlock)
         console.log(recent_device.toString())
@@ -22,10 +33,13 @@ const analyse_block = (bufferBlock) => {
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
         let response_cam = Buffer.from(['00','08']),
-        response_length = Buffer.from(['00','06']),
-        response_payload = Buffer.from('videor')
+        response_length = Buffer.from(['00','07']),
+        response_payload = Buffer.from('%videor')
         response_cam = Buffer.concat([response_cam, response_length, response_payload])
         return Buffer.from(response_cam,'hex')
+    }
+    if (isCamCommand){
+        return CAM_COMMANDS[hexBlock.substring(0,8)]
     }
     return bufferBlock[9]
 }
