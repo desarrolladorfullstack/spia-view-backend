@@ -39,7 +39,7 @@ const analyse_block = (bufferBlock) => {
         return Buffer.from(response_cam,'hex')
     }
     if (isCamCommand){
-        return CAM_COMMANDS[hexBlock.substring(0,8)]
+        return CAM_COMMANDS[hexBlock.substring(0,8)]()
     }
     return bufferBlock[9]
 }
