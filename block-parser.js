@@ -97,7 +97,7 @@ d3d406a9
 const parser_mod = require('./data/parser')
 const mapper_mod = require('./data/modeler')
 const proto = require('./data/proto')
-let input_block = '000000000000011d8e0300000181d448b6400100000000000000000000000000000001f3000f000800f00000150500c80000450200010101f10101f20101f301000500b5000000b60000004238ce0043000000440000000200f1000b2bc5001000002cd50000000000000181d448be100100000000000000000000000000000000ef000f000800ef0100f00100150500c80000450200010101f10101f201000500b5000000b60000004238520043000000440000000200f1000b2bc5001000002cd50000000000000181d44ea1ea0100000000000000000000000000000000ef000f000800ef0000f00000150500c80000450200010001f10101f201000500b5000000b60000004238590043000000440000000200f1000b2bc5001000002cd5000000000300004899'
+let input_block = '00000000000000768e01000001825fad29000100000000000000000000000000000000010013000800f00100150500c80000450200010000b400001465017d00000600b5000000b6000000430fc90044008c001a08960068004d000400f1000b2bc500100000000001d30000012a01d400b8ff5900000001014c0001b7010000382f'
 console.log(input_block)
 input_block = Buffer.from(input_block, "hex")
 console.log('buffered: ', input_block)
@@ -180,21 +180,26 @@ while (loop < events){
                 .toString('hex'),16) 
         let value_indexes = Math.pow(2,loop_properties)
         property_start += 2
+        let isXBytes = (value_indexes > 8)
         for (let property of Array(keys_for_properties).keys()){
             prop_key = parseInt(
                 events_block.subarray(property_start,property_start+2)
                     .toString('hex'),16)
-            property_start+=2
+            property_start+= !isXBytes ? 2 : 4
+            let property_value_end = property_start+value_indexes
+            if (isXBytes) property_value_end += parseInt(
+                events_block.subarray(property_start-2,property_start)
+                    .toString('hex'),16)
             prop_value = parseInt(
-                events_block.subarray(property_start,property_start+value_indexes)
+                events_block.subarray(property_start,property_value_end)
                     .toString('hex'),16)
             properties[prop_key]=prop_value
-            property_start+=value_indexes
-            /* console.log('{', prop_key, ":", prop_value, "} =>", property+1) */
+            property_start=property_value_end
+            console.log('{', prop_key, ":", prop_value, "} =>", property+1, value_indexes)
         }
         loop_properties ++
         properties_keys -= keys_for_properties
-        /* console.log('left ?: >> ', events_block.subarray(property_start,property_start+4)) */
+        console.log('left ?: >> ', events_block.subarray(property_start,property_start+4))
         if (properties_keys <= 0){
             block_index = property_start+4
             break
