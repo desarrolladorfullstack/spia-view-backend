@@ -7,6 +7,13 @@ var CAM_COMMANDS = {
         response_payload = Buffer.from(['00','00','00','01'])
         response_cam = Buffer.concat([response_cam, response_length, response_payload])
         return Buffer.from(response_cam,'hex')
+    },
+    "init": (cam_input="videor") => {
+        let response_cam = Buffer.from(['00','08']),
+        response_length = Buffer.from(['00','07']),
+        response_payload = Buffer.from(`%${cam_input}`)
+        response_cam = Buffer.concat([response_cam, response_length, response_payload])
+        return Buffer.from(response_cam,'hex')
     }
 }
 const mapper_mod = require('./modeler')
@@ -32,11 +39,7 @@ const analyse_block = (bufferBlock) => {
         }
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
-        let response_cam = Buffer.from(['00','08']),
-        response_length = Buffer.from(['00','07']),
-        response_payload = Buffer.from('%videor')
-        response_cam = Buffer.concat([response_cam, response_length, response_payload])
-        return Buffer.from(response_cam,'hex')
+        return CAM_COMMANDS["init"]("videor")
     }
     if (isCamCommand){
         return CAM_COMMANDS[hexBlock.substring(0,8)]()

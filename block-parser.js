@@ -195,11 +195,11 @@ while (loop < events){
                     .toString('hex'),16)
             properties[prop_key]=prop_value
             property_start=property_value_end
-            console.log('{', prop_key, ":", prop_value, "} =>", property+1, value_indexes)
+            /* console.log('{', prop_key, ":", prop_value, "} =>", property+1, value_indexes) */
         }
         loop_properties ++
         properties_keys -= keys_for_properties
-        console.log('left ?: >> ', events_block.subarray(property_start,property_start+4))
+        /* console.log('left ?: >> ', events_block.subarray(property_start,property_start+4)) */
         if (properties_keys <= 0){
             block_index = property_start+4
             break
