@@ -129,10 +129,10 @@ while (loop < events) {
     console.log("[" ,loop+1, "]!", 
         // timestamp, events_block.subarray(block_index, end_index).toString('hex'),
         `${timestamp.getFullYear()}/${timestamp.getMonth()+1}/${timestamp.getDate()}`,
-        `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getSeconds()}`)
-    let isTimestamp = timestamp.toString() != 'Invalid Date'
-    isTimestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
-    if (!isTimestamp) {
+        `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
+    let is_timestamp = timestamp.toString() != 'Invalid Date'
+    is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
+    if (!is_timestamp) {
         break
     }
     console.log('Events(', loop + 1, ')')
@@ -185,15 +185,15 @@ while (loop < events) {
                 .toString('hex'), 16)
         let value_indexes = Math.pow(2, loop_properties)
         property_start += 2
-        let isXBytes = (value_indexes > 8)
+        let is_x_bytes = (value_indexes > 8)
         for (let property of Array(keys_for_properties).keys()) {
             prop_key = parseInt(
                 events_block.subarray(property_start, property_start + 2)
                     .toString('hex'), 16)
             /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key) */
-            property_start += !isXBytes ? 2 : 4
+            property_start += !is_x_bytes ? 2 : 4
             let property_value_end = property_start + value_indexes
-            if (isXBytes) {
+            if (is_x_bytes) {
                 const property_x_bytes_end = parseInt(
                     events_block.subarray(property_start - 2, property_start)
                         .toString('hex'), 16)
@@ -206,12 +206,12 @@ while (loop < events) {
             // console.log("VALUE? [", property_start, ":", property_value_end, "] =>", prop_value)
             properties[prop_key] = prop_value
             property_start = property_value_end
-            /* if (isXBytes) */ 
+            /* if (is_x_bytes) */ 
                 // console.log(`{"${prop_key}":` , prop_value,'}[', property + 1, "] ", value_indexes,"!")
         }
         loop_properties++
         properties_keys -= keys_for_properties
-        /* if (isXBytes || value_indexes == 8)  */
+        /* if (is_x_bytes || value_indexes == 8)  */
         /* console.log('left ?: {', properties_keys,'} >> ', 
             events_block.subarray(property_start, property_start + 4)) */
         if (properties_keys <= 0) {
