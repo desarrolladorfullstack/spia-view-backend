@@ -95,8 +95,16 @@ class DeviceEvent extends EventType{
 }
 class Device extends Imei{
     _imei = undefined
+    _codec = undefined
+    _crc= undefined
     _type = 1
     _events = undefined
+    set crc(any_crc){
+        this._crc = any_crc
+    }
+    set codec(any_codec){
+        this._codec = any_codec
+    }
     set imei(any_imei){
         this._imei = any_imei
     }
