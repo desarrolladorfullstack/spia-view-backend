@@ -108,6 +108,9 @@ class Device extends Imei{
     set imei(any_imei){
         this._imei = any_imei
     }
+    get imei(){
+        return this._imei
+    }
     addEvent(any_event){
         if (this._events == undefined){
             this._events = {}

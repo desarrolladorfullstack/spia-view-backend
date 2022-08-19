@@ -1,24 +1,62 @@
+const mapper_mod = require('./modeler')
+const fs_mod = require('fs')
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
+var RESUME_CAM_COMMAND = Buffer.from(['00', '02'])
+var FILE_REQ_CAM_COMMAND = Buffer.from(['00', '08'])
+let cam_mode = "videor"
+let packet_offset = 0
+let packet_size = 0
+let recent_device = undefined
+let file_raw = []
+let file_name = 'file_raw'
+
+const packet_response = (any = false) => {
+    packet_offset++
+    const payload_hex = ['00', '00', '00', packet_offset]
+    const response_length = Buffer.from(['00', payload_hex.length])
+    const response_payload = Buffer.from(payload_hex)
+    const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
+    if (packet_offset >= packet_size){
+        packet_offset = 0
+        file_raw = []
+        file_name = 'file_raw'
+    }
+    return Buffer.from(response_cam, 'hex')
+}
 var CAM_COMMANDS = {
-    "00010006": () => {
-        let response_cam = Buffer.from(['00','02']),
-        response_length = Buffer.from(['00','04']),
-        response_payload = Buffer.from(['00','00','00','01'])
-        response_cam = Buffer.concat([response_cam, response_length, response_payload])
-        return Buffer.from(response_cam,'hex')
+    "00010006": (any = false) => {
+        packet_size = parseInt(any.substring(8,16), 16)
+        packet_offset = 0
+        file_raw = []
+        file_name = `file_raw_${new Date().getTime()}_${recent_device?.imei}`
+        return packet_response()
     },
-    "init": (cam_input="videor") => {
-        let response_cam = Buffer.from(['00','08']),
-        response_length = Buffer.from(['00','07']),
-        response_payload = Buffer.from(`%${cam_input}`)
-        response_cam = Buffer.concat([response_cam, response_length, response_payload])
-        return Buffer.from(response_cam,'hex')
+    "init": (cam_input = "videor") => {
+        const payload_hex = `%${cam_input}`
+        const response_length = Buffer.from(['00', payload_hex.length])
+        const response_payload = Buffer.from(payload_hex)
+        const response_cam = Buffer.concat([FILE_REQ_CAM_COMMAND, response_length, response_payload])
+        return Buffer.from(response_cam, 'hex')
+    },
+    "00040402": (any = false) => {
+        packet_offset++
+        if (recent_device != undefined) {
+            fs_mod.writeFile(
+                file_name,
+                Buffer.from(any.substring(8,(1024*2)),'hex'),
+                (error)=>{
+                    if(error){
+                        success(['Error en escritura: ', error])
+                    }else{
+                        failure("Archivo escrito correctamente!")
+                    }
+                })
+        }
+        return packet_response()
     }
 }
-const mapper_mod = require('./modeler')
-let recent_device = undefined
-const build_device = (input_block)=>{
+const build_device = (input_block) => {
     const block_length = input_block.length
     let device = recent_device
     console.log('response:', response_any/*, device*/)
@@ -44,9 +82,9 @@ const build_device = (input_block)=>{
         const end_index = block_index + 8
         let timestamp = new Date(parseInt(
             events_block.subarray(block_index, end_index).toString('hex'), 16))
-        console.log("[" ,loop+1, "]!", 
+        console.log("[", loop + 1, "]!",
             // timestamp, events_block.subarray(block_index, end_index).toString('hex'),
-            `${timestamp.getFullYear()}/${timestamp.getMonth()+1}/${timestamp.getDate()}`,
+            `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
             `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
         let is_timestamp = timestamp.toString() != 'Invalid Date'
         is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
@@ -115,7 +153,7 @@ const build_device = (input_block)=>{
                     const property_x_bytes_end = parseInt(
                         events_block.subarray(property_start - 2, property_start)
                             .toString('hex'), 16)
-                    property_value_end = property_start + Math.pow(2, property_x_bytes_end-1)
+                    property_value_end = property_start + Math.pow(2, property_x_bytes_end - 1)
                     // console.log("XBYTES ? [", property_start, ":", property_value_end, "]{", property_x_bytes_end, "}")
                 }
                 prop_value = parseInt(
@@ -124,8 +162,8 @@ const build_device = (input_block)=>{
                 // console.log("VALUE? [", property_start, ":", property_value_end, "] =>", prop_value)
                 properties[prop_key] = prop_value
                 property_start = property_value_end
-                /* if (is_x_bytes) */ 
-                    // console.log(`{"${prop_key}":` , prop_value,'}[', property + 1, "] ", value_indexes,"!")
+                /* if (is_x_bytes) */
+                // console.log(`{"${prop_key}":` , prop_value,'}[', property + 1, "] ", value_indexes,"!")
             }
             loop_properties++
             properties_keys -= keys_for_properties
@@ -134,7 +172,7 @@ const build_device = (input_block)=>{
                 events_block.subarray(property_start, property_start + 4)) */
             if (properties_keys <= 0) {
                 block_index = property_start
-                while ( parseInt(events_block.subarray(block_index, block_index+4).toString('hex'), 16) == 0){
+                while (parseInt(events_block.subarray(block_index, block_index + 4).toString('hex'), 16) == 0) {
                     // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString('hex'))
                     block_index += 4
                     property_start = block_index
@@ -149,31 +187,31 @@ const build_device = (input_block)=>{
         //}
     }
 }
-const analyse_block = (bufferBlock) => {  
+const analyse_block = (bufferBlock) => {
     let hexBlock = bufferBlock.toString('hex')
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
-    let isCamCommand = hexBlock.substring(0,8) in CAM_COMMANDS
-    isCamCommand |= CAM_COMMANDS.hasOwnProperty(hexBlock.substring(0,8)) 
-    if (isIMEI){
+    let isCamCommand = hexBlock.substring(0, 8) in CAM_COMMANDS
+    isCamCommand |= CAM_COMMANDS.hasOwnProperty(hexBlock.substring(0, 8))
+    if (isIMEI) {
         recent_device = new mapper_mod.DeviceData(bufferBlock)
         console.log(recent_device.toString())
         return true
     }
-    if (isCamIMEI){
-        try{
+    if (isCamIMEI) {
+        try {
             bufferBlock = bufferBlock.subarray(4, 16)
             console.log('cam imei?? ', typeof bufferBlock, bufferBlock.toString('hex'))
-        }catch(e){
+        } catch (e) {
             console.error("MOD::analyse_block[ERR] ", e)
         }
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
-        return CAM_COMMANDS["init"]("videor")
+        return CAM_COMMANDS["init"](cam_mode)
     }
-    if (isCamCommand){
-        return CAM_COMMANDS[hexBlock.substring(0,8)]()
+    if (isCamCommand) {
+        return CAM_COMMANDS[hexBlock.substring(0, 8)](hexBlock)
     }
     return bufferBlock[9]
 }
@@ -183,7 +221,7 @@ const read_block = (bufferBlock) => {
     try {
         block_success = analyse_block(bufferBlock)
         console.log("MOD::read_block-> ", block_success, typeof block_success)
-    }catch (e){
+    } catch (e) {
         console.error("MOD::read_block[ERR] ", e)
     }
     /* console.log("MOD::read_block?? ", typeof block_success) */
