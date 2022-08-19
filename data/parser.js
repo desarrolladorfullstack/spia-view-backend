@@ -2,6 +2,7 @@ const mapper_mod = require('./modeler')
 const fs_mod = require('fs')
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
+var CAM_INPUT_ERROR = "0005000400000011"
 var RESUME_CAM_COMMAND = Buffer.from(['00', '02'])
 var FILE_REQ_CAM_COMMAND = Buffer.from(['00', '08'])
 let cam_mode = "videor"
@@ -11,7 +12,14 @@ let recent_device = undefined
 let file_raw = []
 let file_name = 'file_raw'
 
-const packet_response = (any = false) => {
+var change_cam_mode = {
+    "videor":"videof",
+    "videof":"photor",
+    "photor":"photof",
+    "photof":"videor"
+}
+
+const packet_response = (any=false) => {
     packet_offset++
     const payload_hex = ['00', '00', '00', packet_offset]
     const response_length = Buffer.from(['00', payload_hex.length])
@@ -24,22 +32,31 @@ const packet_response = (any = false) => {
     }
     return Buffer.from(response_cam, 'hex')
 }
+const file_req_response = (cam_input = "videor") => {
+    const payload_hex = `%${cam_input}`
+    const response_length = Buffer.from(['00', payload_hex.length])
+    const response_payload = Buffer.from(payload_hex)
+    const response_cam = Buffer.concat([FILE_REQ_CAM_COMMAND, response_length, response_payload])
+    return Buffer.from(response_cam, 'hex')
+}
 var CAM_COMMANDS = {
-    "00010006": (any = false) => {
+    "init": (any=false) => { 
+        return file_req_response(any)
+    },
+    "00050004": (any=false)=>{
+        if (any == CAM_INPUT_ERROR){
+            return file_req_response(change_cam_mode[cam_mode])
+        }
+        return 0x0000
+    },
+    "00010006": (any=false) => {
         packet_size = parseInt(any.substring(8,16), 16)
         packet_offset = 0
         file_raw = []
         file_name = `file_raw_${new Date().getTime()}_${recent_device?.imei}`
         return packet_response()
     },
-    "init": (cam_input = "videor") => {
-        const payload_hex = `%${cam_input}`
-        const response_length = Buffer.from(['00', payload_hex.length])
-        const response_payload = Buffer.from(payload_hex)
-        const response_cam = Buffer.concat([FILE_REQ_CAM_COMMAND, response_length, response_payload])
-        return Buffer.from(response_cam, 'hex')
-    },
-    "00040402": (any = false) => {
+    "00040402": (any=false) => {
         packet_offset++
         if (recent_device != undefined) {
             fs_mod.writeFile(
