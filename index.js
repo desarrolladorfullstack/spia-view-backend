@@ -8,6 +8,7 @@ const net = require('net')
 var KEEP_ALIVE = 3000
 const port = 80
 const server = net.createServer()
+let recent_response = undefined
 let response_value = (data) => { 
   response_any = default_response = 0x01
   response_any = parser_mod.blockParser(data)
@@ -16,11 +17,13 @@ let response_value = (data) => {
 }
 let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
   console.log(' \nREQ:', data.toString(dtype))
-  let responsed = response_value(data)
+  let responsed = recent_response = response_value(data)
   console.log('TYPE?:', typeof responsed, responsed)
   if (typeof responsed == 'object'){
     console.log('OBJECT ?:', responsed.getBytes())
     return responsed
+  }else{
+    recent_response = responsed.getBytes()
   }
   return responsed.getBytes()
 }
@@ -31,7 +34,7 @@ server.on('connection', (socket) => {
   socket.on('data', (data) => {
     console.log('\nCliente: ' , `${socket.remoteAddress} : ${socket.remotePort}`)
     socket.write(response_write(data))
-    console.log( "\nAT: ", new Date() , "\nRES: ", response_write(data))
+    console.log( "\nAT: ", new Date() , "\nRES: ", recent_response)
   })
 
   socket.on('close', () => {
