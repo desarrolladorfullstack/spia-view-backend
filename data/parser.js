@@ -233,13 +233,15 @@ const analyse_block = (bufferBlock) => {
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
-    let isCamCommand = hexBlock.substring(0, 8) in CAM_COMMANDS
-    isCamCommand |= CAM_COMMANDS.hasOwnProperty(hexBlock.substring(0, 8))
+    const cam_command_index = hexBlock.substring(0, 8)
+    let isCamCommand = cam_command_index in CAM_COMMANDS
+    isCamCommand |= CAM_COMMANDS.hasOwnProperty(cam_command_index)
     if (!isCamCommand){
-        isCamCommand = hexBlock.substring(0, 4) in CAM_COMMANDS
-        isCamCommand |= CAM_COMMANDS.hasOwnProperty(hexBlock.substring(0, 4))
+        cam_command_index = hexBlock.substring(0, 4)
+        isCamCommand = cam_command_index in CAM_COMMANDS
+        isCamCommand |= CAM_COMMANDS.hasOwnProperty(cam_command_index)
     }
-    console.log("is Cam Command", isCamCommand, "=>", hexBlock.substring(0, 8))
+    console.log("is Cam Command", isCamCommand, "=>", cam_command_index)
     if (isIMEI) {
         recent_device = new mapper_mod.DeviceData(bufferBlock)
         console.log(recent_device.toString())
@@ -257,7 +259,7 @@ const analyse_block = (bufferBlock) => {
         return CAM_COMMANDS["init"](cam_mode)
     }
     if (isCamCommand) {
-        return CAM_COMMANDS[hexBlock.substring(0, 8)](hexBlock)
+        return CAM_COMMANDS[cam_command_index](hexBlock)
     }
     return bufferBlock[9]
 }
