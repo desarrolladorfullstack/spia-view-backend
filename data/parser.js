@@ -60,11 +60,14 @@ var CAM_COMMANDS = {
         file_name = `file_raw_${new Date().getTime()}_${recent_imei}_${cam_mode}`
         return packet_response()
     },
-    "00040402": (any=false) => {
+    "0004": (any=false) => {
         /* packet_offset++ */
         if (recent_device == undefined) {
             console.error("recent_device not found")
             return packet_response()
+        }
+        if (any.length <= 16){
+            return true
         }
         console.log("recent_device packets:", recent_device.toString())
         console.log(" -- > offset:", packet_offset)
@@ -75,7 +78,10 @@ var CAM_COMMANDS = {
                 console.log("Archivo escrito correctamente!", file_name)
             }
         }
-        const packet_data = Buffer.from(any.substring(8, (1024 * 2)), 'hex')
+        const packet_len = parseInt(
+            Buffer.from(any.substring(4, 8), 'hex'), 16) || 1024
+        console.log(" -- > len:", packet_len)
+        const packet_data = Buffer.from(any.substring(8, (packet_len * 2)), 'hex')
         if (packet_offset > 1){
             fs_mod.appendFile(
                 FILE_MEDIA_PATH+file_name,
