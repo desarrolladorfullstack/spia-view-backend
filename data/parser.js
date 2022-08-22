@@ -54,7 +54,8 @@ var CAM_COMMANDS = {
         packet_size = parseInt(any.substring(8,16), 16)
         packet_offset = 0
         file_raw = []
-        file_name = `file_raw_${new Date().getTime()}_${recent_device?.imei}`
+        const recent_imei = recent_device?.imei.toString('hex')
+        file_name = `file_raw_${new Date().getTime()}_${recent_imei}`
         return packet_response()
     },
     "00040402": (any=false) => {
