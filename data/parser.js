@@ -60,17 +60,29 @@ var CAM_COMMANDS = {
     },
     "00040402": (any=false) => {
         packet_offset++
-        if (recent_device != undefined) {
+        if (recent_device == undefined) {
+            console.error("recent_device not found")
+            return packet_response()
+        }
+        console.log("recent_device packets:", recent_device.toString())
+        const handled_error_fs = (error) => {
+            if (error) {
+                console.error(['Error en escritura: ', error])
+            } else {
+                console.log("Archivo escrito correctamente!", file_name)
+            }
+        }
+        const packet_data = Buffer.from(any.substring(8, (1024 * 2)), 'hex')
+        if (packet_offset > 1){
+            fs_mod.appendFile(
+                file_name,
+                packet_data,
+                (err) => handled_error_fs(err))
+        }else{
             fs_mod.writeFile(
                 file_name,
-                Buffer.from(any.substring(8,(1024*2)),'hex'),
-                (error)=>{
-                    if(error){
-                        console.error(['Error en escritura: ', error])
-                    }else{
-                        console.log("Archivo escrito correctamente!", file_name)
-                    }
-                })
+                packet_data,
+                (err) => handled_error_fs(err))
         }
         return packet_response()
     }
