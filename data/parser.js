@@ -55,7 +55,7 @@ var CAM_COMMANDS = {
         packet_offset = 0
         file_raw = []
         const recent_imei = recent_device?.imei.toString('hex')
-        file_name = `file_raw_${new Date().getTime()}_${recent_imei}`
+        file_name = `file_raw_${new Date().getTime()}_${recent_imei}_${cam_mode}`
         return packet_response()
     },
     "00040402": (any=false) => {
