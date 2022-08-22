@@ -11,6 +11,7 @@ let packet_size = 0
 let recent_device = undefined
 let file_raw = []
 let file_name = 'file_raw'
+var FILE_MEDIA_PATH = '/home/node/media/'
 
 var change_cam_mode = {
     "videor":"videof",
@@ -25,7 +26,8 @@ const packet_response = (any=false) => {
     const response_length = Buffer.from(['00', payload_hex.length])
     const response_payload = Buffer.from(payload_hex)
     const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
-    if (packet_offset >= packet_size){
+    console.log(file_name, 'write count', packet_offset, 'of', packet_size)
+    if (packet_offset > 0 && packet_offset >= packet_size){
         packet_offset = 0
         file_raw = []
         file_name = 'file_raw'
@@ -75,12 +77,12 @@ var CAM_COMMANDS = {
         const packet_data = Buffer.from(any.substring(8, (1024 * 2)), 'hex')
         if (packet_offset > 1){
             fs_mod.appendFile(
-                file_name,
+                FILE_MEDIA_PATH+file_name,
                 packet_data,
                 (err) => handled_error_fs(err))
         }else{
             fs_mod.writeFile(
-                file_name,
+                FILE_MEDIA_PATH+file_name,
                 packet_data,
                 (err) => handled_error_fs(err))
         }
