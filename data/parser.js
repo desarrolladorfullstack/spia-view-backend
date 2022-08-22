@@ -61,12 +61,13 @@ var CAM_COMMANDS = {
         return packet_response()
     },
     "00040402": (any=false) => {
-        packet_offset++
+        /* packet_offset++ */
         if (recent_device == undefined) {
             console.error("recent_device not found")
             return packet_response()
         }
         console.log("recent_device packets:", recent_device.toString())
+        console.log(" -- > offset:", packet_offset)
         const handled_error_fs = (error) => {
             if (error) {
                 console.error(['Error en escritura: ', error])
