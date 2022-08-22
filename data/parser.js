@@ -233,7 +233,7 @@ const analyse_block = (bufferBlock) => {
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
-    const cam_command_index = hexBlock.substring(0, 8)
+    let cam_command_index = hexBlock.substring(0, 8)
     let isCamCommand = cam_command_index in CAM_COMMANDS
     isCamCommand |= CAM_COMMANDS.hasOwnProperty(cam_command_index)
     if (!isCamCommand){
