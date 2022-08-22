@@ -32,7 +32,7 @@ const packet_response = (any=false) => {
     }
     return Buffer.from(response_cam, 'hex')
 }
-const file_req_response = (cam_input = "videor") => {
+const file_req_response = (cam_input="videor") => {
     const payload_hex = `%${cam_input}`
     const response_length = Buffer.from(['00', payload_hex.length])
     const response_payload = Buffer.from(payload_hex)
@@ -45,7 +45,8 @@ var CAM_COMMANDS = {
     },
     "00050004": (any=false)=>{
         if (any == CAM_INPUT_ERROR){
-            return file_req_response(change_cam_mode[cam_mode])
+            cam_mode = change_cam_mode[cam_mode]
+            return file_req_response(cam_mode)
         }
         return 0x0000
     },
