@@ -67,6 +67,7 @@ var CAM_COMMANDS = {
             return packet_response()
         }
         if (any.length <= 16){
+            console.warn("no packet:", any)
             return true
         }
         console.log("recent_device packets:", recent_device.toString())
