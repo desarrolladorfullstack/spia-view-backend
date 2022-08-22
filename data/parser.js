@@ -234,6 +234,7 @@ const analyse_block = (bufferBlock) => {
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
     let isCamCommand = hexBlock.substring(0, 8) in CAM_COMMANDS
+    isCamCommand |= hexBlock.substring(0, 4) in CAM_COMMANDS
     isCamCommand |= CAM_COMMANDS.hasOwnProperty(hexBlock.substring(0, 8))
     if (isIMEI) {
         recent_device = new mapper_mod.DeviceData(bufferBlock)
