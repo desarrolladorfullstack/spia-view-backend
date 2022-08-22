@@ -66,9 +66,9 @@ var CAM_COMMANDS = {
                 Buffer.from(any.substring(8,(1024*2)),'hex'),
                 (error)=>{
                     if(error){
-                        success(['Error en escritura: ', error])
+                        console.error(['Error en escritura: ', error])
                     }else{
-                        failure("Archivo escrito correctamente!")
+                        console.log("Archivo escrito correctamente!", file_name)
                     }
                 })
         }
