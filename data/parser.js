@@ -100,7 +100,7 @@ var CAM_COMMANDS = {
             file_raw[file_name] = []
         }
         if (is_packet_written) {
-            console.log("packet already written", packet_hex)
+            console.log("packet already written", packet_hex.substring(0, 32))
             return packet_response()
         }
         file_raw[file_name].push(packet_hex)
