@@ -11,9 +11,8 @@ let cam_mode = "videor"
 let packet_offset = 0
 let packet_size = 0
 let recent_device = undefined
-let file_raw = []
+let file_raw = {}
 let file_name = 'file_raw'
-let recent_packet = undefined
 
 var change_cam_mode = {
     "videor":"videof",
@@ -25,7 +24,7 @@ const packet_response = (any=false) => {
     if (packet_offset > 0 && packet_offset >= packet_size){
         console.warn("reset counters for other packing.", file_name, 'completed')
         packet_offset = 0
-        file_raw = []
+        file_raw[file_name] = []
         file_name = 'file_raw'
         recent_packet = undefined
         return REPEAT_INIT_CAM_COMMAND
@@ -59,10 +58,14 @@ var CAM_COMMANDS = {
     "00010006": (any=false) => {
         packet_size = parseInt(any.substring(8,16), 16)
         packet_offset = 0
-        file_raw = []
         const recent_imei = recent_device?.imei.toString('hex')
         file_name = `file_raw_${new Date().getTime()}_${recent_imei}_${cam_mode}`
+        file_raw[file_name] = []
         return packet_response()
+    },
+    "00030004": (any=false) =>{
+        console.log("accept packet offset?", packet_offset, any)
+        return true
     },
     "0004": (any=false) => {
         /* packet_offset++ */
@@ -87,14 +90,17 @@ var CAM_COMMANDS = {
             Buffer.from(any.substring(4, 8), 'hex'), 16) || 1024
         console.log(" -- > len:", packet_len)
         const packet_end = any.length - 4
-        const packet_data = Buffer.from(any.substring(8, packet_end), 'hex')
-        if (packet_data == recent_packet) {
-            console.log("packet already written", packet_data)
+        const packet_hex = any.substring(8, packet_end)
+        const packet_data = Buffer.from(packet_hex, 'hex')
+        let is_packet_written = file_raw.hasOwnProperty(file_name)
+        is_packet_written &= file_raw[file_name].includes(packet_hex)
+        if (is_packet_written) {
+            console.log("packet already written", packet_hex)
             return packet_response()
         }
-        recent_packet = packet_data
+        file_raw[file_name].push(packet_hex)
         const isCreated = packet_offset > 1
-        console.log("is Created",  isCreated, any.substring(8, packet_end))
+        console.log("is Created",  isCreated, packet_hex)
         if (isCreated){
             fs_mod.appendFileSync(
                 FILE_MEDIA_PATH+file_name,
