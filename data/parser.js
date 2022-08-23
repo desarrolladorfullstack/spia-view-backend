@@ -27,6 +27,7 @@ const packet_response = (any=false) => {
         file_raw[file_name] = []
         file_name = 'file_raw'
         recent_packet = undefined
+        cam_mode = change_cam_mode[cam_mode]
         return REPEAT_INIT_CAM_COMMAND
     }
     packet_offset++
