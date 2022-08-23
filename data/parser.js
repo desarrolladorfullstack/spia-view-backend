@@ -94,6 +94,7 @@ var CAM_COMMANDS = {
         }
         recent_packet = packet_data
         const isCreated = packet_offset > 1
+        console.log("is Created",  isCreated, any.substring(8, packet_end))
         if (isCreated){
             fs_mod.appendFileSync(
                 FILE_MEDIA_PATH+file_name,
