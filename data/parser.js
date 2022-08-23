@@ -47,8 +47,7 @@ const file_req_response = (cam_input="videor") => {
 }
 var CAM_COMMANDS = {
     "init": (any=false) => { 
-        cam_mode = "videor"
-        if (change_cam_mode.hasOwnProperty(cam_mode)){
+        if (cam_mode != "videor" && change_cam_mode.hasOwnProperty(cam_mode)){
             cam_mode = change_cam_mode[cam_mode]
         }
         console.log("cam mode init to", cam_mode)
