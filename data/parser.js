@@ -93,7 +93,9 @@ var CAM_COMMANDS = {
         const packet_hex = any.substring(8, packet_end)
         const packet_data = Buffer.from(packet_hex, 'hex')
         let is_packet_written = file_raw.hasOwnProperty(file_name)
-        is_packet_written &= file_raw[file_name].includes(packet_hex)
+        if (is_packet_written){
+            is_packet_written = file_raw[file_name].includes(packet_hex)
+        }
         if (is_packet_written) {
             console.log("packet already written", packet_hex)
             return packet_response()
