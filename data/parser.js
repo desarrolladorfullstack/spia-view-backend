@@ -30,7 +30,9 @@ const packet_response = (any=false) => {
         cam_mode = change_cam_mode[cam_mode]
         return REPEAT_INIT_CAM_COMMAND
     }
-    packet_offset++
+    if (!any) {
+        packet_offset++
+    }
     const payload_hex = ['00', '00', '00', packet_offset]
     const response_length = Buffer.from(['00', payload_hex.length])
     const response_payload = Buffer.from(payload_hex)
@@ -100,15 +102,17 @@ var CAM_COMMANDS = {
         const packet_data = Buffer.from(packet_hex, 'hex')
         let is_packet_written = file_raw.hasOwnProperty(file_name)
         if (is_packet_written){
-            is_packet_written = file_raw[file_name].includes(packet_hex)
+            is_packet_written = file_raw[file_name].includes(packet_hex.substring(0, 64))
         }else{
             file_raw[file_name] = []
         }
-        if (is_packet_written) {
+        const heap_of_packets = packet_size > 100
+        if (is_packet_written && !heap_of_packets) {
             console.log("packet already written", packet_hex.substring(0, 32))
-            return packet_response()
+            const keep_offset = true
+            return packet_response(keep_offset)
         }
-        file_raw[file_name].push(packet_hex)
+        file_raw[file_name].push(packet_hex.substring(0, 64))
         const isCreated = packet_offset > 1
         console.log("is Created",  isCreated, packet_hex)
         if (isCreated){
