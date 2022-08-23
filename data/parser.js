@@ -92,14 +92,14 @@ var CAM_COMMANDS = {
             return packet_response()
         }
         recent_packet = packet_data
-        const isCreated = true /* packet_offset > 1 */
+        const isCreated = packet_offset > 1
         if (isCreated){
-            fs_mod.appendFile(
+            fs_mod.appendFileSync(
                 FILE_MEDIA_PATH+file_name,
                 packet_data,
                 (err) => handled_error_fs(err))
         }else{
-            fs_mod.writeFile(
+            fs_mod.writeFileSync(
                 FILE_MEDIA_PATH+file_name,
                 packet_data,
                 (err) => handled_error_fs(err))
