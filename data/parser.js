@@ -5,6 +5,7 @@ var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
 var RESUME_CAM_COMMAND = Buffer.from(['00', '02'])
 var FILE_REQ_CAM_COMMAND = Buffer.from(['00', '08'])
+var REPEAT_INIT_CAM_COMMAND = Buffer.from(['00', '09'])
 var FILE_MEDIA_PATH = '/home/node/media/'
 let cam_mode = "videor"
 let packet_offset = 0
@@ -20,21 +21,21 @@ var change_cam_mode = {
     "photor":"photof",
     "photof":"videor"
 }
-
 const packet_response = (any=false) => {
-    packet_offset++
-    const payload_hex = ['00', '00', '00', packet_offset]
-    const response_length = Buffer.from(['00', payload_hex.length])
-    const response_payload = Buffer.from(payload_hex)
-    const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
-    console.log(file_name, 'write count', packet_offset, 'of', packet_size)
     if (packet_offset > 0 && packet_offset >= packet_size){
         console.warn("reset counters for other packing.", file_name, 'completed')
         packet_offset = 0
         file_raw = []
         file_name = 'file_raw'
         recent_packet = undefined
+        return REPEAT_INIT_CAM_COMMAND
     }
+    packet_offset++
+    const payload_hex = ['00', '00', '00', packet_offset]
+    const response_length = Buffer.from(['00', payload_hex.length])
+    const response_payload = Buffer.from(payload_hex)
+    const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
+    console.log(file_name, 'write count', packet_offset, 'of', packet_size)
     return Buffer.from(response_cam, 'hex')
 }
 const file_req_response = (cam_input="videor") => {
