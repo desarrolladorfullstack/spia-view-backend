@@ -95,6 +95,8 @@ var CAM_COMMANDS = {
         let is_packet_written = file_raw.hasOwnProperty(file_name)
         if (is_packet_written){
             is_packet_written = file_raw[file_name].includes(packet_hex)
+        }else{
+            file_raw[file_name] = []
         }
         if (is_packet_written) {
             console.log("packet already written", packet_hex)
