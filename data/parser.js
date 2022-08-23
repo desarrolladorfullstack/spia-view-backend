@@ -92,7 +92,8 @@ var CAM_COMMANDS = {
             return packet_response()
         }
         recent_packet = packet_data
-        if (packet_offset > 1){
+        const isCreated = true /* packet_offset > 1 */
+        if (isCreated){
             fs_mod.appendFile(
                 FILE_MEDIA_PATH+file_name,
                 packet_data,
