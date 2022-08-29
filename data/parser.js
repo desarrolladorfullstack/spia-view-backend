@@ -1,5 +1,6 @@
 const mapper_mod = require('./modeler')
 const fs_mod = require('fs')
+const path_mod = require('path')
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
@@ -20,6 +21,30 @@ var change_cam_mode = {
     "photor":"photof",
     "photof":"videor"
 }
+const load_temp_packets = () => {
+    let queued_packets = {}
+    fs.readdir(FILE_MEDIA_PATH, (err, files) => {
+        files.forEach(file => {
+            const media_file = path_mod.resolve(FILE_MEDIA_PATH, file)
+            const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
+            if (!isDirectory) { 
+                fs_mod.readFile(FILE_MEDIA_PATH+file, {encoding: 'utf-8'}, function(err,data){
+                    let queued_offset = parseInt(data)
+                    if (queued_offset > 0) {
+                        queued_packets[file] = queued_offset
+                    }
+                })
+            }
+        })
+    })
+    return queued_packets
+} 
+const save_temp_packet = (file_name, offset) => {
+    fs_mod.writeFileSync(
+        FILE_MEDIA_PATH+'temp_'+file_name,
+        offset,
+        (err) => handled_error_fs(err))
+}
 const packet_response = (any=false) => {
     if (packet_offset > 0 && packet_offset >= packet_size){
         console.warn("reset counters for other packing.", file_name, 'completed')
@@ -28,11 +53,13 @@ const packet_response = (any=false) => {
         file_name = 'file_raw'
         recent_packet = undefined
         cam_mode = change_cam_mode[cam_mode]
-        return REPEAT_INIT_CAM_COMMAND
-    }
+        save_temp_packet(file_name, -1)
+        return REPEAT_INIT_CAM_COMMAND 
+    } 
     if (!any) {
         packet_offset++
-    }
+    } 
+    save_temp_packet(file_name, packet_offset)
     const payload_hex = ['00', '00', '00', packet_offset]
     const response_length = Buffer.from(['00', payload_hex.length])
     const response_payload = Buffer.from(payload_hex)
@@ -41,6 +68,13 @@ const packet_response = (any=false) => {
     return Buffer.from(response_cam, 'hex')
 }
 const file_req_response = (cam_input="videor") => {
+    const queued_files = load_temp_packets()
+    if (queued_files) {
+        file_name = Object.keys(queued_files)[0]
+        packet_offset = queued_files[file_name]
+        console.log('queued file:', file_name, packet_offset)
+        return packet_response()
+    }
     const payload_hex = `%${cam_input}`
     const response_length = Buffer.from(['00', payload_hex.length])
     const response_payload = Buffer.from(payload_hex)
