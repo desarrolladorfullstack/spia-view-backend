@@ -23,7 +23,7 @@ var change_cam_mode = {
 }
 const load_temp_packets = () => {
     let queued_packets = {}
-    fs.readdir(FILE_MEDIA_PATH, (err, files) => {
+    fs_mod.readdir(FILE_MEDIA_PATH, (err, files) => {
         files.forEach(file => {
             const media_file = path_mod.resolve(FILE_MEDIA_PATH, file)
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
