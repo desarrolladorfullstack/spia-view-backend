@@ -37,7 +37,7 @@ const load_temp_packets = () => {
             }
         })
     })
-    if (queued_packets.length <= 0){
+    if (queued_packets == {}){
         console.log('[queued packets not found]')
         return false
     }
