@@ -112,7 +112,12 @@ var CAM_COMMANDS = {
         return packet_response()
     },
     "00030004": (any=false) =>{
-        console.log("accept packet offset?", packet_offset, any)
+        const temp_packet_offset = load_temp_packets()[file_name]
+        req_offset = parseInt(Buffer.from(any.substring(8)))
+        console.log("accept packet offset?", packet_offset, any, req_offset)
+        if (req_offset < packet_offset){
+            return false
+        }
         return true
     },
     "0004": (any=false) => {
