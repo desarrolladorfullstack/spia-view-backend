@@ -48,7 +48,7 @@ const load_temp_packets = () => {
 const save_temp_packet = (file_name, offset) => {
     fs_mod.writeFileSync(
         FILE_MEDIA_PATH+'temp_'+file_name,
-        offset,
+        `${offset}`,
         (err) => handled_error_fs(err))
 }
 const packet_response = (any=false) => {
