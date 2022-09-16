@@ -113,7 +113,7 @@ var CAM_COMMANDS = {
     },
     "00030004": (any=false) =>{
         const temp_packet_offset = load_temp_packets()[file_name]
-        req_offset = parseInt(Buffer.from(any.substring(8)))
+        req_offset = parseInt(Buffer.from(any.substring(8)),16)
         console.log("accept packet offset?", packet_offset, any, req_offset)
         if (req_offset < packet_offset){
             return false
@@ -345,7 +345,7 @@ const read_block = (bufferBlock) => {
     let block_success = true
     try {
         block_success = analyse_block(bufferBlock)
-        console.log("MOD::read_block-> ", block_success.toString(16) /* , typeof block_success */)
+        console.log("MOD::read_block-> ", block_success ?? Buffer.from(block_success, 16)/* , typeof block_success */)
     } catch (e) {
         console.error("MOD::read_block[ERR] ", e)
     }
