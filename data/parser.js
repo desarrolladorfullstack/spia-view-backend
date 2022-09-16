@@ -37,6 +37,10 @@ const load_temp_packets = () => {
             }
         })
     })
+    if (queued_packets.length <= 0){
+        console.log('No hay paquetes pendientes !!!')
+        return false
+    }
     return queued_packets
 } 
 const save_temp_packet = (file_name, offset) => {
