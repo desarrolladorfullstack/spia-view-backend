@@ -37,7 +37,8 @@ const load_temp_packets = () => {
             }
         })
     })
-    if (queued_packets == {}){
+    if (queued_packets && Object.keys(queued_packets).length === 0
+    && Object.getPrototypeOf(queued_packets) === Object.prototype){
         console.log('[queued packets not found]')
         return false
     }
