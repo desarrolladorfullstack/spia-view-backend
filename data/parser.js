@@ -38,9 +38,10 @@ const load_temp_packets = () => {
         })
     })
     if (queued_packets.length <= 0){
-        console.log('No hay paquetes pendientes !!!')
+        console.log('[queued packets not found]')
         return false
     }
+    console.log('[queued packets] =>', queued_packets)
     return queued_packets
 } 
 const save_temp_packet = (file_name, offset) => {
