@@ -338,7 +338,7 @@ const read_block = (bufferBlock) => {
     } catch (e) {
         console.error("MOD::read_block[ERR] ", e)
     }
-    /* console.log("MOD::read_block?? ", typeof block_success) */
+    console.log("MOD::read_block?? ", typeof block_success)
     return block_success
 }
 module.exports.blockParser = read_block
