@@ -340,7 +340,7 @@ const read_block = (bufferBlock) => {
     let block_success = true
     try {
         block_success = analyse_block(bufferBlock)
-        console.log("MOD::read_block-> ", block_success.toString('hex') /* , typeof block_success */)
+        console.log("MOD::read_block-> ", block_success.toString(16) /* , typeof block_success */)
     } catch (e) {
         console.error("MOD::read_block[ERR] ", e)
     }
