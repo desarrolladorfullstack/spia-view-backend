@@ -15,7 +15,7 @@ do
     { 
         while IFS= read -r line
         do
-            echo "$line"
+            echo $line | hexdump
             line_offset=$((line_offset + 1))
         done < "$input"
     } || {
