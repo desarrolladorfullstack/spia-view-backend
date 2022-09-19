@@ -20,12 +20,21 @@ PGSQL_TABLE_PARENT_SEQUENCE="file_id_seq"
 list_media_files=($(ls $MEDIA_FOLDER))
 for file in ${list_media_files[*]}
 do
+    if [[ "$file" == "temp_file_raw"* ]]
+    then
+        continue
+    fi
     input=$MEDIA_FOLDER$file
     line_offset=0
     IFS='_' read -ra file_data_split <<< "$file"
-    echo ${file_data_split[*]}
-    device_id=${file_data_split[-2]}
-    timestamp=${file_data_split[-3]}
+    device_id='00030efafb4bd16a7c000400'
+    timestamp=$(date '+%s')"000"
+    if [[ "$file" -ne "file_raw" ]]
+    then
+        echo "file_data_split: "${file_data_split[*]}
+        device_id=${file_data_split[-2]}
+        timestamp=${file_data_split[-3]}
+    fi
     IFS=': ' read -ra mime_type <<< file --mime-type $input
     mime_type=${mime_type[1]}
     echo "()=>$input [$device_id, $timestamp] reading ... \n"
