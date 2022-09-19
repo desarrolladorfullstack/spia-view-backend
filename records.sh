@@ -7,6 +7,10 @@
 # 4. SQL insert content as hex block per block
 MEDIA_FOLDER="/home/node/media/"
 PGSQL_HOST="192.168.20.109"
+PGSQL_USER="postgres"
+PGSQL_PORT=5432
+PGSQL_COLUMN="content_block"
+PGSQL_TABLE_NAME="records"
 list_media_files=($(ls $MEDIA_FOLDER))
 for file in ${list_media_files[*]}
 do
@@ -17,7 +21,7 @@ do
         while IFS= read -r line
         do
             line_insert=($(echo $line | hexdump))
-            echo "INSERT INTO $PGSQL_TABLE_NAME VALUES ('${line_insert[*]}');" > temp_insert.sql
+            echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('${line_insert[*]}');" > temp_insert.sql
             cat temp_insert.sql
             # psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f temp_insert.sql
             line_offset=$((line_offset + 1))
