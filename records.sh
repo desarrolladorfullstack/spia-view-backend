@@ -9,7 +9,7 @@ MEDIA_FOLDER="/home/node/media/"
 list_media_files=($(ls $MEDIA_FOLDER))
 for file in ${list_media_files[*]}
 do
-    $input=$MEDIA_FOLDER$file
+    input=$MEDIA_FOLDER$file
     line_offset=0
     echo "()=>$input reading ... \n"
     { 
