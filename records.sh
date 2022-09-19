@@ -29,6 +29,7 @@ do
     mime_type=${mime_type[1]}
     echo "()=>$input [$device_id, $timestamp] reading ... \n"
     echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', '$timestamp','$mime_type');" > temp_insert.sql
+    cat temp_insert.sql
     { 
         while IFS= read -r line
         do
