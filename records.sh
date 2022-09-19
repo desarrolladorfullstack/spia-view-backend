@@ -23,6 +23,7 @@ do
     input=$MEDIA_FOLDER$file
     line_offset=0
     IFS='_' read -ra file_data_split <<< "$file"
+    echo ${file_data_split[*]}
     device_id=${file_data_split[-2]}
     timestamp=${file_data_split[-3]}
     IFS=': ' read -ra mime_type <<< file --mime-type $input
