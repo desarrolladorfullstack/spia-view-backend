@@ -16,8 +16,8 @@ do
     { 
         while IFS= read -r line
         do
-            $line_insert=$(echo $line | hexdump) 
-            echo "INSERT INTO $PGSQL_TABLE_NAME VALUES ('$line_insert');" > temp_insert.sql
+            $line_insert=($(echo $line | hexdump))
+            echo "INSERT INTO $PGSQL_TABLE_NAME VALUES ('${line_insert[*]}');" > temp_insert.sql
             cat temp_insert.sql
             # psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f temp_insert.sql
             line_offset=$((line_offset + 1))
