@@ -81,9 +81,9 @@ const packet_response = (any=false) => {
             /* console.log('offset', offset_byte , count, start, end) */
             payload_hex[payload_hex.length-1-count]=offset_byte
         }
+        response_payload = Buffer.from(payload_hex.join(''),'hex')
     }
     const response_length = Buffer.from(['00', payload_hex.length])
-    response_payload = Buffer.from(payload_hex.join(''),'hex')
     console.log('payload_hex', packet_offset, payload_hex, response_payload)
     const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
     console.log(file_name, 'write count', packet_offset, 'of', packet_size)
