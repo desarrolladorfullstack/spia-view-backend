@@ -67,6 +67,7 @@ const packet_response = (any=false) => {
     } 
     save_temp_packet(file_name, packet_offset)
     let payload_hex = ['00', '00', '00', packet_offset]
+    let response_payload = Buffer.from(payload_hex)
     if (packet_offset > 255){
         let hex_offset = packet_offset.toString(16)
         if (hex_offset.length%2 == 1 ) {
@@ -82,7 +83,7 @@ const packet_response = (any=false) => {
         }
     }
     const response_length = Buffer.from(['00', payload_hex.length])
-    const response_payload = Buffer.from(payload_hex)
+    response_payload = Buffer.from(payload_hex.join(''),'hex')
     console.log('payload_hex', packet_offset, payload_hex, response_payload)
     const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
     console.log(file_name, 'write count', packet_offset, 'of', packet_size)
