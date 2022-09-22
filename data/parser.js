@@ -66,9 +66,13 @@ const packet_response = (any=false) => {
         packet_offset++
     } 
     save_temp_packet(file_name, packet_offset)
-    const payload_hex = ['00', '00', '00', packet_offset]
+    let payload_hex = ['00', '00', '00', packet_offset]
+    if (packet_offset > 255){
+        payload_hex = ['00', '00', packet_offset]
+    }
     const response_length = Buffer.from(['00', payload_hex.length])
     const response_payload = Buffer.from(payload_hex)
+    console.log('payload_hex', packet_offset, payload_hex, response_payload)
     const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
     console.log(file_name, 'write count', packet_offset, 'of', packet_size)
     return Buffer.from(response_cam, 'hex')
