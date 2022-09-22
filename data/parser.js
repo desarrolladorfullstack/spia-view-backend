@@ -68,7 +68,18 @@ const packet_response = (any=false) => {
     save_temp_packet(file_name, packet_offset)
     let payload_hex = ['00', '00', '00', packet_offset]
     if (packet_offset > 255){
-        payload_hex = ['00', '00', packet_offset]
+        let hex_offset = packet_offset.toString(16)
+        if (hex_offset.length%2 == 1 ) {
+             hex_offset = "0"+hex_offset 
+        }
+        /* console.log('hex', hex_offset) */
+        for (let count = 0; count < Math.round(hex_offset.length/2) ; count ++) {
+            const start = hex_offset.length - (count * 2) - 2
+            const end = hex_offset.length - (count * 2)
+            const offset_byte = hex_offset.substring(start, end)
+            /* console.log('offset', offset_byte , count, start, end) */
+            payload_hex[payload_hex.length-1-count]=offset_byte
+        }
     }
     const response_length = Buffer.from(['00', payload_hex.length])
     const response_payload = Buffer.from(payload_hex)
@@ -151,7 +162,7 @@ var CAM_COMMANDS = {
         const packet_data = Buffer.from(packet_hex, 'hex')
         let is_packet_written = file_raw.hasOwnProperty(file_name)
         if (is_packet_written){
-            is_packet_written = file_raw[file_name].includes(packet_hex.substring(0, 64))
+            is_packet_written = file_raw[file_name].includes(packet_hex.substring(0, 128))
         }else{
             file_raw[file_name] = []
         }
@@ -161,7 +172,7 @@ var CAM_COMMANDS = {
             const keep_offset = true
             return packet_response(keep_offset)
         }
-        file_raw[file_name].push(packet_hex.substring(0, 64))
+        file_raw[file_name].push(packet_hex.substring(0, 128))
         const isCreated = packet_offset > 1
         console.log("is Created",  isCreated, packet_hex)
         if (isCreated){
@@ -305,7 +316,7 @@ const build_device = (input_block) => {
         }
         console.log('properties', properties/*, 'loop:', loop+1*/)
         // if(block_complete){        
-        loop++;
+        loop++
         //}
     }
 }

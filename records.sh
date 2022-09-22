@@ -10,13 +10,13 @@ PGSQL_HOST="192.168.20.109"
 PGSQL_USER="postgres"
 PGSQL_PORT=5432
 PGSQL_COLUMN="content_block"
-PGSQL_PARENT_COLUMN="device_id, stamp, mime_type"
+PGSQL_PARENT_COLUMN="device_id, file_stamp, mime_type"
 PGSQL_CROSS_COLUMN="file_id, record_id"
 PGSQL_TABLE_NAME="records"
 PGSQL_TABLE_PARENT_NAME="files"
 PGSQL_TABLE_CROSS_NAME="file_records"
-PGSQL_TABLE_SEQUENCE="record_id_seq"
-PGSQL_TABLE_PARENT_SEQUENCE="file_id_seq"
+PGSQL_TABLE_SEQUENCE="records_record_id_seq"
+PGSQL_TABLE_PARENT_SEQUENCE="files_file_id_seq"
 list_media_files=($(ls $MEDIA_FOLDER))
 for file in ${list_media_files[*]}
 do
