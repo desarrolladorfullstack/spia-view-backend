@@ -167,7 +167,7 @@ var CAM_COMMANDS = {
         }else{
             file_raw[file_name] = []
         }
-        const heap_of_packets = packet_size > 100
+        const heap_of_packets = false /* packet_size > 100 */
         if (is_packet_written && !heap_of_packets) {
             console.log("packet already written", packet_hex.substring(0, 32))
             const keep_offset = true
