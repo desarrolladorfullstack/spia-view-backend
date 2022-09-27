@@ -6,7 +6,15 @@
 # 3. connect to datasource
 # 4. SQL insert content as hex block per block
 MEDIA_FOLDER="/home/node/media/"
+if [[ "$1" != "" ]]
+then
+    MEDIA_FOLDER=$1
+fi
 SQL_FOLDER="/home/node/"
+if [[ "$2" != "" ]]
+then
+    SQL_FOLDER=$2
+fi
 PGSQL_HOST="192.168.20.109"
 PGSQL_USER="postgres"
 PGSQL_PORT=5432
