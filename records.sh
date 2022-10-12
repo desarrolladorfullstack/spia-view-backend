@@ -5,20 +5,21 @@
 # 2. loop file contents
 # 3. connect to datasource
 # 4. SQL insert content as hex block per block
-MEDIA_FOLDER="/home/node/media/"
+MEDIA_FOLDER="/home/ubuntu/media/"
 if [[ "$1" != "" ]]
 then
     MEDIA_FOLDER=$1
 fi
-SQL_FOLDER="/home/node/"
+SQL_FOLDER="/home/ubuntu/"
 if [[ "$2" != "" ]]
 then
     SQL_FOLDER=$2
 fi
-PGSQL_HOST="192.168.20.109"
-PGSQL_USER="postgres"
+PGSQL_HOST="200.91.236.122"
+PGSQL_USER="spiadbadmin"
+PGSQL_DBNAME="spiaview"
 PGSQL_PORT=5432
-PGSQL_COLUMN="content_block"
+PGSQL_COLUMN="content_block, record_offset"
 PGSQL_PARENT_COLUMN="device_key, file_stamp, mime_type"
 PGSQL_CROSS_COLUMN="file_key, record_key"
 PGSQL_TABLE_NAME="records"
@@ -35,6 +36,7 @@ do
     fi
     input=$MEDIA_FOLDER$file
     line_offset=0
+    record_offset=0
     IFS='_' read -ra file_data_split <<< "$file"
     device_id='00030efafb4bd16a7c000400'
     timestamp=$(date '+%s')"000"
@@ -53,10 +55,10 @@ do
         while IFS= read -r line
         do
             line_insert=($(echo $line | hexdump))
-            echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('${line_insert[*]}');" > temp_insert.sql
+            echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('${line_insert[*]}', $record_offset);" > temp_insert.sql
             echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT currval('$PGSQL_TABLE_PARENT_SEQUENCE'), currval('$PGSQL_TABLE_SEQUENCE');" >> $SQL_FOLDER"temp_insert.sql"
             cat temp_insert.sql
-            # psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
+            psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
             line_offset=$((line_offset + 1))
         done < "$input"
     } || {
