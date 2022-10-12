@@ -50,14 +50,14 @@ do
     mime_type=${mime_type[1]}
     echo "()=>$input [$device_id, $timestamp] reading ... \n"
     echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', '$timestamp','$mime_type');" > $SQL_FOLDER"temp_insert.sql"
-    cat temp_insert.sql
+    cat $SQL_FOLDER"temp_insert.sql"
     { 
         while IFS= read -r line
         do
             line_insert=($(echo $line | hexdump))
-            echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('${line_insert[*]}', $record_offset);" > temp_insert.sql
+            echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('${line_insert[*]}', $record_offset);" > $SQL_FOLDER"temp_insert.sql"
             echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT currval('$PGSQL_TABLE_PARENT_SEQUENCE'), currval('$PGSQL_TABLE_SEQUENCE');" >> $SQL_FOLDER"temp_insert.sql"
-            cat temp_insert.sql
+            cat $SQL_FOLDER"temp_insert.sql"
             psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
             line_offset=$((line_offset + 1))
         done < "$input"
