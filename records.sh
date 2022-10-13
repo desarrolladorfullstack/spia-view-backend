@@ -67,7 +67,7 @@ do
                 continue
             fi
             echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('$block', $record_offset);" > $SQL_FOLDER"temp_insert.sql"
-            echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT currval('$PGSQL_TABLE_PARENT_SEQUENCE'), currval('$PGSQL_TABLE_SEQUENCE');" >> $SQL_FOLDER"temp_insert.sql"
+            echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT sq1.last_value, sq2.last_value FROM $PGSQL_TABLE_PARENT_SEQUENCE sq1, $PGSQL_TABLE_SEQUENCE sq2;" >> $SQL_FOLDER"temp_insert.sql"
             cat $SQL_FOLDER"temp_insert.sql"
             psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
             line_offset=$((line_offset + 1))
