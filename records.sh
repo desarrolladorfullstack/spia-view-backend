@@ -5,6 +5,7 @@
 # 2. loop file contents
 # 3. connect to datasource
 # 4. SQL insert content as hex block per block
+BYTEBLOCK_LIMIT=1024
 MEDIA_FOLDER="/home/ubuntu/media/"
 if [[ "$1" != "" ]]
 then
@@ -52,15 +53,27 @@ do
     echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', '$timestamp','$mime_type');" > $SQL_FOLDER"temp_insert.sql"
     cat $SQL_FOLDER"temp_insert.sql"
     { 
-        while IFS= read -r line
+        # while IFS= read -r line 
+        # 8a4a280168a4a2800a28a28016928a2800a28a2800a28a2800a28a4a0028 while join < 1024*2 chars
+        # do
+        lines_insert=($(xxd -p $input))
+        line_count=0
+        block=""
+        for line in ${lines_insert[*]}
         do
-            line_insert=($(echo $line | xxd -p))
-            echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('${line_insert[*]}', $record_offset);" > $SQL_FOLDER"temp_insert.sql"
+            if ((${#block} < ($BYTEBLOCK_LIMIT*2)))
+            then
+                block+=$line
+                continue
+            fi
+            echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('$block', $record_offset);" > $SQL_FOLDER"temp_insert.sql"
             echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT currval('$PGSQL_TABLE_PARENT_SEQUENCE'), currval('$PGSQL_TABLE_SEQUENCE');" >> $SQL_FOLDER"temp_insert.sql"
             cat $SQL_FOLDER"temp_insert.sql"
             psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
             line_offset=$((line_offset + 1))
-        done < "$input"
+            block=""
+        done
+        # done < "$input"
     } || {
         echo "error on $input:$line_offset\n"
     }
