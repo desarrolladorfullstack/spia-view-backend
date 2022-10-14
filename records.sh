@@ -47,7 +47,8 @@ do
         device_id=${file_data_split[-2]}
         timestamp=${file_data_split[-3]}
     fi
-    IFS=': ' read -ra mime_type <<< file --mime-type $input
+    mime_type=$(file --mime-type $input)
+    IFS=': ' read -ra mime_type <<< $mime_type
     mime_type=${mime_type[1]}
     echo "()=>$input [$device_id, $timestamp] reading ... \n"
     echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', '$timestamp','$mime_type');" > $SQL_FOLDER"temp_insert.sql"
