@@ -42,7 +42,7 @@ do
         IFS='_' read -ra file_data_split <<< "$file"
         device_id='00030efafb4bd16a7c000400'
         timestamp=$(date '+%s')"000"
-        if [[ "$file" -ne "file_raw" ]]
+        if [[ "$file" != "file_raw" ]]
         then
             echo "file_data_split: "${file_data_split[*]}
             device_id=${file_data_split[-2]}
