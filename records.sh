@@ -52,7 +52,7 @@ do
         IFS=': ' read -ra mime_type <<< $mime_type
         mime_type=${mime_type[1]}
         echo "()=>$input [$device_id, $timestamp] reading ... \n"
-        echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', '$timestamp','$mime_type');" > $SQL_FOLDER"temp_insert.sql"
+        echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type');" > $SQL_FOLDER"temp_insert.sql"
         cat $SQL_FOLDER"temp_insert.sql"
         psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
         { 
