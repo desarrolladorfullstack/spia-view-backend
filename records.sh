@@ -62,7 +62,7 @@ do
         block=""
         for line in ${lines_insert[*]}
         do
-            if ((${#block} < ($BYTEBLOCK_LIMIT*2))
+            if ((${#block} < ($BYTEBLOCK_LIMIT*2)))
             then
                 block+=$line
                 continue
