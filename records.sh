@@ -37,6 +37,13 @@ do
             continue
         fi
         input=$MEDIA_FOLDER$file
+        if test -f "$input"
+        then
+            echo "$input exists."
+        else
+            echo "FAILURE: $input Not found!"
+            continue
+        fi
         line_offset=0
         record_offset=0
         IFS='_' read -ra file_data_split <<< "$file"
@@ -55,11 +62,8 @@ do
         echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type');" > $SQL_FOLDER"temp_insert.sql"
         cat $SQL_FOLDER"temp_insert.sql"
         psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
-        { 
-            # while IFS= read -r line 
-            # 8a4a280168a4a2800a28a28016928a2800a28a2800a28a2800a28a4a0028 while join < 1024*2 chars
-            # do
-            lines_insert=($(xxd -p $input))
+        {  
+            lines_insert=($(xxd -p "$input"))
             line_count=0
             block=""
             for line in ${lines_insert[*]}
@@ -75,9 +79,15 @@ do
                 psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
                 line_offset=$((line_offset + 1))
                 block=""
-            done
-            # done < "$input"
-            rm $input
+            done 
+            if test -f "$input"
+            then
+                echo "$input exists for RM." 
+                rm $input
+            else
+                echo "RM: $input Not found!"
+                continue
+            fi
         } || {
             echo "error on Subprocess $input:$line_offset\n"
         }
