@@ -61,29 +61,46 @@ do
         echo "()=>$input [$device_id, $timestamp] reading ... \n"
         echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type');" > $SQL_FOLDER"temp_insert.sql"
         cat $SQL_FOLDER"temp_insert.sql"
+        cat $SQL_FOLDER"temp_insert.sql" >> $SQL_FOLDER"inserts_records.sql"
         psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
         {  
             lines_insert=($(xxd -p "$input"))
             line_count=0
             block=""
+            block_count=32
+            declare -a block_inserts
             for line in ${lines_insert[*]}
             do
-                if ((${#block} < ($BYTEBLOCK_LIMIT*2)))
-                then
-                    block+=$line
-                    continue
-                fi
+            #    if (($line_count < $block_count))
+            #    then
+            #        block+=$line
+            #        line_count=$((line_count + 1))
+            #        continue
+            #    fi
+            #    block_inserts+=(\"$block\")
+            #    block=""
+            #    line_count=0
+            #done 
+            #if (($line_count < $block_count))
+            #then
+            #    block_inserts+=($block)
+            #fi
+            #for line in ${block_inserts[@]}
+            #do
+                block=$line
                 echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('$block', $record_offset);" > $SQL_FOLDER"temp_insert.sql"
                 echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT sq1.last_value, sq2.last_value FROM $PGSQL_TABLE_PARENT_SEQUENCE sq1, $PGSQL_TABLE_SEQUENCE sq2;" >> $SQL_FOLDER"temp_insert.sql"
-                cat $SQL_FOLDER"temp_insert.sql"
+                cat $SQL_FOLDER"temp_insert.sql" 
+                cat $SQL_FOLDER"temp_insert.sql" >> $SQL_FOLDER"inserts_records.sql"
                 psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
                 line_offset=$((line_offset + 1))
                 block=""
+                line_count=0
             done 
             if test -f "$input"
             then
                 echo "$input exists for RM." 
-                rm $input
+                # rm $input
             else
                 echo "RM: $input Not found!"
                 continue
