@@ -216,15 +216,24 @@ const build_device = (input_block) => {
         const end_index = block_index + 8
         let timestamp = new Date(parseInt(
             events_block.subarray(block_index, end_index).toString('hex'), 16))
-        console.log("[", loop + 1, "]!",
-            // timestamp, events_block.subarray(block_index, end_index).toString('hex'),
-            `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
-            `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
         let is_timestamp = timestamp.toString() != 'Invalid Date'
         is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
         if (!is_timestamp) {
+        timestamp = new Date(parseInt(
+            events_block.subarray(block_index-2, block_index+6).toString('hex'), 16))
+        let is_timestamp_2 = timestamp.toString() != 'Invalid Date'
+        is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
+        if (!is_timestamp_2){
             break
+        }else{
+            block_index-=2
+            // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
         }
+    }
+    console.log("[", loop + 1, "]!",
+        // timestamp, events_block.subarray(block_index, end_index).toString('hex'),
+        `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
+        `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
         console.log('Events(', loop + 1, ')')
         console.log('timestamp', timestamp)
         const priority = parseInt(
@@ -277,10 +286,10 @@ const build_device = (input_block) => {
             property_start += 2
             let is_x_bytes = (value_indexes > 8)
             for (let property of Array(keys_for_properties).keys()) {
-                prop_key = parseInt(
-                    events_block.subarray(property_start, property_start + 2)
-                        .toString('hex'), 16)
-                /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key) */
+            const prop_key_byte = events_block.subarray(
+                property_start, property_start + 2).toString('hex')
+            prop_key = parseInt( prop_key_byte, 16)
+            /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key_byte, prop_key) */
                 property_start += !is_x_bytes ? 2 : 4
                 let property_value_end = property_start + value_indexes
                 if (is_x_bytes) {

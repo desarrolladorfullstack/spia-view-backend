@@ -29,7 +29,7 @@ let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
 }
 server.on('connection', (socket) => {
   socket.setNoDelay(true)
-  socket.setKeepAlive(true)
+  socket.setKeepAlive(true, 9*KEEP_ALIVE)
   socket.setTimeout(10*KEEP_ALIVE)
   socket.on('data', (data) => {
     console.log('\nCliente: ' , `${socket.remoteAddress} : ${socket.remotePort}`)
