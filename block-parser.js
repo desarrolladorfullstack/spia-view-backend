@@ -128,15 +128,24 @@ while (loop < events) {
     const end_index = block_index + 8
     let timestamp = new Date(parseInt(
         events_block.subarray(block_index, end_index).toString('hex'), 16))
+    let is_timestamp = timestamp.toString() != 'Invalid Date'
+    is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
+    if (!is_timestamp) {
+        timestamp = new Date(parseInt(
+            events_block.subarray(block_index-2, block_index+6).toString('hex'), 16))
+        let is_timestamp_2 = timestamp.toString() != 'Invalid Date'
+        is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
+        if (!is_timestamp_2){
+            break  
+        }else{
+            block_index-=2
+            // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
+        }
+    }
     console.log("[", loop + 1, "]!",
         // timestamp, events_block.subarray(block_index, end_index).toString('hex'),
         `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
         `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
-    let is_timestamp = timestamp.toString() != 'Invalid Date'
-    is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
-    if (!is_timestamp) {
-        break
-    }
     console.log('Events(', loop + 1, ')')
     console.log('timestamp', timestamp)
     const priority = parseInt(
