@@ -21,17 +21,21 @@ PGSQL_USER="spiadbadmin"
 PGSQL_DBNAME="spiaview"
 PGSQL_PORT=5432
 PGSQL_COLUMN="content_block, record_offset"
-PGSQL_PARENT_COLUMN="device_key, file_stamp, mime_type"
+PGSQL_PARENT_COLUMN="device_key, file_stamp, mime_type, temp_file"
 PGSQL_CROSS_COLUMN="file_key, record_key"
 PGSQL_TABLE_NAME="records"
 PGSQL_TABLE_PARENT_NAME="files"
 PGSQL_TABLE_CROSS_NAME="file_records"
 PGSQL_TABLE_SEQUENCE="records_record_id_seq"
 PGSQL_TABLE_PARENT_SEQUENCE="files_file_id_seq"
+TEMP_INSERT_FILE="temp_insert.sql"
+TEMP_SELECT_FILE="temp_select.sql"
+TEMP_SELECT_RESULT="temp_select_result.tmp"
 list_media_files=($(ls $MEDIA_FOLDER))
 for file in ${list_media_files[*]}
 do
     {
+        file_key="sq1.last_value"
         if [[ "$file" == "temp_file_raw"* ]]
         then
             continue
@@ -57,23 +61,49 @@ do
         fi
         mime_type=$(file --mime-type $input)
         IFS=': ' read -ra mime_type <<< $mime_type
-        mime_type=${mime_type[1]}
+        mime_type="${mime_type[1]}"
+        # BEGIN: validate temp_file
+        echo "SELECT * FROM $PGSQL_TABLE_PARENT_NAME WHERE temp_file = '$file';" > $SQL_FOLDER$TEMP_SELECT_FILE
+        cat $SQL_FOLDER$TEMP_INSERT_FILE
+        cat $SQL_FOLDER$TEMP_SELECT_FILE >> $SQL_FOLDER"inserts_records.sql"
+        psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_SELECT_FILE > $SQL_FOLDER$TEMP_SELECT_RESULT
+        result=""; while read -r line; do result="$result$line;"; done < $SQL_FOLDER$TEMP_SELECT_RESULT
+        if [[ "$result" != *"(0 rows)"* ]]
+        then
+          IFS=';' read -ra results <<< "$result"
+          end_rows=${#results}
+          for (( i = 2; i < end_rows; i++ ))
+          do
+            IFS=' | ' read -ra row <<< "${results[$i]}"
+            file_id="${row[0]}"
+            file_key=$file_id
+          done
+        fi
+        # END: validate temp_file
         echo "()=>$input [$device_id, $timestamp] reading ... \n"
-        echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type');" > $SQL_FOLDER"temp_insert.sql"
-        cat $SQL_FOLDER"temp_insert.sql"
-        cat $SQL_FOLDER"temp_insert.sql" >> $SQL_FOLDER"inserts_records.sql"
-        psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
+        echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type','$file');" > $SQL_FOLDER$TEMP_INSERT_FILE
+        cat $SQL_FOLDER$TEMP_INSERT_FILE
+        cat $SQL_FOLDER$TEMP_INSERT_FILE >> $SQL_FOLDER"inserts_records.sql"
+        psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_INSERT_FILE
         {  
             lines_insert=($(xxd -p "$input"))
             line_count=0
             block=""
             block_count=32
             declare -a block_inserts
+            lines="";
             for line in ${lines_insert[*]}
             do
+              lines="$lines$line"
+            done
+            #if ((${#block} < ($BYTEBLOCK_LIMIT*2)))
+            #then
+            #    block+=$line
+            #    continue
+            #fi
             #    if (($line_count < $block_count))
             #    then
-            #        block+=$line
+            #        block="$block$line"
             #        line_count=$((line_count + 1))
             #        continue
             #    fi
@@ -87,16 +117,18 @@ do
             #fi
             #for line in ${block_inserts[@]}
             #do
-                block=$line
-                echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('$block', $record_offset);" > $SQL_FOLDER"temp_insert.sql"
-                echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT sq1.last_value, sq2.last_value FROM $PGSQL_TABLE_PARENT_SEQUENCE sq1, $PGSQL_TABLE_SEQUENCE sq2;" >> $SQL_FOLDER"temp_insert.sql"
-                cat $SQL_FOLDER"temp_insert.sql" 
-                cat $SQL_FOLDER"temp_insert.sql" >> $SQL_FOLDER"inserts_records.sql"
-                psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER"temp_insert.sql"
+            #   block=$line
+                echo "-> ENTIRE MODE: block=\$lines ... lines=\"\$lines\$line\""
+                block=$lines
+                echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('$block', $record_offset);" > $SQL_FOLDER$TEMP_INSERT_FILE
+                echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT $file_key, sq2.last_value FROM $PGSQL_TABLE_PARENT_SEQUENCE sq1, $PGSQL_TABLE_SEQUENCE sq2;" >> $SQL_FOLDER$TEMP_INSERT_FILE
+                cat $SQL_FOLDER$TEMP_INSERT_FILE
+                cat $SQL_FOLDER$TEMP_INSERT_FILE >> $SQL_FOLDER"inserts_records.sql"
+                psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_INSERT_FILE
                 line_offset=$((line_offset + 1))
                 block=""
                 line_count=0
-            done 
+            #done
             if test -f "$input"
             then
                 echo "$input exists for RM." 
