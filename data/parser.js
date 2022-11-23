@@ -176,7 +176,7 @@ var CAM_COMMANDS = {
         file_raw[file_name].push(packet_hex.substring(0, 128))
         const isCreated = packet_offset > 1
         console.log("is Created",  isCreated, packet_hex)
-        packet_data=packet_hex
+        packet_data=packet_hex+"\n"
         console.log("..:: WARNING: insert as hex ::..");
         if (isCreated){
             fs_mod.appendFileSync(
