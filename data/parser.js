@@ -160,7 +160,7 @@ var CAM_COMMANDS = {
         console.log(" -- > len:", packet_len)
         const packet_end = any.length - 4
         const packet_hex = any.substring(8, packet_end)
-        const packet_data = Buffer.from(packet_hex, 'hex')
+        let packet_data = Buffer.from(packet_hex, 'hex')
         let is_packet_written = file_raw.hasOwnProperty(file_name)
         if (is_packet_written){
             is_packet_written = file_raw[file_name].includes(packet_hex.substring(0, 128))
@@ -171,11 +171,13 @@ var CAM_COMMANDS = {
         if (is_packet_written && !heap_of_packets) {
             console.log("packet already written", packet_hex.substring(0, 32))
             const keep_offset = true
-            return packet_response(keep_offset)
+            /*return packet_response(keep_offset)*/
         }
         file_raw[file_name].push(packet_hex.substring(0, 128))
         const isCreated = packet_offset > 1
         console.log("is Created",  isCreated, packet_hex)
+        packet_data=packet_hex
+        console.log("..:: WARNING: insert as hex ::..");
         if (isCreated){
             fs_mod.appendFileSync(
                 FILE_MEDIA_PATH+file_name,

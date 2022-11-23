@@ -93,6 +93,8 @@ do
         fi
         {  
             lines_insert=($(xxd -p "$input"))
+            echo "== WARNING: INSERT FROM HEX STRING =="
+            lines_insert=($(cat "$input"))
             line_count=0
             block=""
             block_count=32
