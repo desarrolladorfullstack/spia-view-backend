@@ -75,16 +75,22 @@ do
           for (( i = 2; i < end_rows; i++ ))
           do
             IFS=' | ' read -ra row <<< "${results[$i]}"
-            file_id="${row[0]}"
-            file_key=$file_id
+            if [[ "${row[0]}" != "" ]]
+            then
+              file_id="${row[0]}"
+              file_key=$file_id
+            fi
           done
         fi
         # END: validate temp_file
         echo "()=>$input [$device_id, $timestamp] reading ... \n"
-        echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type','$file');" > $SQL_FOLDER$TEMP_INSERT_FILE
-        cat $SQL_FOLDER$TEMP_INSERT_FILE
-        cat $SQL_FOLDER$TEMP_INSERT_FILE >> $SQL_FOLDER"inserts_records.sql"
-        psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_INSERT_FILE
+        if [[ "${row[0]}" != "" ]]
+        then
+          echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type','$file');" > $SQL_FOLDER$TEMP_INSERT_FILE
+          cat $SQL_FOLDER$TEMP_INSERT_FILE
+          cat $SQL_FOLDER$TEMP_INSERT_FILE >> $SQL_FOLDER"inserts_records.sql"
+          psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_INSERT_FILE
+        fi
         {  
             lines_insert=($(xxd -p "$input"))
             line_count=0
