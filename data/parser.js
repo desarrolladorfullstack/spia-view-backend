@@ -214,7 +214,7 @@ var CAM_COMMANDS = {
                 hex_packet_data,
                 (err) => handled_error_fs(err))
         }
-        let mime_type_cmd = "file --mime-type "+file_path
+        let mime_type_cmd = `file --mime-type ${file_path}`
         exec(mime_type_cmd, (error, stdout, stderr) => {
             if (error) {
                 console.log(`error [mime_type_cmd]: ${error.message}`, mime_type_cmd)
@@ -242,7 +242,7 @@ var CAM_COMMANDS = {
                 if (is_image){
                     file_type="_image"
                 }
-                let move_file_as_type_cmd = "mv "+file_hex_path+" "+file_hex_path+file_type
+                let move_file_as_type_cmd = `cp ${file_hex_path} ${file_hex_path}${file_type}`
                 if (file_type){
                     exec(move_file_as_type_cmd, (error, stdout, stderr) => {
                         if (error) {
