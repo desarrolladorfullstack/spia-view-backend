@@ -177,7 +177,7 @@ var CAM_COMMANDS = {
         if (is_packet_written && !heap_of_packets) {
             console.log("packet already written", packet_hex.substring(0, 32))
             const keep_offset = true
-            /*return packet_response(keep_offset)*/
+            return packet_response(keep_offset)
         }
         file_raw[file_name].push(packet_hex.substring(0, 128))
         const isCreated = packet_offset > 1
