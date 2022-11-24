@@ -72,7 +72,7 @@ do
         #mime_type="${mime_type[1]}"
         # END: validate mime-type
         mime_type="image/jpeg"
-        if [[ "$file" != *"_video" ]]
+        if [[ "$file" == *"_video" ]]
         then
           mime_type="application/octet-stream"
           echo ".... $file is a video ...."
