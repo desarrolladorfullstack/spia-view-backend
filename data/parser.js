@@ -228,6 +228,9 @@ var CAM_COMMANDS = {
             let is_mime_response = stdout.indexOf(separator_mime_type) > -1
             if(is_mime_response){
                 let split_mime_type = stdout.split(separator_mime_type)[1]
+                if (split_mime_type.length > 0){
+                    split_mime_type = split_mime_type.replace("\n","");
+                }
                 let file_type = false
                 console.log(`stdout [split_mime_type] => [[${split_mime_type}]]`)
                 let is_video = split_mime_type == "application/octet-stream"
