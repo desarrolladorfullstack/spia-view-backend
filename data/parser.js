@@ -187,7 +187,7 @@ var CAM_COMMANDS = {
         let file_hex_path = file_path+"_hex"
         for (const cam_mode_index in orientation_cam_mode) {
             let searchValue = "_"+cam_mode_index
-            let replaceValue = orientation_cam_mode[orientation_cam_mode]
+            let replaceValue = orientation_cam_mode[cam_mode_index]
             console.log("file_path ? cam_mode_index =>", file_path, cam_mode_index, replaceValue)
             if (file_path.indexOf(searchValue) > -1){
                 file_hex_path = file_path.replace(searchValue,"_"+replaceValue)+"_hex"
