@@ -223,11 +223,13 @@ var CAM_COMMANDS = {
                 console.log(`stderr [mime_type_cmd]: ${stderr}`, mime_type_cmd)
                 return
             }
+            console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd)
             let separator_mime_type = ": ";
             let is_mime_response = stdout.indexOf(separator_mime_type) > -1
             if(is_mime_response){
                 let split_mime_type = stdout.split(separator_mime_type)[1]
                 let file_type = false
+                console.log(`stdout [split_mime_type] => [[${split_mime_type}]]`)
                 let is_video = split_mime_type == "application/octet-stream"
                 if (is_video){
                     file_type="_video"
@@ -236,7 +238,6 @@ var CAM_COMMANDS = {
                 if (is_image){
                     file_type="_image"
                 }
-                console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd, split_mime_type, file_type)
                 let move_file_as_type_cmd = "mv "+file_hex_path+" "+file_hex_path+file_type
                 if (file_type){
                     exec(move_file_as_type_cmd, (error, stdout, stderr) => {
