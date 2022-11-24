@@ -214,7 +214,6 @@ var CAM_COMMANDS = {
                 (err) => handled_error_fs(err))
         }
         let mime_type_cmd = "file --mime-type "+file_path
-        let file_type = false
         exec(mime_type_cmd, (error, stdout, stderr) => {
             if (error) {
                 console.log(`error [mime_type_cmd]: ${error.message}`, mime_type_cmd)
@@ -228,6 +227,7 @@ var CAM_COMMANDS = {
             let is_mime_response = stdout.indexOf(separator_mime_type) > -1
             if(is_mime_response){
                 let split_mime_type = stdout.split(separator_mime_type)[1]
+                let file_type = false
                 let is_video = split_mime_type == "application/octet-stream"
                 if (is_video){
                     file_type="_video"
