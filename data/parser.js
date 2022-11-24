@@ -237,22 +237,23 @@ var CAM_COMMANDS = {
                     file_type="_image"
                 }
                 console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd, split_mime_type, file_type)
+                let move_file_as_type_cmd = "mv "+file_hex_path+" "+file_hex_path+file_type
+                if (file_type){
+                    exec(move_file_as_type_cmd, (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(`error [move_file_as_type_cmd]: ${error.message}`, move_file_as_type_cmd)
+                            return
+                        }
+                        if (stderr) {
+                            console.log(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
+                            return
+                        }
+                        console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd)
+                    })
+                }
             }
         })
-        let move_file_as_type_cmd = "mv "+file_hex_path+" "+file_hex_path+file_type
-        if (file_type){
-            exec(move_file_as_type_cmd, (error, stdout, stderr) => {
-                if (error) {
-                    console.log(`error [move_file_as_type_cmd]: ${error.message}`, move_file_as_type_cmd)
-                    return
-                }
-                if (stderr) {
-                    console.log(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
-                    return
-                }
-                console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd)
-            })
-        }
+
         return packet_response()
     }
 }
