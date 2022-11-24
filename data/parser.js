@@ -236,7 +236,7 @@ var CAM_COMMANDS = {
                 if (is_image){
                     file_type="_image"
                 }
-                console.log(`stdout [mime_type_cmd]: ${stdout}`, move_file_as_type_cmd, split_mime_type, file_type)
+                console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd, split_mime_type, file_type)
             }
         })
         let move_file_as_type_cmd = "mv "+file_hex_path+" "+file_hex_path+file_type
