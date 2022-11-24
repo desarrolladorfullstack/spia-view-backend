@@ -58,10 +58,10 @@ do
         if [[ "$file" != "file_raw" ]]
         then
             echo "file_data_split: "${file_data_split[*]}
-            device_id=${file_data_split[-2]}
-            timestamp=${file_data_split[-3]}
+            device_id=${file_data_split[-4]}
+            timestamp=${file_data_split[-5]}
             {
-              orientation=${file_data_split[-1]}
+              orientation=${file_data_split[-3]}
             } || {
               orientation='both'
             }
@@ -100,7 +100,7 @@ do
           done
         fi
         # END: validate temp_file
-        echo "()=>$input [$device_id, $timestamp] reading ... \n"
+        echo "()=>$input [$device_id, $timestamp,$mime_type,$file,$orientation] reading ... \n"
         if [[ "$file_key" == "" ]] || [[ "$file_key" == "sq1.last_value" ]]
         then
           echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type','$file','$orientation');" > $SQL_FOLDER$TEMP_INSERT_FILE
