@@ -96,6 +96,8 @@ do
             then
               file_id="${row[0]}"
               file_key=$file_id
+              echo "file_key exists: $file_id"
+              break
             fi
           done
         fi
