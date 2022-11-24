@@ -101,7 +101,7 @@ do
         fi
         # END: validate temp_file
         echo "()=>$input [$device_id, $timestamp] reading ... \n"
-        if [[ "${row[0]}" != "" ]]
+        if [[ "$file_key" == "" ]] || [[ "$file_key" == "sq1.last_value" ]]
         then
           echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type','$file','$orientation');" > $SQL_FOLDER$TEMP_INSERT_FILE
           cat $SQL_FOLDER$TEMP_INSERT_FILE
