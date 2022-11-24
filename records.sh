@@ -21,7 +21,7 @@ PGSQL_USER="spiadbadmin"
 PGSQL_DBNAME="spiaview"
 PGSQL_PORT=5432
 PGSQL_COLUMN="content_block, record_offset"
-PGSQL_PARENT_COLUMN="device_key, file_stamp, mime_type, temp_file"
+PGSQL_PARENT_COLUMN="device_key, file_stamp, mime_type, temp_file, orientation"
 PGSQL_CROSS_COLUMN="file_key, record_key"
 PGSQL_TABLE_NAME="records"
 PGSQL_TABLE_PARENT_NAME="files"
@@ -36,8 +36,9 @@ for file in ${list_media_files[*]}
 do
     {
         file_key="sq1.last_value"
-        if [[ "$file" == "temp_file_raw"* ]]
+        if [[ "$file" != *"_video" ]] && [[ "$file" != *"_image" ]]
         then
+            echo "file rejected: $file"
             continue
         fi
         input=$MEDIA_FOLDER$file
@@ -53,15 +54,31 @@ do
         IFS='_' read -ra file_data_split <<< "$file"
         device_id='00030efafb4bd16a7c000400'
         timestamp=$(date '+%s')"000"
+        orientation='undefined'
         if [[ "$file" != "file_raw" ]]
         then
             echo "file_data_split: "${file_data_split[*]}
             device_id=${file_data_split[-2]}
             timestamp=${file_data_split[-3]}
+            {
+              orientation=${file_data_split[-1]}
+            } || {
+              orientation='both'
+            }
         fi
-        mime_type=$(file --mime-type $input)
-        IFS=': ' read -ra mime_type <<< $mime_type
-        mime_type="${mime_type[1]}"
+        # BEGIN: validate mime-type
+        #mime_type=$(file --mime-type $input)
+        #IFS=': ' read -ra mime_type <<< $mime_type
+        #mime_type="${mime_type[1]}"
+        # END: validate mime-type
+        mime_type="image/jpeg"
+        if [[ "$file" != *"_video" ]]
+        then
+          mime_type="application/octet-stream"
+          echo ".... $file is a video ...."
+        else
+          echo ".... $file is an image ...."
+        fi
         # BEGIN: validate temp_file
         echo "SELECT * FROM $PGSQL_TABLE_PARENT_NAME WHERE temp_file = '$file';" > $SQL_FOLDER$TEMP_SELECT_FILE
         cat $SQL_FOLDER$TEMP_INSERT_FILE
@@ -86,7 +103,7 @@ do
         echo "()=>$input [$device_id, $timestamp] reading ... \n"
         if [[ "${row[0]}" != "" ]]
         then
-          echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type','$file');" > $SQL_FOLDER$TEMP_INSERT_FILE
+          echo "INSERT INTO $PGSQL_TABLE_PARENT_NAME ($PGSQL_PARENT_COLUMN) VALUES ('$device_id', to_timestamp($timestamp/1000),'$mime_type','$file','$orientation');" > $SQL_FOLDER$TEMP_INSERT_FILE
           cat $SQL_FOLDER$TEMP_INSERT_FILE
           cat $SQL_FOLDER$TEMP_INSERT_FILE >> $SQL_FOLDER"inserts_records.sql"
           psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_INSERT_FILE

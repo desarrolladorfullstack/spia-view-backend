@@ -1,6 +1,7 @@
 const mapper_mod = require('./modeler')
 const fs_mod = require('fs')
 const path_mod = require('path')
+const {exec} = require('child_process')
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
@@ -14,7 +15,12 @@ let packet_size = 0
 let recent_device = undefined
 let file_raw = {}
 let file_name = 'file_raw'
-
+var orientation_cam_mode = {
+    "videor":"rear",
+    "videof":"front",
+    "photor":"rear",
+    "photof":"front"
+}
 var change_cam_mode = {
     "videor":"videof",
     "videof":"photor",
@@ -176,18 +182,76 @@ var CAM_COMMANDS = {
         file_raw[file_name].push(packet_hex.substring(0, 128))
         const isCreated = packet_offset > 1
         console.log("is Created",  isCreated, packet_hex)
-        packet_data=packet_hex+"\n"
-        console.log("..:: WARNING: insert as hex ::..");
+        console.log("..:: WARNING: insert as hex ::..")
+        let file_path = FILE_MEDIA_PATH+file_name
+        let file_hex_path = file_path+"_hex"
+        for (const cam_mode_index in orientation_cam_mode) {
+            let searchValue = "_"+cam_mode_index
+            if (file_path.indexOf(searchValue) > -1){
+                let replaceValue = "_"+orientation_cam_mode[orientation_cam_mode]
+                file_hex_path = file_path.replace(searchValue,replaceValue)+"_hex"
+                break;
+            }
+        }
+        let hex_packet_data = packet_hex+"\n"
         if (isCreated){
             fs_mod.appendFileSync(
-                FILE_MEDIA_PATH+file_name,
+                file_path,
                 packet_data,
+                (err) => handled_error_fs(err))
+            fs_mod.appendFileSync(
+                file_hex_path,
+                hex_packet_data,
                 (err) => handled_error_fs(err))
         }else{
             fs_mod.writeFileSync(
-                FILE_MEDIA_PATH+file_name,
+                file_path,
                 packet_data,
                 (err) => handled_error_fs(err))
+            fs_mod.writeFileSync(
+                file_hex_path,
+                hex_packet_data,
+                (err) => handled_error_fs(err))
+        }
+        let mime_type_cmd = "file --mime-type "+file_path
+        let file_type = false
+        exec(mime_type_cmd, (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error [mime_type_cmd]: ${error.message}`, mime_type_cmd)
+                return
+            }
+            if (stderr) {
+                console.log(`stderr [mime_type_cmd]: ${stderr}`, mime_type_cmd)
+                return
+            }
+            let separator_mime_type = ": ";
+            let is_mime_response = stdout.indexOf(separator_mime_type) > -1
+            if(is_mime_response){
+                let split_mime_type = stdout.split(separator_mime_type)[1]
+                let is_video = split_mime_type == "application/octet-stream"
+                if (is_video){
+                    file_type="_video"
+                }
+                let is_image = split_mime_type == "image/jpeg"
+                if (is_image){
+                    file_type="_image"
+                }
+                console.log(`stdout [mime_type_cmd]: ${stdout}`, move_file_as_type_cmd, split_mime_type, file_type)
+            }
+        })
+        let move_file_as_type_cmd = "mv "+file_hex_path+" "+file_hex_path+file_type
+        if (file_type){
+            exec(move_file_as_type_cmd, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error [move_file_as_type_cmd]: ${error.message}`, move_file_as_type_cmd)
+                    return
+                }
+                if (stderr) {
+                    console.log(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
+                    return
+                }
+                console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd)
+            })
         }
         return packet_response()
     }
