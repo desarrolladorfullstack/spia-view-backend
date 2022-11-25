@@ -115,11 +115,11 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
     let mime_type_cmd = `file --mime-type ${file_path}`
     exec(mime_type_cmd, (error, stdout, stderr) => {
         if (error) {
-            console.log(`error [mime_type_cmd]: ${error.message}`, mime_type_cmd)
+            console.warn(`error [mime_type_cmd]: ${error.message}`, mime_type_cmd)
             return
         }
         if (stderr) {
-            console.log(`stderr [mime_type_cmd]: ${stderr}`, mime_type_cmd)
+            console.warn(`stderr [mime_type_cmd]: ${stderr}`, mime_type_cmd)
             return
         }
         console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd)
@@ -155,11 +155,11 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
             if (file_type) {
                 exec(move_file_as_type_cmd, (error, stdout, stderr) => {
                     if (error) {
-                        console.log(`error [move_file_as_type_cmd]: ${error.message}`, move_file_as_type_cmd)
+                        console.warn(`error [move_file_as_type_cmd]: ${error.message}`, move_file_as_type_cmd)
                         return
                     }
                     if (stderr) {
-                        console.log(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
+                        console.warn(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
                         return
                     }
                     console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd)
@@ -174,11 +174,11 @@ function define_hex_file_types_for_records_flush(){
     let list_hex_files_cmd = `find ${FILE_MEDIA_PATH} -name *"_hex"`
     exec(list_hex_files_cmd, (error, stdout, stderr) => {
         if (error) {
-            console.log(`error [list_hex_files_cmd]: ${error.message}`, list_hex_files_cmd)
+            console.warn(`error [list_hex_files_cmd]: ${error.message}`, list_hex_files_cmd)
             return
         }
         if (stderr) {
-            console.log(`stderr [list_hex_files_cmd]: ${stderr}`, list_hex_files_cmd)
+            console.warn(`stderr [list_hex_files_cmd]: ${stderr}`, list_hex_files_cmd)
             return
         }
         console.log(`stdout [list_hex_files_cmd]: ${stdout}`, list_hex_files_cmd, typeof stdout)
@@ -199,11 +199,11 @@ function define_hex_file_types_for_records_flush(){
             let search_file_path_cmd = `find ${FILE_MEDIA_PATH} -not -name *"_hex"* | grep "${search_file_path}"`
             exec(search_file_path_cmd, (error, stdout, stderr) => {
                 if (error) {
-                    console.log(`error [search_file_path_cmd]: ${error.message}`, search_file_path_cmd)
+                    console.warn(`error [search_file_path_cmd]: ${error.message}`, search_file_path_cmd)
                     return
                 }
                 if (stderr) {
-                    console.log(`stderr [search_file_path_cmd]: ${stderr}`, search_file_path_cmd)
+                    console.warn(`stderr [search_file_path_cmd]: ${stderr}`, search_file_path_cmd)
                     return
                 }
                 console.log(`stdout [search_file_path_cmd]: ${stdout}`, search_file_path_cmd, typeof stdout)

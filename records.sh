@@ -58,8 +58,16 @@ do
         if [[ "$file" != "file_raw" ]]
         then
             echo "file_name_split: "${file_name_split[*]}
-            device_id=${file_name_split[-4]}
-            timestamp=${file_name_split[-5]}
+            {
+              device_id=${file_name_split[-4]}
+            }||{
+              device_id='00030efafb4bd16a7c000400'
+            }
+            {
+              timestamp=${file_name_split[-5]}
+            } || {
+              timestamp=$(date '+%s')"000"
+            }
             if [[ "$timestamp" == "" ]]
             then
               timestamp=$(date '+%s')"000"
