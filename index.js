@@ -12,13 +12,13 @@ let recent_response = undefined
 let response_value = (data) => { 
   response_any = default_response = 0x01
   response_any = parser_mod.blockParser(data)
-  console.log('<<--', response_any, typeof response_any)
+  /*console.log('<<--', response_any, typeof response_any)*/
   return response_any || default_response
 }
 let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
-  console.log(' \nREQ:', data.toString(dtype))
+  console.log(' \nREQ:', data.toString(dtype).substring(0,(data.toString(dtype).length>255?255:data.toString(dtype).length)), data.length )
   let responsed = recent_response = response_value(data)
-  console.log('TYPE?:', typeof responsed, responsed)
+  /*console.log('TYPE?:', typeof responsed, responsed)*/
   if (typeof responsed == 'object'){
     console.log('OBJECT ?:', responsed.getBytes())
     return responsed

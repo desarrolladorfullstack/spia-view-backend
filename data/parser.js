@@ -33,8 +33,9 @@ const load_temp_packets = () => {
         files.forEach(file => {
             const media_file = path_mod.resolve(FILE_MEDIA_PATH, file)
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
-            if (!isDirectory) { 
-                fs_mod.readFile(FILE_MEDIA_PATH+file, {encoding: 'utf-8'}, function(err,data){
+            if (!isDirectory) {
+                let queued_file_path = FILE_MEDIA_PATH+file;
+                fs_mod.readFile(queued_file_path, {encoding: 'utf-8'}, function(err, data){
                     let queued_offset = parseInt(data)
                     if (queued_offset > 0) {
                         queued_packets[file] = queued_offset
@@ -109,6 +110,101 @@ const file_req_response = (cam_input="videor") => {
     const response_cam = Buffer.concat([FILE_REQ_CAM_COMMAND, response_length, response_payload])
     return Buffer.from(response_cam, 'hex')
 }
+
+function define_file_type_in_file_name(file_path, file_hex_path) {
+    let mime_type_cmd = `file --mime-type ${file_path}`
+    exec(mime_type_cmd, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error [mime_type_cmd]: ${error.message}`, mime_type_cmd)
+            return
+        }
+        if (stderr) {
+            console.log(`stderr [mime_type_cmd]: ${stderr}`, mime_type_cmd)
+            return
+        }
+        console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd)
+        let separator_mime_type = ": ";
+        let is_mime_response = stdout.indexOf(separator_mime_type) > -1
+        if (is_mime_response) {
+            let split_mime_type = stdout.split(separator_mime_type)[1]
+            if (split_mime_type.length > 0) {
+                split_mime_type = split_mime_type.replace("\n", "");
+            }
+            let file_type = false
+            console.log(`stdout [split_mime_type] => [[${split_mime_type}]]`)
+            let is_video = split_mime_type == "application/octet-stream"
+            if (is_video) {
+                file_type = "_video"
+            }
+            let is_image = split_mime_type == "image/jpeg"
+            if (is_image) {
+                file_type = "_image"
+            }
+            let file_hex_release_path = file_hex_path+file_type;
+            console.log('file_hex_release_path:', file_hex_release_path)
+            let file_hex_release_exists_cmd = `cp ${file_hex_path} ${file_hex_release_path}`
+            try {
+                if (fs_mod.existsSync(file_hex_release_exists_cmd)) {
+                    let file_stamp_replace = file_hex_release_path.split('_')[2]
+                    file_hex_release_path = file_hex_release_path.replace(file_stamp_replace, new Date().getTime())
+                    console.log('file_hex_release_path [copy]:', file_hex_release_path)
+                }
+            } catch(err) {
+                console.error(err)
+            }
+            let move_file_as_type_cmd = `cp ${file_hex_path} ${file_hex_release_path}`
+            if (file_type) {
+                exec(move_file_as_type_cmd, (error, stdout, stderr) => {
+                    if (error) {
+                        console.log(`error [move_file_as_type_cmd]: ${error.message}`, move_file_as_type_cmd)
+                        return
+                    }
+                    if (stderr) {
+                        console.log(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
+                        return
+                    }
+                    console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd)
+                })
+            }
+        }
+    })
+}
+
+function define_hex_file_types_for_records_flush(){
+    let list_hex_files_cmd = `find ${FILE_MEDIA_PATH} -name *"_hex"`
+    exec(list_hex_files_cmd, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error [list_hex_files_cmd]: ${error.message}`, list_hex_files_cmd)
+            return
+        }
+        if (stderr) {
+            console.log(`stderr [list_hex_files_cmd]: ${stderr}`, list_hex_files_cmd)
+            return
+        }
+        console.log(`stdout [list_hex_files_cmd]: ${stdout}`, list_hex_files_cmd, typeof stdout)
+        let split_files_hex = stdout.split("\n");
+        for (let file_hex_path of split_files_hex){
+            let split_file_path = file_hex_path.split('_')
+            split_file_path = split_file_path.slice(0, -2)
+            let search_file_path = split_file_path.join('_')
+            let search_file_path_cmd = `find ${FILE_MEDIA_PATH} -not -name *"_hex"* | grep "/${search_file_path}"`
+            exec(search_file_path_cmd, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error [search_file_path_cmd]: ${error.message}`, search_file_path_cmd)
+                    return
+                }
+                if (stderr) {
+                    console.log(`stderr [search_file_path_cmd]: ${stderr}`, search_file_path_cmd)
+                    return
+                }
+                console.log(`stdout [search_file_path_cmd]: ${stdout}`, search_file_path_cmd, typeof stdout)
+                let file_path = stdout.split("\n")[0]
+                define_file_type_in_file_name(file_path, file_hex_path)
+            })
+        }
+    })
+}
+
 var CAM_COMMANDS = {
     "init": (any=false) => { 
         if (cam_mode != "videor" && change_cam_mode.hasOwnProperty(cam_mode)){
@@ -137,10 +233,8 @@ var CAM_COMMANDS = {
         const temp_packet_offset = load_temp_packets()[file_name]
         req_offset = parseInt(Buffer.from(any.substring(8)),16)
         console.log("accept packet offset?", packet_offset, any, req_offset)
-        if (req_offset < packet_offset){
-            return false
-        }
-        return true
+        return req_offset >= packet_offset;
+
     },
     "0004": (any=false) => {
         /* packet_offset++ */
@@ -214,55 +308,13 @@ var CAM_COMMANDS = {
                 hex_packet_data,
                 (err) => handled_error_fs(err))
         }
-        let mime_type_cmd = `file --mime-type ${file_path}`
-        exec(mime_type_cmd, (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error [mime_type_cmd]: ${error.message}`, mime_type_cmd)
-                return
-            }
-            if (stderr) {
-                console.log(`stderr [mime_type_cmd]: ${stderr}`, mime_type_cmd)
-                return
-            }
-            console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd)
-            let separator_mime_type = ": ";
-            let is_mime_response = stdout.indexOf(separator_mime_type) > -1
-            if(is_mime_response){
-                let split_mime_type = stdout.split(separator_mime_type)[1]
-                if (split_mime_type.length > 0){
-                    split_mime_type = split_mime_type.replace("\n","");
-                }
-                let file_type = false
-                console.log(`stdout [split_mime_type] => [[${split_mime_type}]]`)
-                let is_video = split_mime_type == "application/octet-stream"
-                if (is_video){
-                    file_type="_video"
-                }
-                let is_image = split_mime_type == "image/jpeg"
-                if (is_image){
-                    file_type="_image"
-                }
-                let move_file_as_type_cmd = `cp ${file_hex_path} ${file_hex_path}${file_type}`
-                if (file_type){
-                    exec(move_file_as_type_cmd, (error, stdout, stderr) => {
-                        if (error) {
-                            console.log(`error [move_file_as_type_cmd]: ${error.message}`, move_file_as_type_cmd)
-                            return
-                        }
-                        if (stderr) {
-                            console.log(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
-                            return
-                        }
-                        console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd)
-                    })
-                }
-            }
-        })
+        /*define_file_type_in_file_name(file_path, file_hex_path)*/
 
         return packet_response()
     }
 }
-const build_device = (input_block) => {
+
+function build_device(input_block) {
     const block_length = input_block.length
     let device = recent_device
     console.log('response:', response_any/*, device*/)
@@ -291,21 +343,21 @@ const build_device = (input_block) => {
         let is_timestamp = timestamp.toString() != 'Invalid Date'
         is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
         if (!is_timestamp) {
-        timestamp = new Date(parseInt(
-            events_block.subarray(block_index-2, block_index+6).toString('hex'), 16))
-        let is_timestamp_2 = timestamp.toString() != 'Invalid Date'
-        is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
-        if (!is_timestamp_2){
-            break
-        }else{
-            block_index-=2
-            // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
+            timestamp = new Date(parseInt(
+                events_block.subarray(block_index - 2, block_index + 6).toString('hex'), 16))
+            let is_timestamp_2 = timestamp.toString() != 'Invalid Date'
+            is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
+            if (!is_timestamp_2) {
+                break
+            } else {
+                block_index -= 2
+                // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
+            }
         }
-    }
-    console.log("[", loop + 1, "]!",
-        // timestamp, events_block.subarray(block_index, end_index).toString('hex'),
-        `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
-        `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
+        console.log("[", loop + 1, "]!",
+            // timestamp, events_block.subarray(block_index, end_index).toString('hex'),
+            `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
+            `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
         console.log('Events(', loop + 1, ')')
         console.log('timestamp', timestamp)
         const priority = parseInt(
@@ -358,10 +410,10 @@ const build_device = (input_block) => {
             property_start += 2
             let is_x_bytes = (value_indexes > 8)
             for (let property of Array(keys_for_properties).keys()) {
-            const prop_key_byte = events_block.subarray(
-                property_start, property_start + 2).toString('hex')
-            prop_key = parseInt( prop_key_byte, 16)
-            /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key_byte, prop_key) */
+                const prop_key_byte = events_block.subarray(
+                    property_start, property_start + 2).toString('hex')
+                prop_key = parseInt(prop_key_byte, 16)
+                /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key_byte, prop_key) */
                 property_start += !is_x_bytes ? 2 : 4
                 let property_value_end = property_start + value_indexes
                 if (is_x_bytes) {
@@ -383,7 +435,7 @@ const build_device = (input_block) => {
             loop_properties++
             properties_keys -= keys_for_properties
             /* if (is_x_bytes || value_indexes == 8)  */
-            /* console.log('left ?: {', properties_keys,'} >> ', 
+            /* console.log('left ?: {', properties_keys,'} >> ',
                 events_block.subarray(property_start, property_start + 4)) */
             if (properties_keys <= 0) {
                 block_index = property_start
@@ -397,11 +449,12 @@ const build_device = (input_block) => {
             }
         }
         console.log('properties', properties/*, 'loop:', loop+1*/)
-        // if(block_complete){        
+        // if(block_complete){
         loop++
         //}
     }
 }
+
 const analyse_block = (bufferBlock) => {
     let hexBlock = bufferBlock.toString('hex')
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
@@ -425,6 +478,8 @@ const analyse_block = (bufferBlock) => {
         try {
             bufferBlock = bufferBlock.subarray(4, 16)
             console.log('cam imei?? ', typeof bufferBlock, bufferBlock.toString('hex'))
+            /** generate hex file with file type definition => released file for records.sh */
+            define_hex_file_types_for_records_flush()
         } catch (e) {
             console.error("MOD::analyse_block[ERR] ", e)
         }
@@ -446,7 +501,7 @@ const read_block = (bufferBlock) => {
     } catch (e) {
         console.error("MOD::read_block[ERR] ", e)
     }
-    console.log("MOD::read_block?? ", typeof block_success)
+    /*console.log("MOD::read_block?? ", typeof block_success)*/
     return block_success
 }
 module.exports.blockParser = read_block
