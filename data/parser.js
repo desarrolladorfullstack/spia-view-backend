@@ -183,7 +183,8 @@ function define_hex_file_types_for_records_flush(){
             return
         }
         console.log(`stdout [list_hex_files_cmd]: ${stdout}`, list_hex_files_cmd, typeof stdout)
-        let split_files_hex = stdout.split("\n").pop()
+        let split_files_hex = stdout.split('\n')
+        split_files_hex.pop()
         if (split_files_hex.length <= 0){
             console.log('split_files_hex empty ', split_files_hex)
             return
