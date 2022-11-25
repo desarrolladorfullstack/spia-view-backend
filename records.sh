@@ -51,17 +51,21 @@ do
         fi
         line_offset=0
         record_offset=0
-        IFS='_' read -ra file_data_split <<< "$file"
+        IFS='_' read -ra file_name_split <<< "$file"
         device_id='00030efafb4bd16a7c000400'
         timestamp=$(date '+%s')"000"
         orientation='undefined'
         if [[ "$file" != "file_raw" ]]
         then
-            echo "file_data_split: "${file_data_split[*]}
-            device_id=${file_data_split[-4]}
-            timestamp=${file_data_split[-5]}
+            echo "file_name_split: "${file_name_split[*]}
+            device_id=${file_name_split[-4]}
+            timestamp=${file_name_split[-5]}
+            if [[ "$timestamp" == "" ]]
+            then
+              timestamp=$(date '+%s')"000"
+            fi
             {
-              orientation=${file_data_split[-3]}
+              orientation=${file_name_split[-3]}
             } || {
               orientation='both'
             }
