@@ -34,7 +34,7 @@ const load_temp_packets = () => {
             const media_file = path_mod.resolve(FILE_MEDIA_PATH, file)
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
             if (!isDirectory) {
-                let queued_file_path = FILE_MEDIA_PATH+file;
+                let queued_file_path = FILE_MEDIA_PATH+file
                 fs_mod.readFile(queued_file_path, {encoding: 'utf-8'}, function(err, data){
                     let queued_offset = parseInt(data)
                     if (queued_offset > 0) {
@@ -123,12 +123,12 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
             return
         }
         console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd)
-        let separator_mime_type = ": ";
+        let separator_mime_type = ": "
         let is_mime_response = stdout.indexOf(separator_mime_type) > -1
         if (is_mime_response) {
             let split_mime_type = stdout.split(separator_mime_type)[1]
             if (split_mime_type.length > 0) {
-                split_mime_type = split_mime_type.replace("\n", "");
+                split_mime_type = split_mime_type.replace("\n", "")
             }
             let file_type = false
             console.log(`stdout [split_mime_type] => [[${split_mime_type}]]`)
@@ -140,7 +140,7 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
             if (is_image) {
                 file_type = "_image"
             }
-            let file_hex_release_path = file_hex_path+file_type;
+            let file_hex_release_path = file_hex_path+file_type
             console.log('file_hex_release_path:', file_hex_release_path)
             try {
                 if (fs_mod.existsSync(file_hex_release_path)) {
@@ -243,9 +243,16 @@ var CAM_COMMANDS = {
     "00030004": (any=false) =>{
         const temp_packet_offset = load_temp_packets()[file_name]
         req_offset = parseInt(Buffer.from(any.substring(8)),16)
-        console.log("accept packet offset?", packet_offset, any, req_offset)
-        return req_offset >= packet_offset;
-
+        console.log("accept packet offset?", packet_offset, any.substring(0,64), req_offset)
+        if (any.length > 16){
+            let packet_data_accepted = any.substring(16);
+            console.log("accept packet offset => already packet data:", packet_data_accepted.substring(0,64))
+            let is_packet_data_block = packet_data_accepted.substring(0,4) == "0004";
+            if (is_packet_data_block){
+                return CAM_COMMANDS["0004"](packet_data_accepted)
+            }
+        }
+        return req_offset >= packet_offset
     },
     "0004": (any=false) => {
         /* packet_offset++ */
@@ -296,7 +303,7 @@ var CAM_COMMANDS = {
             console.log("file_path ? cam_mode_index =>", file_path, cam_mode_index, replaceValue)
             if (file_path.indexOf(searchValue) > -1){
                 file_hex_path = file_path.replace(searchValue,"_"+replaceValue)+"_hex"
-                break;
+                break
             }
         }
         let hex_packet_data = packet_hex+"\n"
