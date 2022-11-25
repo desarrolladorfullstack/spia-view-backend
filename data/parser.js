@@ -197,7 +197,7 @@ function define_hex_file_types_for_records_flush(){
             let split_file_path = file_hex_path.split('_')
             split_file_path = split_file_path.slice(0, -2)
             let search_file_path = split_file_path.join('_')
-            let search_file_path_cmd = `find ${FILE_MEDIA_PATH} -not -name *"_hex"* | grep "/${search_file_path}"`
+            let search_file_path_cmd = `find ${FILE_MEDIA_PATH} -not -name *"_hex"* | grep "${search_file_path}"`
             exec(search_file_path_cmd, (error, stdout, stderr) => {
                 if (error) {
                     console.log(`error [search_file_path_cmd]: ${error.message}`, search_file_path_cmd)
