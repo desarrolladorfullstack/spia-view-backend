@@ -142,9 +142,8 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
             }
             let file_hex_release_path = file_hex_path+file_type;
             console.log('file_hex_release_path:', file_hex_release_path)
-            let file_hex_release_exists_cmd = `cp ${file_hex_path} ${file_hex_release_path}`
             try {
-                if (fs_mod.existsSync(file_hex_release_exists_cmd)) {
+                if (fs_mod.existsSync(file_hex_release_path)) {
                     let file_stamp_replace = file_hex_release_path.split('_')[2]
                     file_hex_release_path = file_hex_release_path.replace(file_stamp_replace, new Date().getTime())
                     console.log('file_hex_release_path [copy]:', file_hex_release_path)
