@@ -171,6 +171,7 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
 }
 
 function define_hex_file_types_for_records_flush(){
+    /** generate hex file with file type definition => released file for records.sh */
     let list_hex_files_cmd = `find ${FILE_MEDIA_PATH} -name *"_hex"`
     exec(list_hex_files_cmd, (error, stdout, stderr) => {
         if (error) {
@@ -222,6 +223,7 @@ var CAM_COMMANDS = {
         return file_req_response(any)
     },
     "00050004": (any=false)=>{
+        define_hex_file_types_for_records_flush()
         if (any == CAM_INPUT_ERROR){
             cam_mode = change_cam_mode[cam_mode]
             console.log("cam mode switch to", cam_mode)
@@ -230,6 +232,7 @@ var CAM_COMMANDS = {
         return 0x0000
     },
     "00010006": (any=false) => {
+        define_hex_file_types_for_records_flush()
         packet_size = parseInt(any.substring(8,16), 16)
         packet_offset = 0
         const recent_imei = recent_device?.imei.toString('hex')
@@ -283,7 +286,7 @@ var CAM_COMMANDS = {
         }
         file_raw[file_name].push(packet_hex.substring(0, 128))
         const isCreated = packet_offset > 1
-        console.log("is Created",  isCreated, packet_hex)
+        console.log("is Created",  isCreated, packet_hex.substring(0,64))
         console.log("..:: WARNING: insert as hex ::..")
         let file_path = FILE_MEDIA_PATH+file_name
         let file_hex_path = file_path+"_hex"
@@ -486,7 +489,6 @@ const analyse_block = (bufferBlock) => {
         try {
             bufferBlock = bufferBlock.subarray(4, 16)
             console.log('cam imei?? ', typeof bufferBlock, bufferBlock.toString('hex'))
-            /** generate hex file with file type definition => released file for records.sh */
             define_hex_file_types_for_records_flush()
         } catch (e) {
             console.error("MOD::analyse_block[ERR] ", e)
