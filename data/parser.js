@@ -182,8 +182,16 @@ function define_hex_file_types_for_records_flush(){
             return
         }
         console.log(`stdout [list_hex_files_cmd]: ${stdout}`, list_hex_files_cmd, typeof stdout)
-        let split_files_hex = stdout.split("\n");
+        let split_files_hex = stdout.split("\n").pop()
+        if (split_files_hex.length <= 0){
+            console.log('split_files_hex empty ', split_files_hex)
+            return
+        }
         for (let file_hex_path of split_files_hex){
+            if (file_hex_path.length <= 0){
+                console.log('search_file_path empty ', file_hex_path)
+                continue
+            }
             let split_file_path = file_hex_path.split('_')
             split_file_path = split_file_path.slice(0, -2)
             let search_file_path = split_file_path.join('_')

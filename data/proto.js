@@ -12,7 +12,7 @@ let getHex = () => {
   for (let iter = 0; iter < hex.length; iter+=2) {
       bytes.push(hex.substring(iter, iter+2))
   }
-  console.log('getHex:', bytes)
+  /*console.log('getHex:', bytes)*/
   return Buffer.from(bytes)
 }
 let getBytes = function () {
