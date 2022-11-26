@@ -7,6 +7,7 @@
 # 4. SQL insert content as hex block per block
 BYTEBLOCK_LIMIT=1024
 MEDIA_FOLDER="/home/ubuntu/media/"
+BACKUP_FOLDER="/home/ubuntu/bk/"
 if [[ "$1" != "" ]]
 then
     MEDIA_FOLDER=$1
@@ -171,7 +172,7 @@ do
             if test -f "$input"
             then
                 echo "$input exists for RM." 
-                # rm $input
+                mv $input $BACKUP_FOLDER
             else
                 echo "RM: $input Not found!"
                 continue
@@ -183,3 +184,4 @@ do
             echo "error on Process $input\n"
     }
 done
+mv $MEDIA_FOLDER"*" $BACKUP_FOLDER
