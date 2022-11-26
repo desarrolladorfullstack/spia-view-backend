@@ -523,3 +523,4 @@ const read_block = (bufferBlock) => {
 }
 module.exports.blockParser = read_block
 module.exports.deviceObject = recent_device
+module.exports.files_reset = () => define_hex_file_types_for_records_flush()

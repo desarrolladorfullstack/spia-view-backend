@@ -39,10 +39,12 @@ server.on('connection', (socket) => {
 
   socket.on('close', () => {
     console.log('Comunicación finalizada \n\tAT: ', new Date())
+    parser_mod.files_reset()
   })
 
   socket.on('error', (err) => {
     console.log('error en socket: ', err.message)
+    parser_mod.files_reset()
   })
 })
 
