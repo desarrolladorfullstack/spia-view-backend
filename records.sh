@@ -93,9 +93,9 @@ do
           echo ".... $file is an image ...."
         fi
         # BEGIN: validate temp_file
-        echo "SELECT * FROM $PGSQL_TABLE_PARENT_NAME WHERE temp_file = '$file';" > $SQL_FOLDER$TEMP_SELECT_FILE
+        echo "SELECT * FROM $PGSQL_TABLE_PARENT_NAME WHERE temp_file = '$file' AND mime_type like '$mime_type';" > $SQL_FOLDER$TEMP_SELECT_FILE
         cat $SQL_FOLDER$TEMP_INSERT_FILE
-        cat $SQL_FOLDER$TEMP_SELECT_FILE >> $SQL_FOLDER"inserts_records.sql"
+        #cat $SQL_FOLDER$TEMP_SELECT_FILE >> $SQL_FOLDER"inserts_records.sql"
         psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_SELECT_FILE > $SQL_FOLDER$TEMP_SELECT_RESULT
         result=""; while read -r line; do result="$result$line;"; done < $SQL_FOLDER$TEMP_SELECT_RESULT
         if [[ "$result" != *"(0 rows)"* ]]
@@ -122,6 +122,8 @@ do
           cat $SQL_FOLDER$TEMP_INSERT_FILE
           cat $SQL_FOLDER$TEMP_INSERT_FILE >> $SQL_FOLDER"inserts_records.sql"
           psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_INSERT_FILE
+        else
+          echo "validate temp_file: ${results[*]}"
         fi
         {  
             lines_insert=($(xxd -p "$input"))
@@ -163,7 +165,7 @@ do
                 echo "INSERT INTO $PGSQL_TABLE_NAME ($PGSQL_COLUMN) VALUES ('$block', $record_offset);" > $SQL_FOLDER$TEMP_INSERT_FILE
                 echo "INSERT INTO $PGSQL_TABLE_CROSS_NAME ($PGSQL_CROSS_COLUMN) SELECT $file_key, sq2.last_value FROM $PGSQL_TABLE_PARENT_SEQUENCE sq1, $PGSQL_TABLE_SEQUENCE sq2;" >> $SQL_FOLDER$TEMP_INSERT_FILE
                 cat $SQL_FOLDER$TEMP_INSERT_FILE
-                cat $SQL_FOLDER$TEMP_INSERT_FILE >> $SQL_FOLDER"inserts_records.sql"
+                #cat $SQL_FOLDER$TEMP_INSERT_FILE >> $SQL_FOLDER"inserts_records.sql"
                 psql -h $PGSQL_HOST -U $PGSQL_USER -d $PGSQL_DBNAME -p $PGSQL_PORT -f $SQL_FOLDER$TEMP_INSERT_FILE
                 line_offset=$((line_offset + 1))
                 block=""
