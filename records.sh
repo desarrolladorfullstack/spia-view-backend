@@ -188,7 +188,7 @@ do
 done
 echo "LIST $BACKUP_FOLDER"
 ls -tl $BACKUP_FOLDER
-sudo cp -r $MEDIA_FOLDER $BACKUP_FOLDER"media"
+sudo cp -r $MEDIA_FOLDER $BACKUP_FOLDER
 echo "LIST ${BACKUP_FOLDER}media"
 ls -tl $BACKUP_FOLDER"media"
 sudo rm -Rf $MEDIA_FOLDER"*"
