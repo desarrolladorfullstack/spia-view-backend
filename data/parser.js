@@ -502,7 +502,7 @@ const analyse_block = (bufferBlock) => {
             let settings = bufferBlock.subarray(imei_byte_start, imei_byte_start + CAM_SETTINGS_BYTE_LENGTH)
             bufferBlock = parseInt(bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex'), 16)
             console.log('cam imei??', typeof bufferBlock, bufferBlock)
-            console.log('cam settings??', settings.toString('hex'), parseInt(settings.toString('hex')))
+            console.log('cam settings??', settings.toString('hex'), parseInt(settings.toString('hex'),16))
             define_hex_file_types_for_records_flush()
         } catch (e) {
             console.error("MOD::analyse_block[ERR] ", e)
