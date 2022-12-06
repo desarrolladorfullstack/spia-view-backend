@@ -2,6 +2,7 @@ const mapper_mod = require('./modeler')
 const fs_mod = require('fs')
 const path_mod = require('path')
 const {exec} = require('child_process')
+const {settings} = require("express/lib/application");
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
@@ -473,6 +474,9 @@ function build_device(input_block) {
     }
 }
 
+const IMEI_BYTE_LENGTH = 8;
+const CAM_INIT_BYTE_LENGTH = 4;
+const CAM_SETTINGS_BYTE_LENGTH = 4;
 const analyse_block = (bufferBlock) => {
     let hexBlock = bufferBlock.toString('hex')
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
@@ -494,8 +498,9 @@ const analyse_block = (bufferBlock) => {
     }
     if (isCamIMEI) {
         try {
-            bufferBlock = bufferBlock.subarray(4, 16)
-            console.log('cam imei?? ', typeof bufferBlock, bufferBlock.toString('hex'))
+            let settings = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH, CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH + CAM_SETTINGS_BYTE_LENGTH)
+            bufferBlock = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH)
+            console.log('cam imei?? ', typeof bufferBlock, bufferBlock.toString('hex'), settings.toString('hex'))
             define_hex_file_types_for_records_flush()
         } catch (e) {
             console.error("MOD::analyse_block[ERR] ", e)
