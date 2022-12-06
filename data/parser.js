@@ -498,8 +498,9 @@ const analyse_block = (bufferBlock) => {
     }
     if (isCamIMEI) {
         try {
-            let settings = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH, CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH + CAM_SETTINGS_BYTE_LENGTH)
-            bufferBlock = parseInt(bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH).toString('hex'))
+            let imei_byte_start = CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH;
+            let settings = bufferBlock.subarray(imei_byte_start, imei_byte_start + CAM_SETTINGS_BYTE_LENGTH)
+            bufferBlock = parseInt(bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex'))
             console.log('cam imei?? ', typeof bufferBlock, bufferBlock, settings.toString('hex'), parseInt(settings.toString('hex')))
             define_hex_file_types_for_records_flush()
         } catch (e) {
