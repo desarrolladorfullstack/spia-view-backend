@@ -1,4 +1,5 @@
 const mapper_mod = require('./modeler')
+const worker_mod = require('./worker')
 const fs_mod = require('fs')
 const path_mod = require('path')
 const {exec} = require('child_process')
@@ -10,6 +11,7 @@ var RESUME_CAM_COMMAND = Buffer.from(['00', '02'])
 var FILE_REQ_CAM_COMMAND = Buffer.from(['00', '08'])
 var REPEAT_INIT_CAM_COMMAND = Buffer.from(['00', '09'])
 var FILE_MEDIA_PATH = '/home/node/media/'
+var data_options = {}
 let cam_mode = "photor"
 let packet_offset = 0
 let packet_size = 0
@@ -37,7 +39,8 @@ const load_temp_packets = () => {
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
             if (!isDirectory) {
                 let queued_file_path = FILE_MEDIA_PATH+file
-                fs_mod.readFile(queued_file_path, {encoding: 'utf-8'}, function(err, data){
+                let reader_options = {encoding: 'utf-8'};
+                fs_mod.readFile(queued_file_path, reader_options, function(err, data){
                     let queued_offset = parseInt(data)
                     if (queued_offset > 0) {
                         queued_packets[file] = queued_offset
@@ -459,7 +462,8 @@ function build_device(input_block) {
                 events_block.subarray(property_start, property_start + 4)) */
             if (properties_keys <= 0) {
                 block_index = property_start
-                while (parseInt(events_block.subarray(block_index, block_index + 4).toString('hex'), 16) == 0) {
+                let block_end = block_index + 4;
+                while (parseInt(events_block.subarray(block_index, block_end).toString('hex'), 16) == 0) {
                     // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString('hex'))
                     block_index += 4
                     property_start = block_index
@@ -495,14 +499,15 @@ const analyse_block = (bufferBlock) => {
     }
     if (isIMEI) {
         recent_device = new mapper_mod.DeviceData(bufferBlock)
-        console.log(recent_device.toString())
+        console.log("recent_device:", recent_device.toString())
         return true
     }
     if (isCamIMEI) {
         try {
             let imei_byte_start = CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH;
             let settings = bufferBlock.subarray(imei_byte_start, imei_byte_start + CAM_SETTINGS_BYTE_LENGTH)
-            bufferBlock = parseInt(bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex'), 16)
+            let imei_hex_block = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex');
+            bufferBlock = parseInt(imei_hex_block, 16)
             console.log('cam imei??', typeof bufferBlock, bufferBlock)
             let cam_mode_bin = parseInt(settings.subarray(0,2).toString('hex'),16)
                 .toString(2).padStart(8, '0').substring(2,6)
@@ -513,7 +518,8 @@ const analyse_block = (bufferBlock) => {
                     for (const index_bin_cam_mode in cam_mode_bin) {
                         if (cam_mode_bin[index_bin_cam_mode] == 1){
                             cam_mode = settings_cam_mode[index_bin_cam_mode];
-                            console.log('settings_cam_mode[index_bin_cam_mode]', settings_cam_mode[index_bin_cam_mode])
+                            let log_type = 'settings_cam_mode[index_bin_cam_mode]';
+                            console.log(log_type, settings_cam_mode[index_bin_cam_mode])
                             break;
                         }
                     }
@@ -537,13 +543,26 @@ const read_block = (bufferBlock) => {
     let block_success = true
     try {
         block_success = analyse_block(bufferBlock)
-        console.log("MOD::read_block-> ", block_success ?? Buffer.from(block_success, 16)/* , typeof block_success */)
+        if (data_options){
+            if (data_options.hasOwnProperty("connection")){
+                if ( worker_mod.conn.hasOwnProperty(data_options['connection'])){
+                    worker_mod.conn[data_options['connection']] = recent_device
+                    console.log("Add connection by options:", worker_mod.conn)
+                }
+            }
+        }
+        let data_read_log = block_success ?? Buffer.from(block_success, 16);
+        console.log("MOD::read_block-> ", data_read_log/* , typeof block_success */)
     } catch (e) {
         console.error("MOD::read_block[ERR] ", e)
     }
     /*console.log("MOD::read_block?? ", typeof block_success)*/
     return block_success
 }
-module.exports.blockParser = read_block
-module.exports.deviceObject = recent_device
-module.exports.files_reset = () => define_hex_file_types_for_records_flush()
+
+module.exports = {
+    "blockParser": read_block,
+    "deviceObject": recent_device,
+    "files_reset": () => define_hex_file_types_for_records_flush(),
+    "parser_options": data_options
+}

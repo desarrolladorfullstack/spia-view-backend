@@ -43,7 +43,12 @@ server.on('connection', (socket) => {
   socket.setKeepAlive(true, 9*KEEP_ALIVE)
   socket.setTimeout(10*KEEP_ALIVE)
   socket.on('data', (data) => {
-    console.log('\nClient IP:' , `${socket.remoteAddress} ; RemotePort: ${socket.remotePort}`)
+    let remoteAddress = socket.remoteAddress;
+    let remotePort = socket.remotePort;
+    console.log('\nClient IP:' , `${remoteAddress} ; RemotePort: ${remotePort}`)
+    if(parser_mod.parser_options){
+      parser_mod.parser_options["connection"] = `${remoteAddress}:${remotePort}`
+    }
     socket.write(response_write(data))
     console.log( "\nAT: ", new Date() , "\nRES: ", recent_response)
   })
