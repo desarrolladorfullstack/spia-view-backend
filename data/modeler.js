@@ -27,7 +27,7 @@ class Imei extends DeviceType{
         this._id = imei_id.toString()
     }
     toString(){
-        return `<Imei:${this._id},${super.toString()}>`
+        return `Imei:${this._id},${super.toString()}`
     }
 }
 class EventProperty {
@@ -74,7 +74,7 @@ class EventType{
     }
     toString(){
         let properties_msg = this._properties ? `Events:(${this._properties.toString()})` : "" 
-        let msg = `<(EventType:${this.getname()},${properties_msg}])>` 
+        let msg = `(EventType:${this.getname()},${properties_msg}])`
         return msg
     }
 }
@@ -86,11 +86,12 @@ class DeviceEvent extends EventType{
         
     }
     constructor (event_block=undefined){
+        super();
         this._event_block = event_block
         this.parseEvent()
     }
     toString(){
-        return `<Event:(${this._event_id})=>${super.toString()}>`
+        return `Event:(${this._event_id})::${super.toString()}`
     }
 }
 class Device extends Imei{
@@ -127,7 +128,7 @@ class Device extends Imei{
     }
     toString(){
         let events_msg = this._events ? `Events:(${this._events.toString()})` : "" 
-        let msg = `<Device:[${super.toString()}${events_msg}]>` 
+        let msg = `Device:[${super.toString()}${events_msg}]`
         return msg
     }
 }
