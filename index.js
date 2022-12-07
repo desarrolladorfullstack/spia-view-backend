@@ -4,6 +4,11 @@ Buffer.prototype.getBytes = proto.BytesHex
 Number.prototype.getBytes = proto.getBytes
 Boolean.prototype.getBytes = proto.getBytes
 const parser_mod = require('./data/parser')
+var LOG_MODE = 0;
+if (process && process?.argv){
+  let arg_values = process.argv.slice(2);
+  LOG_MODE = parseInt(arg_values[0]);
+}
 const net = require('net')
 var KEEP_ALIVE = 200000
 const port = 80
@@ -16,7 +21,13 @@ let response_value = (data) => {
   return response_any || default_response
 }
 let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
-  console.log(' \nREQ:', data.toString(dtype).substring(0,(data.toString(dtype).length>255?255:data.toString(dtype).length)), data.length )
+  let data_hex = data.toString(dtype);
+  let data_log = data_hex;
+  if(LOG_MODE == 0){
+    let data_length = data_hex.length > 255 ? 255 : data_hex.length;
+    data_log = data_hex.substring(0, data_length);
+  }
+  console.log(' \nREQ:', data_log, data.length )
   let responsed = recent_response = response_value(data)
   /*console.log('TYPE?:', typeof responsed, responsed)*/
   if (typeof responsed == 'object'){
