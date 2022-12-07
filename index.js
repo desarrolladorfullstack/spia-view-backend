@@ -47,7 +47,9 @@ server.on('connection', (socket) => {
     let remotePort = socket.remotePort
     console.log('\nClient IP:' , `${remoteAddress} ; RemotePort: ${remotePort}`)
     if(parser_mod.parser_options){
-      parser_mod.parser_options["connection"] = `${remoteAddress}:${remotePort}`
+      let connection_client = `${remoteAddress}:${remotePort}`
+      console.log("set connection", connection_client)
+      parser_mod.parser_options["connection"] = connection_client
     }
     socket.write(response_write(data))
     console.log( "\nAT: ", new Date() , "\nRES: ", recent_response)
