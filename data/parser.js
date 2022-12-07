@@ -544,7 +544,7 @@ const read_block = (bufferBlock) => {
         block_success = analyse_block(bufferBlock)
         if (data_options){
             if (data_options.hasOwnProperty("connection")){
-                if ( worker_mod.conn.hasOwnProperty(data_options['connection'])){
+                if ( !worker_mod.conn.hasOwnProperty(data_options['connection']) ){
                     worker_mod.conn[data_options['connection']] = recent_device
                     console.log("Add connection by options:", worker_mod.conn)
                 }
