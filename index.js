@@ -43,7 +43,7 @@ server.on('connection', (socket) => {
   socket.setKeepAlive(true, 9*KEEP_ALIVE)
   socket.setTimeout(10*KEEP_ALIVE)
   socket.on('data', (data) => {
-    console.log('\nClient IP: ' , `${socket.remoteAddress} RemotePort: ${socket.remotePort}`)
+    console.log('\nClient IP:' , `${socket.remoteAddress} ; RemotePort: ${socket.remotePort}`)
     socket.write(response_write(data))
     console.log( "\nAT: ", new Date() , "\nRES: ", recent_response)
   })
