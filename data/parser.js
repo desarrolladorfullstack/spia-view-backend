@@ -22,6 +22,7 @@ var orientation_cam_mode = {
     "photor":"rear",
     "photof":"front"
 }
+var settings_cam_mode = Object.keys(orientation_cam_mode)
 var change_cam_mode = {
     "videor":"videof",
     "videof":"photor",
@@ -502,7 +503,21 @@ const analyse_block = (bufferBlock) => {
             let settings = bufferBlock.subarray(imei_byte_start, imei_byte_start + CAM_SETTINGS_BYTE_LENGTH)
             bufferBlock = parseInt(bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex'), 16)
             console.log('cam imei??', typeof bufferBlock, bufferBlock)
-            console.log('cam settings??', settings.toString('hex'), parseInt(settings.toString('hex'),16))
+            let cam_mode_bin = parseInt(settings.subarray(0,2).toString('hex'),16)
+                .toString(2).padStart(8, '0').substring(2,6)
+            console.log('cam settings??', cam_mode_bin, parseInt(settings.toString('hex'),16))
+            let index_of_settings_cam_mode = settings_cam_mode.indexOf(cam_mode);
+            if (Object.keys(cam_mode_bin).indexOf(index_of_settings_cam_mode.toString()) > -1 ){
+                if (cam_mode_bin[index_of_settings_cam_mode] == 0){
+                    for (const index_bin_cam_mode in cam_mode_bin) {
+                        if (cam_mode_bin[index_bin_cam_mode] == 1){
+                            cam_mode = settings_cam_mode[index_bin_cam_mode];
+                            console.log('settings_cam_mode[index_bin_cam_mode]', settings_cam_mode[index_bin_cam_mode])
+                            break;
+                        }
+                    }
+                }
+            }
             define_hex_file_types_for_records_flush()
         } catch (e) {
             console.error("MOD::analyse_block[ERR] ", e)
