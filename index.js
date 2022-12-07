@@ -20,45 +20,45 @@ let response_value = (data) => {
   /*console.log('<<--', response_any, typeof response_any)*/
   return response_any || default_response
 }
-let response_write = (data, dtype='hex', options={type: 'text/plain'}) => {
-  let data_hex = data.toString(dtype);
+let response_write = (data, data_type='hex', options={type: 'text/plain'}) => {
+  let data_hex = data.toString(data_type);
   let data_log = data_hex;
   if(LOG_MODE == 0){
     let data_length = data_hex.length > 255 ? 255 : data_hex.length;
     data_log = data_hex.substring(0, data_length);
   }
   console.log(' \nREQ:', data_log, data.length )
-  let responsed = recent_response = response_value(data)
-  /*console.log('TYPE?:', typeof responsed, responsed)*/
-  if (typeof responsed == 'object'){
-    console.log('OBJECT ?:', responsed.getBytes())
-    return responsed
+  let respond = recent_response = response_value(data)
+  /*console.log('TYPE?:', typeof respond, respond)*/
+  if (typeof respond == 'object'){
+    console.log('OBJECT ?:', respond.getBytes())
+    return respond
   }else{
-    recent_response = responsed.getBytes()
+    recent_response = respond.getBytes()
   }
-  return responsed.getBytes()
+  return respond.getBytes()
 }
 server.on('connection', (socket) => {
   socket.setNoDelay(true)
   socket.setKeepAlive(true, 9*KEEP_ALIVE)
   socket.setTimeout(10*KEEP_ALIVE)
   socket.on('data', (data) => {
-    console.log('\nCliente: ' , `${socket.remoteAddress} : ${socket.remotePort}`)
+    console.log('\nClient IP: ' , `${socket.remoteAddress} RemotePort: ${socket.remotePort}`)
     socket.write(response_write(data))
     console.log( "\nAT: ", new Date() , "\nRES: ", recent_response)
   })
 
   socket.on('close', () => {
-    console.log('Comunicación finalizada \n\tAT: ', new Date())
+    console.log('Communication closed \n\tAT: ', new Date())
     parser_mod.files_reset()
   })
 
   socket.on('error', (err) => {
-    console.log('error en socket: ', err.message)
+    console.log('Error in socket: ', err.message)
     parser_mod.files_reset()
   })
 })
 
 server.listen(port, () => {
-  console.log('servidor esta escuchando en puerto', server.address().port)
+  console.log('Server listening on Port:', server.address().port)
 })

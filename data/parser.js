@@ -490,8 +490,9 @@ const analyse_block = (bufferBlock) => {
         cam_command_index = hexBlock.substring(0, 4)
         isCamCommand = cam_command_index in CAM_COMMANDS
         isCamCommand |= CAM_COMMANDS.hasOwnProperty(cam_command_index)
+    }else{
+        console.log("is Cam Command", isCamCommand, "=>", cam_command_index)
     }
-    console.log("is Cam Command", isCamCommand, "=>", cam_command_index)
     if (isIMEI) {
         recent_device = new mapper_mod.DeviceData(bufferBlock)
         console.log(recent_device.toString())
