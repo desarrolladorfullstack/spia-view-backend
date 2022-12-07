@@ -3,7 +3,6 @@ const worker_mod = require('./worker')
 const fs_mod = require('fs')
 const path_mod = require('path')
 const {exec} = require('child_process')
-const {settings} = require("express/lib/application");
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
@@ -39,7 +38,7 @@ const load_temp_packets = () => {
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
             if (!isDirectory) {
                 let queued_file_path = FILE_MEDIA_PATH+file
-                let reader_options = {encoding: 'utf-8'};
+                let reader_options = {encoding: 'utf-8'}
                 fs_mod.readFile(queued_file_path, reader_options, function(err, data){
                     let queued_offset = parseInt(data)
                     if (queued_offset > 0) {
@@ -250,9 +249,9 @@ var CAM_COMMANDS = {
         req_offset = parseInt(Buffer.from(any.substring(8)),16)
         console.log("accept packet offset?", packet_offset, any.substring(0,64), req_offset)
         if (any.length > 16){
-            let packet_data_accepted = any.substring(16);
+            let packet_data_accepted = any.substring(16)
             console.log("accept packet offset => already packet data:", packet_data_accepted.substring(0,64))
-            let is_packet_data_block = packet_data_accepted.substring(0,4) == "0004";
+            let is_packet_data_block = packet_data_accepted.substring(0,4) == "0004"
             if (is_packet_data_block){
                 return CAM_COMMANDS["0004"](packet_data_accepted)
             }
@@ -462,7 +461,7 @@ function build_device(input_block) {
                 events_block.subarray(property_start, property_start + 4)) */
             if (properties_keys <= 0) {
                 block_index = property_start
-                let block_end = block_index + 4;
+                let block_end = block_index + 4
                 while (parseInt(events_block.subarray(block_index, block_end).toString('hex'), 16) == 0) {
                     // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString('hex'))
                     block_index += 4
@@ -479,9 +478,9 @@ function build_device(input_block) {
     }
 }
 
-const IMEI_BYTE_LENGTH = 8;
-const CAM_INIT_BYTE_LENGTH = 4;
-const CAM_SETTINGS_BYTE_LENGTH = 4;
+const IMEI_BYTE_LENGTH = 8
+const CAM_INIT_BYTE_LENGTH = 4
+const CAM_SETTINGS_BYTE_LENGTH = 4
 const analyse_block = (bufferBlock) => {
     let hexBlock = bufferBlock.toString('hex')
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
@@ -504,23 +503,23 @@ const analyse_block = (bufferBlock) => {
     }
     if (isCamIMEI) {
         try {
-            let imei_byte_start = CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH;
+            let imei_byte_start = CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH
             let settings = bufferBlock.subarray(imei_byte_start, imei_byte_start + CAM_SETTINGS_BYTE_LENGTH)
-            let imei_hex_block = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex');
+            let imei_hex_block = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex')
             bufferBlock = parseInt(imei_hex_block, 16)
             console.log('cam imei??', typeof bufferBlock, bufferBlock)
             let cam_mode_bin = parseInt(settings.subarray(0,2).toString('hex'),16)
                 .toString(2).padStart(8, '0').substring(2,6)
             console.log('cam settings??', cam_mode_bin, parseInt(settings.toString('hex'),16))
-            let index_of_settings_cam_mode = settings_cam_mode.indexOf(cam_mode);
+            let index_of_settings_cam_mode = settings_cam_mode.indexOf(cam_mode)
             if (Object.keys(cam_mode_bin).indexOf(index_of_settings_cam_mode.toString()) > -1 ){
                 if (cam_mode_bin[index_of_settings_cam_mode] == 0){
                     for (const index_bin_cam_mode in cam_mode_bin) {
                         if (cam_mode_bin[index_bin_cam_mode] == 1){
-                            cam_mode = settings_cam_mode[index_bin_cam_mode];
-                            let log_type = 'settings_cam_mode[index_bin_cam_mode]';
+                            cam_mode = settings_cam_mode[index_bin_cam_mode]
+                            let log_type = 'settings_cam_mode[index_bin_cam_mode]'
                             console.log(log_type, settings_cam_mode[index_bin_cam_mode])
-                            break;
+                            break
                         }
                     }
                 }
@@ -551,7 +550,7 @@ const read_block = (bufferBlock) => {
                 }
             }
         }
-        let data_read_log = block_success ?? Buffer.from(block_success, 16);
+        let data_read_log = block_success ?? Buffer.from(block_success, 16)
         console.log("MOD::read_block-> ", data_read_log/* , typeof block_success */)
     } catch (e) {
         console.error("MOD::read_block[ERR] ", e)

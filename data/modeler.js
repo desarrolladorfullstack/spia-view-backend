@@ -86,7 +86,7 @@ class DeviceEvent extends EventType{
         
     }
     constructor (event_block=undefined){
-        super();
+        super()
         this._event_block = event_block
         this.parseEvent()
     }

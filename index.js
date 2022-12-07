@@ -4,10 +4,10 @@ Buffer.prototype.getBytes = proto.BytesHex
 Number.prototype.getBytes = proto.getBytes
 Boolean.prototype.getBytes = proto.getBytes
 const parser_mod = require('./data/parser')
-var LOG_MODE = 0;
+var LOG_MODE = 0
 if (process && process?.argv){
-  let arg_values = process.argv.slice(2);
-  LOG_MODE = parseInt(arg_values[0]);
+  let arg_values = process.argv.slice(2)
+  LOG_MODE = parseInt(arg_values[0])
 }
 const net = require('net')
 var KEEP_ALIVE = 200000
@@ -21,11 +21,11 @@ let response_value = (data) => {
   return response_any || default_response
 }
 let response_write = (data, data_type='hex', options={type: 'text/plain'}) => {
-  let data_hex = data.toString(data_type);
-  let data_log = data_hex;
+  let data_hex = data.toString(data_type)
+  let data_log = data_hex
   if(LOG_MODE == 0){
-    let data_length = data_hex.length > 255 ? 255 : data_hex.length;
-    data_log = data_hex.substring(0, data_length);
+    let data_length = data_hex.length > 255 ? 255 : data_hex.length
+    data_log = data_hex.substring(0, data_length)
   }
   console.log(' \nREQ:', data_log, data.length )
   let respond = recent_response = response_value(data)
@@ -43,8 +43,8 @@ server.on('connection', (socket) => {
   socket.setKeepAlive(true, 9*KEEP_ALIVE)
   socket.setTimeout(10*KEEP_ALIVE)
   socket.on('data', (data) => {
-    let remoteAddress = socket.remoteAddress;
-    let remotePort = socket.remotePort;
+    let remoteAddress = socket.remoteAddress
+    let remotePort = socket.remotePort
     console.log('\nClient IP:' , `${remoteAddress} ; RemotePort: ${remotePort}`)
     if(parser_mod.parser_options){
       parser_mod.parser_options["connection"] = `${remoteAddress}:${remotePort}`
