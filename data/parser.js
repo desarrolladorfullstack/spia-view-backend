@@ -497,7 +497,7 @@ const analyse_block = (bufferBlock) => {
         console.log("is Cam Command", isCamCommand, "=>", cam_command_index)
     }
     if (isIMEI) {
-        recent_device = new mapper_mod.DeviceData(bufferBlock)
+        recent_device = new mapper_mod.DeviceData(bufferBlock.subarray(IMEI_LENGTH_BYTES))
         console.log("recent_device:", recent_device.toString())
         return true
     }
