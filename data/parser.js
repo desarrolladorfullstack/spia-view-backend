@@ -6,7 +6,7 @@ const {exec} = require('child_process')
 const IMEI_BYTE_LENGTH = 8
 const CAM_INIT_BYTE_LENGTH = 4
 const CAM_SETTINGS_BYTE_LENGTH = 4
-const IMEI_LENGTH_BYTES = 4
+const IMEI_LENGTH_BYTES = 2
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
@@ -503,7 +503,7 @@ const analyse_block = (bufferBlock) => {
     }
     if (isCamIMEI) {
         try {
-            let imei_byte_start = CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH + IMEI_LENGTH_BYTES
+            let imei_byte_start = CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH /* + IMEI_LENGTH_BYTES */
             let settings = bufferBlock.subarray(imei_byte_start, imei_byte_start + CAM_SETTINGS_BYTE_LENGTH)
             let imei_hex_block = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex')
             bufferBlock = parseInt(imei_hex_block, 16)
