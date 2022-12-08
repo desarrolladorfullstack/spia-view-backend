@@ -48,7 +48,7 @@ server.on('connection', (socket) => {
     console.log('\nClient IP:' , `${remoteAddress} ; RemotePort: ${remotePort}`)
     if(parser_mod.parser_options){
       let connection_client = `${remoteAddress}:${remotePort}`
-      console.log("set connection", connection_client)
+      /* console.log("set connection", connection_client) */
       parser_mod.parser_options["connection"] = connection_client
     }else{
       console.log("parser_options??", parser_mod.parser_options)

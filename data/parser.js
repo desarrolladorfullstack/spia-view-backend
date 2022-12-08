@@ -546,7 +546,9 @@ const read_block = (bufferBlock) => {
             if (data_options.hasOwnProperty("connection")){
                 if ( !worker_mod.conn.hasOwnProperty(data_options['connection']) ){
                     worker_mod.conn[data_options['connection']] = recent_device
-                    console.log("Add connection by options:", worker_mod.conn)
+                    console.log("Add connection by options:", 
+                        data_options['connection'],
+                        "<pre>",worker_mod.conn[data_options['connection']],"</pre>");
                 }
             }
         }
