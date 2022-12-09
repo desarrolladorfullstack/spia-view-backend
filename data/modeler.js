@@ -11,7 +11,7 @@ class DeviceType {
         return this.type_name
     }
     constructor(type_id = 1) {
-        this.type_id = type_id
+        this.#_type_id = type_id
         this.getname()
     }
     toString() {
@@ -105,15 +105,15 @@ class DeviceEvent extends EventType {
     }
 }
 class Device extends Imei {
-    _imei = undefined
+    #_imei = undefined
     _type = 1
     _events = undefined
 
     set imei(any_imei) {
-        this._imei = any_imei
+        this.#_imei = any_imei
     }
     get imei() {
-        return this._imei
+        return this.#_imei
     }
     addEvent(any_event) {
         if (this._events == undefined) {
@@ -126,7 +126,7 @@ class Device extends Imei {
     }
     constructor(imei_id = undefined, type_id = 1) {
         super(imei_id, type_id)
-        this._imei = imei_id
+        this.#_imei = imei_id
         this._type = type_id
     }
     toString() {
