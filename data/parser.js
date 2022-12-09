@@ -546,9 +546,11 @@ const read_block = (bufferBlock) => {
             if (data_options.hasOwnProperty("connection")){
                 if ( !worker_mod.conn.hasOwnProperty(data_options['connection']) ){
                     worker_mod.conn[data_options['connection']] = recent_device
+                    let json = JSON.stringify(worker_mod.conn[data_options['connection']])
+                    json = json.replace('"_id"','"imei"')
                     console.log("Add connection by options:", 
                         data_options['connection'],
-                        "<pre>",worker_mod.conn[data_options['connection']],"</pre>");
+                        "<pre>",json,"</pre>");
                 }
             }
         }
