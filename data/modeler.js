@@ -6,12 +6,12 @@ class DeviceType {
     }
     type_name = undefined
     getname() {
-        type_name = this.#devices[this.#_type_id - 1]
+        this.type_name = this.#devices[this.#_type_id - 1]
         /* console.log('type_name?:', type_name) */
-        return type_name
+        return this.type_name
     }
     constructor(type_id = 1) {
-        this.#_type_id = type_id
+        this.type_id = type_id
         this.getname()
     }
     toString() {
