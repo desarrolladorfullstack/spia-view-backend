@@ -106,7 +106,7 @@ class DeviceEvent extends EventType {
 }
 class Device extends Imei {
     #_imei = undefined
-    _type = 1
+    #_type = 1
     _events = undefined
 
     set imei(any_imei) {
@@ -122,12 +122,12 @@ class Device extends Imei {
         this._events.push(any_event)
     }
     set type(any_type_id) {
-        this._type = any_type_id
+        this.#_type = any_type_id
     }
     constructor(imei_id = undefined, type_id = 1) {
         super(imei_id, type_id)
         this.#_imei = imei_id
-        this._type = type_id
+        this.#_type = type_id
     }
     toString() {
         let events_msg = this._events ? `Events:(${this._events.toString()})` : ""

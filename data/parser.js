@@ -552,6 +552,11 @@ const read_block = (bufferBlock) => {
                         data_options['connection'],
                         "<pre>",json,"</pre>");
                 }
+                if(block_success !== true){
+                    if (block_success == bufferBlock[9]){
+                        console.log("Block event:", bufferBlock)
+                    }
+                }
             }
         }
         let data_read_log = block_success ?? Buffer.from(block_success, 16)
