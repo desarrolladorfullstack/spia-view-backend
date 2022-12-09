@@ -343,7 +343,11 @@ var CAM_COMMANDS = {
 function build_device(input_block) {
     const block_length = input_block.length
     let device = recent_device
-    console.log('response:', response_any/*, device*/)
+    if (data_options && data_options.hasOwnProperty("connection") 
+        && worker_mod.conn.hasOwnProperty(data_options['connection']) ){
+        device = worker_mod.conn[data_options['connection']]
+    }
+    console.log('response:', response_any, device)
     let default_imei = '000f383630383936303530373934383538'
     if (device == undefined) {
         console.warn('DEVICE=>undefined')
@@ -555,6 +559,7 @@ const read_block = (bufferBlock) => {
                 if(block_success !== true){
                     if (block_success == bufferBlock[9]){
                         console.log("Block event:", bufferBlock)
+                        build_device(bufferBlock)
                     }
                 }
             }
