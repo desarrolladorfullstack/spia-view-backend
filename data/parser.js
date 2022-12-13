@@ -569,9 +569,12 @@ const read_block = (bufferBlock) => {
                         "<pre>",json,"</pre>");
                 }
                 if(block_success !== true){
-                    let is_event_block = block_success == bufferBlock[9];
+                    let is_event_block = block_success == bufferBlock[9]
                     if (recent_block != undefined){
-                        is_event_block |= block_success == recent_block[9];
+                        is_event_block |= block_success == recent_block[9]
+                        if (recent_block != bufferBlock){
+                            bufferBlock = recent_block
+                        }
                     }
                     if (is_event_block){
                         console.log("Block event:", bufferBlock)
