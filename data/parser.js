@@ -354,7 +354,7 @@ function build_device(input_block) {
         return false
     }
     const codec = input_block[8]
-    device.codec = codec
+    /* device.codec = codec */
     const events = input_block[9]
     if (events == input_block[block_length - 5]) {
         console.log('events:', events,
@@ -362,7 +362,7 @@ function build_device(input_block) {
     }
     const crc = input_block.subarray(block_length - 2)
     console.log('codec:', Buffer.from([codec]), 'crc:', crc)
-    device.crc = crc
+    /* device.crc = crc */
     let events_block = input_block.subarray(10, block_length - 5)
     /*console.log('events.block:', events_block[events_block.length-1])*/
     let loop = 0, block_index = 0, block_complete = false

@@ -227,7 +227,8 @@ while (loop < events) {
             events_block.subarray(property_start, property_start + 4)) */
         if (properties_keys <= 0) {
             block_index = property_start
-            while (parseInt(events_block.subarray(block_index, block_index + 4).toString('hex'), 16) == 0) {
+            let block_end = block_index + 4
+            while (parseInt(events_block.subarray(block_index, block_end).toString('hex'), 16) == 0) {
                 // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString('hex'))
                 block_index += 4
                 property_start = block_index
@@ -238,6 +239,6 @@ while (loop < events) {
     }
     console.log('properties', properties/*, 'loop:', loop+1*/)
     // if(block_complete){        
-    loop++;
+    loop++
     //}
 }

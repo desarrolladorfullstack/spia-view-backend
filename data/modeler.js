@@ -36,6 +36,7 @@ class EventProperty {
     _property_id = undefined
     properties = ['latitude', 'longitude']
     _property_value = undefined
+    _property_stamp = undefined
     _property_block = undefined
     parseProperty() {
 
