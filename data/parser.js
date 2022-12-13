@@ -506,7 +506,7 @@ const analyse_block = (bufferBlock) => {
     }
     if (isIMEI) {
         recent_device = new mapper_mod.DeviceData(bufferBlock.subarray(IMEI_LENGTH_BYTES))
-        console.log("recent_device:", recent_device.toString())
+        console.log("Init device:", recent_device.subarray(2, IMEI_BLOCK_LENGTH).toString())
         /*000f383630383936303530373934383538*/
         if (bufferBlock.length > IMEI_BLOCK_LENGTH){
             console.log("can receive trace joined:", bufferBlock)
