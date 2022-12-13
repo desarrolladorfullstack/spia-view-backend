@@ -1,5 +1,6 @@
 const mapper_mod = require('./modeler')
 const worker_mod = require('./worker')
+const proto_mod = require('./proto')
 const fs_mod = require('fs')
 const path_mod = require('path')
 const {exec} = require('child_process')
@@ -400,10 +401,10 @@ function build_device(input_block) {
                 .toString(encoding), radix_hex)
         console.log('priority', priority/*, 'loop:', loop+1*/)
         const coordinates = {}
-        coordinates['longitude'] = proto.coordinate(parseInt(
+        coordinates['longitude'] = proto_mod.coordinate(parseInt(
             events_block.subarray(block_index + 9, block_index + 13)
                 .toString(encoding), radix_hex))
-        coordinates['latitude'] = proto.coordinate(parseInt(
+        coordinates['latitude'] = proto_mod.coordinate(parseInt(
             events_block.subarray(block_index + 13, block_index + 17)
                 .toString(encoding), radix_hex))
         coordinates['altitude'] = parseInt(
