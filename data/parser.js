@@ -7,6 +7,7 @@ const IMEI_BYTE_LENGTH = 8
 const CAM_INIT_BYTE_LENGTH = 4
 const CAM_SETTINGS_BYTE_LENGTH = 4
 const IMEI_LENGTH_BYTES = 2
+const IMEI_BLOCK_LENGTH = 17
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
@@ -507,8 +508,10 @@ const analyse_block = (bufferBlock) => {
         recent_device = new mapper_mod.DeviceData(bufferBlock.subarray(IMEI_LENGTH_BYTES))
         console.log("recent_device:", recent_device.toString())
         /*000f383630383936303530373934383538*/
-        if (bufferBlock.length > 17){
+        if (bufferBlock.length > IMEI_BLOCK_LENGTH){
             console.log("can receive trace joined:", bufferBlock)
+            bufferBlock = bufferBlock.subarray(IMEI_BLOCK_LENGTH)
+            return analyse_block(bufferBlock)
         }
         return true
     }
