@@ -63,7 +63,7 @@ server.on('connection', (socket) => {
   })
 
   socket.on('error', (err) => {
-    console.log('Error in socket: ', err.message)
+    console.log('Error in socket:', err.message, err.stack)
     parser_mod.files_reset()
   })
 })
