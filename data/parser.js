@@ -20,6 +20,7 @@ let cam_mode = "photor"
 let packet_offset = 0
 let packet_size = 0
 let recent_device = undefined
+let recent_block = undefined
 let file_raw = {}
 let file_name = 'file_raw'
 var orientation_cam_mode = {
@@ -511,7 +512,7 @@ const analyse_block = (bufferBlock) => {
         /*000f383630383936303530373934383538*/
         if (bufferBlock.length > IMEI_BLOCK_LENGTH){
             console.log("can receive trace joined:", bufferBlock)
-            bufferBlock = bufferBlock.subarray(IMEI_BLOCK_LENGTH)
+            recent_block = bufferBlock = bufferBlock.subarray(IMEI_BLOCK_LENGTH)
             return analyse_block(bufferBlock)
         }
         return true
@@ -568,7 +569,11 @@ const read_block = (bufferBlock) => {
                         "<pre>",json,"</pre>");
                 }
                 if(block_success !== true){
-                    if (block_success == bufferBlock[9]){
+                    let is_event_block = block_success == bufferBlock[9];
+                    if (recent_block != undefined){
+                        is_event_block |= block_success == recent_block[9];
+                    }
+                    if (is_event_block){
                         console.log("Block event:", bufferBlock)
                         build_device(bufferBlock)
                     }
