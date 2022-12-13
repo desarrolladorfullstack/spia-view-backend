@@ -505,8 +505,9 @@ const analyse_block = (bufferBlock) => {
         console.log("is Cam Command", isCamCommand, "=>", cam_command_index)
     }
     if (isIMEI) {
-        recent_device = new mapper_mod.DeviceData(bufferBlock.subarray(IMEI_LENGTH_BYTES))
-        console.log("Init device:", recent_device.subarray(2, IMEI_BLOCK_LENGTH).toString())
+        const imei_id = bufferBlock.subarray(IMEI_LENGTH_BYTES, IMEI_BLOCK_LENGTH);
+        recent_device = new mapper_mod.DeviceData(imei_id)
+        console.log("Init device:", recent_device.toString())
         /*000f383630383936303530373934383538*/
         if (bufferBlock.length > IMEI_BLOCK_LENGTH){
             console.log("can receive trace joined:", bufferBlock)
