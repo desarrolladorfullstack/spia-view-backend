@@ -9,6 +9,8 @@ const CAM_INIT_BYTE_LENGTH = 4
 const CAM_SETTINGS_BYTE_LENGTH = 4
 const IMEI_LENGTH_BYTES = 2
 const IMEI_BLOCK_LENGTH = 17
+const RADIX_HEX = 16
+const HEX = 'hex'
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
@@ -87,11 +89,11 @@ const packet_response = (any=false) => {
     let payload_hex = ['00', '00', '00', packet_offset]
     let response_payload = Buffer.from(payload_hex)
     if (packet_offset > 255){
-        let hex_offset = packet_offset.toString(16)
+        let hex_offset = packet_offset.toString(RADIX_HEX)
         if (hex_offset.length%2 == 1 ) {
              hex_offset = "0"+hex_offset 
         }
-        /* console.log('hex', hex_offset) */
+        /* console.log(HEX, hex_offset) */
         for (let count = 0; count < Math.round(hex_offset.length/2) ; count ++) {
             const start = hex_offset.length - (count * 2) - 2
             const end = hex_offset.length - (count * 2)
@@ -99,13 +101,13 @@ const packet_response = (any=false) => {
             /* console.log('offset', offset_byte , count, start, end) */
             payload_hex[payload_hex.length-1-count]=offset_byte
         }
-        response_payload = Buffer.from(payload_hex.join(''),'hex')
+        response_payload = Buffer.from(payload_hex.join(''),HEX)
     }
     const response_length = Buffer.from(['00', payload_hex.length])
     console.log('payload_hex', packet_offset, payload_hex, response_payload)
     const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
     console.log(file_name, 'write count', packet_offset, 'of', packet_size)
-    return Buffer.from(response_cam, 'hex')
+    return Buffer.from(response_cam, HEX)
 }
 const file_req_response = (cam_input="videor") => {
     const queued_files = load_temp_packets()
@@ -119,7 +121,7 @@ const file_req_response = (cam_input="videor") => {
     const response_length = Buffer.from(['00', payload_hex.length])
     const response_payload = Buffer.from(payload_hex)
     const response_cam = Buffer.concat([FILE_REQ_CAM_COMMAND, response_length, response_payload])
-    return Buffer.from(response_cam, 'hex')
+    return Buffer.from(response_cam, HEX)
 }
 
 function define_file_type_in_file_name(file_path, file_hex_path) {
@@ -248,16 +250,16 @@ var CAM_COMMANDS = {
     },
     "00010006": (any=false) => {
         define_hex_file_types_for_records_flush()
-        packet_size = parseInt(any.substring(8,16), 16)
+        packet_size = parseInt(any.substring(8,16), RADIX_HEX)
         packet_offset = 0
-        const recent_imei = recent_device?.imei.toString('hex')
+        const recent_imei = recent_device?.imei.toString(HEX)
         file_name = `file_raw_${new Date().getTime()}_${recent_imei}_${cam_mode}`
         file_raw[file_name] = []
         return packet_response()
     },
     "00030004": (any=false) =>{
         const temp_packet_offset = load_temp_packets()[file_name]
-        req_offset = parseInt(Buffer.from(any.substring(8)),16)
+        req_offset = parseInt(Buffer.from(any.substring(8)),RADIX_HEX)
         console.log("accept packet offset?", packet_offset, any.substring(0,64), req_offset)
         if (any.length > 16){
             let packet_data_accepted = any.substring(16)
@@ -289,11 +291,11 @@ var CAM_COMMANDS = {
             }
         }
         const packet_len = parseInt(
-            Buffer.from(any.substring(4, 8), 'hex'), 16) || 1024
+            Buffer.from(any.substring(4, 8), HEX), RADIX_HEX) || 1024
         console.log(" -- > len:", packet_len)
         const packet_end = any.length - 4
         const packet_hex = any.substring(8, packet_end)
-        let packet_data = Buffer.from(packet_hex, 'hex')
+        let packet_data = Buffer.from(packet_hex, HEX)
         let is_packet_written = file_raw.hasOwnProperty(file_name)
         if (is_packet_written){
             is_packet_written = file_raw[file_name].includes(packet_hex.substring(0, 128))
@@ -348,7 +350,6 @@ var CAM_COMMANDS = {
 }
 
 function build_device(input_block) {
-    const encoding = 'hex'
     const block_length = input_block.length
     let device = recent_device
     if (data_options && data_options.hasOwnProperty("connection") 
@@ -374,17 +375,16 @@ function build_device(input_block) {
     let events_block = input_block.subarray(10, block_length - 5)
     /*console.log('events.block:', events_block[events_block.length-1])*/
     let loop = 0, block_index = 0, block_complete = false
-    const radix_hex = 16
     let loop_properties
     while (loop < events) {
         const end_index = block_index + 8
         let timestamp = new Date(parseInt(
-            events_block.subarray(block_index, end_index).toString(encoding), radix_hex))
+            events_block.subarray(block_index, end_index).toString(HEX), RADIX_HEX))
         let is_timestamp = timestamp.toString() != 'Invalid Date'
         is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
         if (!is_timestamp) {
             timestamp = new Date(parseInt(
-                events_block.subarray(block_index - 2, block_index + 6).toString(encoding), radix_hex))
+                events_block.subarray(block_index - 2, block_index + 6).toString(HEX), RADIX_HEX))
             let is_timestamp_2 = timestamp.toString() != 'Invalid Date'
             is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
             if (!is_timestamp_2) {
@@ -395,44 +395,44 @@ function build_device(input_block) {
             }
         }
         console.log("[", loop + 1, "]!",
-            // timestamp, events_block.subarray(block_index, end_index).toString('hex'),
+            // timestamp, events_block.subarray(block_index, end_index).toString(HEX),
             `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
             `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
         console.log('Events(', loop + 1, ')')
         console.log('timestamp', timestamp)
         const priority = parseInt(
             events_block.subarray(block_index + 8, block_index + 9)
-                .toString(encoding), radix_hex)
+                .toString(HEX), RADIX_HEX)
         console.log('priority', priority/*, 'loop:', loop+1*/)
         const coordinates = {}
         coordinates['longitude'] = proto_mod.coordinate(parseInt(
             events_block.subarray(block_index + 9, block_index + 13)
-                .toString(encoding), radix_hex))
+                .toString(HEX), RADIX_HEX))
         coordinates['latitude'] = proto_mod.coordinate(parseInt(
             events_block.subarray(block_index + 13, block_index + 17)
-                .toString(encoding), radix_hex))
+                .toString(HEX), RADIX_HEX))
         coordinates['altitude'] = parseInt(
             events_block.subarray(block_index + 17, block_index + 19)
-                .toString(encoding), radix_hex)
+                .toString(HEX), RADIX_HEX)
         coordinates['angle'] = parseInt(
             events_block.subarray(block_index + 19, block_index + 21)
-                .toString(encoding), radix_hex)
+                .toString(HEX), RADIX_HEX)
         console.log('coordinates', coordinates/*, 'loop:', loop+1*/)
         const satelites = parseInt(
             events_block.subarray(block_index + 21, block_index + 22)
-                .toString(encoding), radix_hex)
+                .toString(HEX), RADIX_HEX)
         console.log('satelites', satelites/*, 'loop:', loop+1*/)
         const speed = parseInt(
             events_block.subarray(block_index + 22, block_index + 24)
-                .toString(encoding), radix_hex)
+                .toString(HEX), RADIX_HEX)
         console.log('speed', speed/*, 'loop:', loop+1*/)
         const event_id = parseInt(
             events_block.subarray(block_index + 24, block_index + 26)
-                .toString(encoding), radix_hex)
+                .toString(HEX), RADIX_HEX)
         console.log('event_id', event_id/*, 'loop:', loop+1*/)
         let properties_keys = parseInt(
             events_block.subarray(block_index + 26, block_index + 28)
-                .toString(encoding), radix_hex)
+                .toString(HEX), RADIX_HEX)
         console.log('properties', properties_keys/*, 'loop:', loop+1*/)
         const properties = {}
         if (properties_keys < 1) {
@@ -445,27 +445,27 @@ function build_device(input_block) {
         while (loop_properties !== false) {
             let keys_for_properties = parseInt(
                 events_block.subarray(property_start, property_start + 2)
-                    .toString(encoding), radix_hex)
+                    .toString(HEX), RADIX_HEX)
             let value_indexes = Math.pow(2, loop_properties)
             property_start += 2
             let is_x_bytes = (value_indexes > 8)
             for (let property of Array(keys_for_properties).keys()) {
                 const prop_key_byte = events_block.subarray(
-                    property_start, property_start + 2).toString(encoding)
-                prop_key = parseInt(prop_key_byte, radix_hex)
+                    property_start, property_start + 2).toString(HEX)
+                prop_key = parseInt(prop_key_byte, RADIX_HEX)
                 /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key_byte, prop_key) */
                 property_start += !is_x_bytes ? 2 : 4
                 let property_value_end = property_start + value_indexes
                 if (is_x_bytes) {
                     const property_x_bytes_end = parseInt(
                         events_block.subarray(property_start - 2, property_start)
-                            .toString(encoding), radix_hex)
+                            .toString(HEX), RADIX_HEX)
                     property_value_end = property_start + Math.pow(2, property_x_bytes_end - 1)
                     // console.log("XBYTES ? [", property_start, ":", property_value_end, "]{", property_x_bytes_end, "}")
                 }
                 prop_value = parseInt(
                     events_block.subarray(property_start, property_value_end)
-                        .toString(encoding), radix_hex)
+                        .toString(HEX), RADIX_HEX)
                 // console.log("VALUE? [", property_start, ":", property_value_end, "] =>", prop_value)
                 properties[prop_key] = prop_value
                 property_start = property_value_end
@@ -480,8 +480,8 @@ function build_device(input_block) {
             if (properties_keys <= 0) {
                 block_index = property_start
                 let block_end = block_index + 4
-                while (parseInt(events_block.subarray(block_index, block_end).toString(encoding), radix_hex) == 0) {
-                    // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString('hex'))
+                while (parseInt(events_block.subarray(block_index, block_end).toString(HEX), RADIX_HEX) == 0) {
+                    // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString(HEX))
                     block_index += 4
                     property_start = block_index
                 }
@@ -496,7 +496,7 @@ function build_device(input_block) {
     }
 }
 const analyse_block = (bufferBlock) => {
-    let hexBlock = bufferBlock.toString('hex')
+    let hexBlock = bufferBlock.toString(HEX)
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
@@ -526,12 +526,12 @@ const analyse_block = (bufferBlock) => {
         try {
             let imei_byte_start = CAM_INIT_BYTE_LENGTH + IMEI_BYTE_LENGTH /* + IMEI_LENGTH_BYTES */
             let settings = bufferBlock.subarray(imei_byte_start, imei_byte_start + CAM_SETTINGS_BYTE_LENGTH)
-            let imei_hex_block = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString('hex')
-            bufferBlock = parseInt(imei_hex_block, 16)
+            let imei_hex_block = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString(HEX)
+            bufferBlock = parseInt(imei_hex_block, RADIX_HEX)
             console.log('cam imei??', typeof bufferBlock, bufferBlock)
-            let cam_mode_bin = parseInt(settings.subarray(0,2).toString('hex'),16)
+            let cam_mode_bin = parseInt(settings.subarray(0,2).toString(HEX),RADIX_HEX)
                 .toString(2).padStart(8, '0').substring(2,6)
-            console.log('cam settings??', cam_mode_bin, parseInt(settings.toString('hex'),16))
+            console.log('cam settings??', cam_mode_bin, parseInt(settings.toString(HEX),RADIX_HEX))
             let index_of_settings_cam_mode = settings_cam_mode.indexOf(cam_mode)
             if (Object.keys(cam_mode_bin).indexOf(index_of_settings_cam_mode.toString()) > -1 ){
                 if (cam_mode_bin[index_of_settings_cam_mode] == 0){
