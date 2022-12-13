@@ -341,6 +341,7 @@ var CAM_COMMANDS = {
 }
 
 function build_device(input_block) {
+    const encoding = 'hex'
     const block_length = input_block.length
     let device = recent_device
     if (data_options && data_options.hasOwnProperty("connection") 
@@ -366,15 +367,17 @@ function build_device(input_block) {
     let events_block = input_block.subarray(10, block_length - 5)
     /*console.log('events.block:', events_block[events_block.length-1])*/
     let loop = 0, block_index = 0, block_complete = false
+    const radix_hex = 16
+    let loop_properties
     while (loop < events) {
         const end_index = block_index + 8
         let timestamp = new Date(parseInt(
-            events_block.subarray(block_index, end_index).toString('hex'), 16))
+            events_block.subarray(block_index, end_index).toString(encoding), radix_hex))
         let is_timestamp = timestamp.toString() != 'Invalid Date'
         is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
         if (!is_timestamp) {
             timestamp = new Date(parseInt(
-                events_block.subarray(block_index - 2, block_index + 6).toString('hex'), 16))
+                events_block.subarray(block_index - 2, block_index + 6).toString(encoding), radix_hex))
             let is_timestamp_2 = timestamp.toString() != 'Invalid Date'
             is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
             if (!is_timestamp_2) {
@@ -392,37 +395,37 @@ function build_device(input_block) {
         console.log('timestamp', timestamp)
         const priority = parseInt(
             events_block.subarray(block_index + 8, block_index + 9)
-                .toString('hex'), 16)
+                .toString(encoding), radix_hex)
         console.log('priority', priority/*, 'loop:', loop+1*/)
         const coordinates = {}
         coordinates['longitude'] = proto.coordinate(parseInt(
             events_block.subarray(block_index + 9, block_index + 13)
-                .toString('hex'), 16))
+                .toString(encoding), radix_hex))
         coordinates['latitude'] = proto.coordinate(parseInt(
             events_block.subarray(block_index + 13, block_index + 17)
-                .toString('hex'), 16))
+                .toString(encoding), radix_hex))
         coordinates['altitude'] = parseInt(
             events_block.subarray(block_index + 17, block_index + 19)
-                .toString('hex'), 16)
+                .toString(encoding), radix_hex)
         coordinates['angle'] = parseInt(
             events_block.subarray(block_index + 19, block_index + 21)
-                .toString('hex'), 16)
+                .toString(encoding), radix_hex)
         console.log('coordinates', coordinates/*, 'loop:', loop+1*/)
         const satelites = parseInt(
             events_block.subarray(block_index + 21, block_index + 22)
-                .toString('hex'), 16)
+                .toString(encoding), radix_hex)
         console.log('satelites', satelites/*, 'loop:', loop+1*/)
         const speed = parseInt(
             events_block.subarray(block_index + 22, block_index + 24)
-                .toString('hex'), 16)
+                .toString(encoding), radix_hex)
         console.log('speed', speed/*, 'loop:', loop+1*/)
         const event_id = parseInt(
             events_block.subarray(block_index + 24, block_index + 26)
-                .toString('hex'), 16)
+                .toString(encoding), radix_hex)
         console.log('event_id', event_id/*, 'loop:', loop+1*/)
         let properties_keys = parseInt(
             events_block.subarray(block_index + 26, block_index + 28)
-                .toString('hex'), 16)
+                .toString(encoding), radix_hex)
         console.log('properties', properties_keys/*, 'loop:', loop+1*/)
         const properties = {}
         if (properties_keys < 1) {
@@ -435,27 +438,27 @@ function build_device(input_block) {
         while (loop_properties !== false) {
             let keys_for_properties = parseInt(
                 events_block.subarray(property_start, property_start + 2)
-                    .toString('hex'), 16)
+                    .toString(encoding), radix_hex)
             let value_indexes = Math.pow(2, loop_properties)
             property_start += 2
             let is_x_bytes = (value_indexes > 8)
             for (let property of Array(keys_for_properties).keys()) {
                 const prop_key_byte = events_block.subarray(
-                    property_start, property_start + 2).toString('hex')
-                prop_key = parseInt(prop_key_byte, 16)
+                    property_start, property_start + 2).toString(encoding)
+                prop_key = parseInt(prop_key_byte, radix_hex)
                 /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key_byte, prop_key) */
                 property_start += !is_x_bytes ? 2 : 4
                 let property_value_end = property_start + value_indexes
                 if (is_x_bytes) {
                     const property_x_bytes_end = parseInt(
                         events_block.subarray(property_start - 2, property_start)
-                            .toString('hex'), 16)
+                            .toString(encoding), radix_hex)
                     property_value_end = property_start + Math.pow(2, property_x_bytes_end - 1)
                     // console.log("XBYTES ? [", property_start, ":", property_value_end, "]{", property_x_bytes_end, "}")
                 }
                 prop_value = parseInt(
                     events_block.subarray(property_start, property_value_end)
-                        .toString('hex'), 16)
+                        .toString(encoding), radix_hex)
                 // console.log("VALUE? [", property_start, ":", property_value_end, "] =>", prop_value)
                 properties[prop_key] = prop_value
                 property_start = property_value_end
@@ -470,7 +473,7 @@ function build_device(input_block) {
             if (properties_keys <= 0) {
                 block_index = property_start
                 let block_end = block_index + 4
-                while (parseInt(events_block.subarray(block_index, block_end).toString('hex'), 16) == 0) {
+                while (parseInt(events_block.subarray(block_index, block_end).toString(encoding), radix_hex) == 0) {
                     // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString('hex'))
                     block_index += 4
                     property_start = block_index
@@ -503,6 +506,10 @@ const analyse_block = (bufferBlock) => {
     if (isIMEI) {
         recent_device = new mapper_mod.DeviceData(bufferBlock.subarray(IMEI_LENGTH_BYTES))
         console.log("recent_device:", recent_device.toString())
+        /*000f383630383936303530373934383538*/
+        if (bufferBlock.length > 17){
+            console.log("can receive trace joined:", bufferBlock)
+        }
         return true
     }
     if (isCamIMEI) {

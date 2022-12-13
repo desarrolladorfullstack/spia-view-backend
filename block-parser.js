@@ -102,7 +102,8 @@ let input_block = '000000000000033d8e07000001825fad29000100000000000000000000000
 // input_block = '00000000000004c98e0d0000018293b546380100000000000000000000000000000000fc000f000800f00000150500c80000450200b30001f10001f20000fc01000500b5000000b600000042134100430f8c00440000000200f1000b2bc700100000492a000000000000018293b571300100000000000000000000000000000000f6000f000800f00100150000c80000450200b30001f10001f20000f601000500b5000000b60000004204f500430f9300440000000200f10000000000100000492a000000000000018293b65f780100000000000000000000000000000000f6000f000800f00100150500c80000450200b30001f10001f20000f600000500b5000000b600000042000000430f5f00440000000200f1000b2bc700100000492a0000000000000182b2244a380100000000000000000000000000000000ef000f000800ef0100f00100150500c80000450200b30001f10001f200000500b5000000b600000042290600430ea50044008c000200f1000b2bc700100000492a0000000000000182b26186000100000000000000000000000000000000ef000f000800ef0000f00000150500c80000450200b30001f10301f203000500b5000000b6000000422e8400430ff600440000000200f1000b2bc700100000492a0000000000000182b28d41500100000000000000000000000000000000ef000f000800ef0100f00100150500c80000450200b30001f10001f200000500b5000000b6000000422b9100430fe300440000000200f1000b2bc700100000492a0000000000000182b28d54d80100000000000000000000000000000000ef000f000800ef0000f00000150500c80000450200b30001f10001f203000500b5000000b6000000422e0a00430fe300440000000200f1000b2bc700100000492a0000000000000182b28d54ec0100000000000000000000000000000001f3000f000800f00000150500c80000450200b30001f10001f20301f301000500b5000000b6000000422e4900430fe300440000000200f1000b2bc700100000492a0000000000000182b28d54f60100000000000000000000000000000001f3000f000800f00000150500c80000450200b30001f10001f20301f301000500b5000000b6000000422e4900430fe300440000000200f1000b2bc700100000492a0000000000000182b2e53cc00100000000000000000000000000000000ef000f000800ef0100f00100150500c80000450200b30001f10001f200000500b5000000b6000000422af700430fde00440000000200f1000b2bc700100000492a0000000000000182b2e57f280100000000000000000000000000000001f3000f000800f00100150500c80000450200b30001f10301f20301f301000500b5000000b6000000422d8c00430fde00440000000200f1000b2bc700100000492a0000000000000182b2e57f320100000000000000000000000000000001f3000f000800f00100150500c80000450200b30001f10301f20301f301000500b5000000b6000000422d8c00430fde00440000000200f1000b2bc700100000492a0000000000000182b30dc3c00100000000000000000000000000000000ef000f000800ef0000f00100150500c80000450200b30001f10301f203000500b5000000b6000000422e4b00430fe000440000000200f1000b2bc700100000492a000000000d0000dfe6'
 input_block = '00000000000004c98e0d0000018293b546380100000000000000000000000000000000fc000f000800f00000150500c80000450200b30001f10001f20000fc01000500b5000000b600000042134100430f8c00440000000200f1000b2bc700100000492a000000000000018293b571300100000000000000000000000000000000f6000f000800f00100150000c80000450200b30001f10001f20000f601000500b5000000b60000004204f500430f9300440000000200f10000000000100000492a000000000000018293b65f780100000000000000000000000000000000f6000f000800f00100150500c80000450200b30001f10001f20000f600000500b5000000b600000042000000430f5f00440000000200f1000b2bc700100000492a0000000000000182b2244a380100000000000000000000000000000000ef000f000800ef0100f00100150500c80000450200b30001f10001f200000500b5000000b600000042290600430ea50044008c000200f1000b2bc700100000492a0000000000000182b26186000100000000000000000000000000000000ef000f000800ef0000f00000150500c80000450200b30001f10301f203000500b5000000b6000000422e8400430ff600440000000200f1000b2bc700100000492a0000000000000182b28d41500100000000000000000000000000000000ef000f000800ef0100f00100150500c80000450200b30001f10001f200000500b5000000b6000000422b9100430fe300440000000200f1000b2bc700100000492a0000000000000182b28d54d80100000000000000000000000000000000ef000f000800ef0000f00000150500c80000450200b30001f10001f203000500b5000000b6000000422e0a00430fe300440000000200f1000b2bc700100000492a0000000000000182b28d54ec0100000000000000000000000000000001f3000f000800f00000150500c80000450200b30001f10001f20301f301000500b5000000b6000000422e4900430fe300440000000200f1000b2bc700100000492a0000000000000182b28d54f60100000000000000000000000000000001f3000f000800f00000150500c80000450200b30001f10001f20301f301000500b5000000b6000000422e4900430fe300440000000200f1000b2bc700100000492a0000000000000182b2e53cc00100000000000000000000000000000000ef000f000800ef0100f00100150500c80000450200b30001f10001f200000500b5000000b6000000422af700430fde00440000000200f1000b2bc700100000492a0000000000000182b2e57f280100000000000000000000000000000001f3000f000800f00100150500c80000450200b30001f10301f20301f301000500b5000000b6000000422d8c00430fde00440000000200f1000b2bc700100000492a0000000000000182b2e57f320100000000000000000000000000000001f3000f000800f00100150500c80000450200b30001f10301f20301f301000500b5000000b6000000422d8c00430fde00440000000200f1000b2bc700100000492a0000000000000182b30dc3c00100000000000000000000000000000000ef000f000800ef0000f00100150500c80000450200b30001f10301f203000500b5000000b6000000422e4b00430fe000440000000200f1000b2bc700100000492a000000000d0000dfe6'
 console.log(input_block)
-input_block = Buffer.from(input_block, "hex")
+const encoding = 'hex'
+input_block = Buffer.from(input_block, encoding)
 console.log('buffered: ', input_block)
 const block_length = input_block.length
 response_any = parser_mod.blockParser(input_block)
@@ -110,7 +111,7 @@ let device = parser_mod.deviceObject
 console.log('response:', response_any/*, device*/)
 let default_imei = '000f383630383936303530373934383538'
 if (device == undefined) {
-    device = new mapper_mod.DeviceData(Buffer.from(default_imei, "hex"))
+    device = new mapper_mod.DeviceData(Buffer.from(default_imei, encoding))
     console.log("New DEVICE: ", device.toString())
 }
 const codec = input_block[8]
@@ -124,21 +125,23 @@ console.log('codec:', Buffer.from([codec]), 'crc:', crc)
 let events_block = input_block.subarray(10, block_length - 5)
 /*console.log('events.block:', events_block[events_block.length-1])*/
 let loop = 0, block_index = 0, block_complete = false
+const radix_hex = 16
+let loop_properties
 while (loop < events) {
     const end_index = block_index + 8
     let timestamp = new Date(parseInt(
-        events_block.subarray(block_index, end_index).toString('hex'), 16))
+        events_block.subarray(block_index, end_index).toString(encoding), radix_hex))
     let is_timestamp = timestamp.toString() != 'Invalid Date'
     is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
     if (!is_timestamp) {
         timestamp = new Date(parseInt(
-            events_block.subarray(block_index-2, block_index+6).toString('hex'), 16))
+            events_block.subarray(block_index - 2, block_index + 6).toString(encoding), radix_hex))
         let is_timestamp_2 = timestamp.toString() != 'Invalid Date'
         is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
-        if (!is_timestamp_2){
-            break  
-        }else{
-            block_index-=2
+        if (!is_timestamp_2) {
+            break
+        } else {
+            block_index -= 2
             // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
         }
     }
@@ -150,37 +153,37 @@ while (loop < events) {
     console.log('timestamp', timestamp)
     const priority = parseInt(
         events_block.subarray(block_index + 8, block_index + 9)
-            .toString('hex'), 16)
+            .toString(encoding), radix_hex)
     console.log('priority', priority/*, 'loop:', loop+1*/)
     const coordinates = {}
     coordinates['longitude'] = proto.coordinate(parseInt(
         events_block.subarray(block_index + 9, block_index + 13)
-            .toString('hex'), 16))
+            .toString(encoding), radix_hex))
     coordinates['latitude'] = proto.coordinate(parseInt(
         events_block.subarray(block_index + 13, block_index + 17)
-            .toString('hex'), 16))
+            .toString(encoding), radix_hex))
     coordinates['altitude'] = parseInt(
         events_block.subarray(block_index + 17, block_index + 19)
-            .toString('hex'), 16)
+            .toString(encoding), radix_hex)
     coordinates['angle'] = parseInt(
         events_block.subarray(block_index + 19, block_index + 21)
-            .toString('hex'), 16)
+            .toString(encoding), radix_hex)
     console.log('coordinates', coordinates/*, 'loop:', loop+1*/)
     const satelites = parseInt(
         events_block.subarray(block_index + 21, block_index + 22)
-            .toString('hex'), 16)
+            .toString(encoding), radix_hex)
     console.log('satelites', satelites/*, 'loop:', loop+1*/)
     const speed = parseInt(
         events_block.subarray(block_index + 22, block_index + 24)
-            .toString('hex'), 16)
+            .toString(encoding), radix_hex)
     console.log('speed', speed/*, 'loop:', loop+1*/)
     const event_id = parseInt(
         events_block.subarray(block_index + 24, block_index + 26)
-            .toString('hex'), 16)
+            .toString(encoding), radix_hex)
     console.log('event_id', event_id/*, 'loop:', loop+1*/)
     let properties_keys = parseInt(
         events_block.subarray(block_index + 26, block_index + 28)
-            .toString('hex'), 16)
+            .toString(encoding), radix_hex)
     console.log('properties', properties_keys/*, 'loop:', loop+1*/)
     const properties = {}
     if (properties_keys < 1) {
@@ -193,27 +196,27 @@ while (loop < events) {
     while (loop_properties !== false) {
         let keys_for_properties = parseInt(
             events_block.subarray(property_start, property_start + 2)
-                .toString('hex'), 16)
+                .toString(encoding), radix_hex)
         let value_indexes = Math.pow(2, loop_properties)
         property_start += 2
         let is_x_bytes = (value_indexes > 8)
         for (let property of Array(keys_for_properties).keys()) {
             const prop_key_byte = events_block.subarray(
-                property_start, property_start + 2).toString('hex')
-            prop_key = parseInt( prop_key_byte, 16)
+                property_start, property_start + 2).toString(encoding)
+            prop_key = parseInt(prop_key_byte, radix_hex)
             /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key_byte, prop_key) */
             property_start += !is_x_bytes ? 2 : 4
             let property_value_end = property_start + value_indexes
             if (is_x_bytes) {
                 const property_x_bytes_end = parseInt(
                     events_block.subarray(property_start - 2, property_start)
-                        .toString('hex'), 16)
+                        .toString(encoding), radix_hex)
                 property_value_end = property_start + Math.pow(2, property_x_bytes_end - 1)
                 // console.log("XBYTES ? [", property_start, ":", property_value_end, "]{", property_x_bytes_end, "}")
             }
             prop_value = parseInt(
                 events_block.subarray(property_start, property_value_end)
-                    .toString('hex'), 16)
+                    .toString(encoding), radix_hex)
             // console.log("VALUE? [", property_start, ":", property_value_end, "] =>", prop_value)
             properties[prop_key] = prop_value
             property_start = property_value_end
@@ -228,7 +231,7 @@ while (loop < events) {
         if (properties_keys <= 0) {
             block_index = property_start
             let block_end = block_index + 4
-            while (parseInt(events_block.subarray(block_index, block_end).toString('hex'), 16) == 0) {
+            while (parseInt(events_block.subarray(block_index, block_end).toString(encoding), radix_hex) == 0) {
                 // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString('hex'))
                 block_index += 4
                 property_start = block_index
