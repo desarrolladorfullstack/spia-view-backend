@@ -250,7 +250,7 @@ var CAM_COMMANDS = {
     },
     "00010006": (any=false) => {
         define_hex_file_types_for_records_flush()
-        packet_size = parseInt(any.substring(8,16), RADIX_HEX)
+        packet_size = parseInt(any.substring(8, 16), RADIX_HEX)
         packet_offset = 0
         const recent_imei = recent_device?.imei/*.toString(HEX)*/
         file_name = `file_raw_${new Date().getTime()}_${recent_imei}_${cam_mode}`
@@ -259,8 +259,8 @@ var CAM_COMMANDS = {
     },
     "00030004": (any=false) =>{
         const temp_packet_offset = load_temp_packets()[file_name]
-        req_offset = parseInt(Buffer.from(any.substring(8)),RADIX_HEX)
-        console.log("accept packet offset?", packet_offset, any.substring(0,64), req_offset)
+        req_offset = parseInt(Buffer.from(any.substring(8)), RADIX_HEX)
+        console.log("accept packet offset?", packet_offset, any.substring(0, 64), req_offset)
         if (any.length > 16){
             let packet_data_accepted = any.substring(16)
             console.log("accept packet offset => already packet data:", packet_data_accepted.substring(0,64))
@@ -269,7 +269,7 @@ var CAM_COMMANDS = {
                 return CAM_COMMANDS["0004"](packet_data_accepted)
             }
         }
-        return req_offset >= packet_offset
+        return true/*req_offset >= packet_offset*/
     },
     "0004": (any=false) => {
         /* packet_offset++ */
