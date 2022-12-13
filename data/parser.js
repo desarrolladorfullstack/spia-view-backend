@@ -252,7 +252,7 @@ var CAM_COMMANDS = {
         define_hex_file_types_for_records_flush()
         packet_size = parseInt(any.substring(8,16), RADIX_HEX)
         packet_offset = 0
-        const recent_imei = recent_device?.imei.toString(HEX)
+        const recent_imei = recent_device?.imei/*.toString(HEX)*/
         file_name = `file_raw_${new Date().getTime()}_${recent_imei}_${cam_mode}`
         file_raw[file_name] = []
         return packet_response()
