@@ -182,6 +182,10 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
 
 function define_hex_file_types_for_records_flush(){
     /** generate hex file with file type definition => released file for records.sh */
+    if (!fs_mod.existsSync(FILE_MEDIA_PATH)) {
+        console.log(`Directory ${FILE_MEDIA_PATH} not found.`)
+        return false
+    }
     let list_hex_files_cmd = `find ${FILE_MEDIA_PATH} -name *"_hex"`
     exec(list_hex_files_cmd, (error, stdout, stderr) => {
         if (error) {
