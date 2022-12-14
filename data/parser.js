@@ -10,6 +10,7 @@ const CAM_SETTINGS_BYTE_LENGTH = 4
 const IMEI_LENGTH_BYTES = 2
 const IMEI_BLOCK_LENGTH = 17
 const RADIX_HEX = 16
+const PACKET_BYTES = 1024
 const HEX = 'hex'
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
@@ -59,7 +60,7 @@ const load_temp_packets = () => {
     })
     if (queued_packets && Object.keys(queued_packets).length === 0
     && Object.getPrototypeOf(queued_packets) === Object.prototype){
-        console.log('[queued packets not found]')
+        /* console.log('[queued packets not found]') */
         return false
     }
     console.log('[queued packets] =>', queued_packets)
@@ -104,7 +105,7 @@ const packet_response = (any=false) => {
         response_payload = Buffer.from(payload_hex.join(''),HEX)
     }
     const response_length = Buffer.from(['00', payload_hex.length])
-    console.log('payload_hex', packet_offset, payload_hex, response_payload)
+    /* console.log('payload_hex', packet_offset, payload_hex, response_payload) */
     const response_cam = Buffer.concat([RESUME_CAM_COMMAND, response_length, response_payload])
     console.log(file_name, 'write count', packet_offset, 'of', packet_size)
     return Buffer.from(response_cam, HEX)
@@ -135,7 +136,7 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
             console.warn(`stderr [mime_type_cmd]: ${stderr}`, mime_type_cmd)
             return
         }
-        console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd)
+        /* console.log(`stdout [mime_type_cmd]: ${stdout}`, mime_type_cmd) */
         let separator_mime_type = ": "
         let is_mime_response = stdout.indexOf(separator_mime_type) > -1
         if (is_mime_response) {
@@ -175,7 +176,7 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
                         console.warn(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
                         return
                     }
-                    console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd)
+                    /* console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd) */
                 })
             }
         }
@@ -198,7 +199,7 @@ function define_hex_file_types_for_records_flush(){
             console.warn(`stderr [list_hex_files_cmd]: ${stderr}`, list_hex_files_cmd)
             return
         }
-        console.log(`stdout [list_hex_files_cmd]: ${stdout}`, list_hex_files_cmd, typeof stdout)
+        /* console.log(`stdout [list_hex_files_cmd]: ${stdout}`, list_hex_files_cmd, typeof stdout) */
         let split_files_hex = stdout.split('\n')
         split_files_hex.pop()
         if (split_files_hex.length <= 0){
@@ -223,7 +224,7 @@ function define_hex_file_types_for_records_flush(){
                     console.warn(`stderr [search_file_path_cmd]: ${stderr}`, search_file_path_cmd)
                     return
                 }
-                console.log(`stdout [search_file_path_cmd]: ${stdout}`, search_file_path_cmd, typeof stdout)
+                /* console.log(`stdout [search_file_path_cmd]: ${stdout}`, search_file_path_cmd, typeof stdout) */
                 let file_path = stdout.split("\n")[0]
                 define_file_type_in_file_name(file_path, file_hex_path)
             })
@@ -282,7 +283,9 @@ var CAM_COMMANDS = {
             return true
         }
         console.log("recent_device packets:", recent_device.toString())
-        console.log(" -- > offset:", packet_offset)
+        if(packet_offset > packet_size && packet_size > 0){
+            console.log(" -- > offset:", packet_offset)
+        }
         const handled_error_fs = (error) => {
             if (error) {
                 console.error(['Error en escritura: ', error])
@@ -291,8 +294,10 @@ var CAM_COMMANDS = {
             }
         }
         const packet_len = parseInt(
-            Buffer.from(any.substring(4, 8), HEX), RADIX_HEX) || 1024
-        console.log(" -- > len:", packet_len)
+            Buffer.from(any.substring(4, 8), HEX), RADIX_HEX) || PACKET_BYTES
+        if (packet_len > PACKET_BYTES*2){
+            console.log(" -- > len:", packet_len)
+        }
         const packet_end = any.length - 4
         const packet_hex = any.substring(8, packet_end)
         let packet_data = Buffer.from(packet_hex, HEX)
@@ -311,15 +316,16 @@ var CAM_COMMANDS = {
         file_raw[file_name].push(packet_hex.substring(0, 128))
         const isCreated = packet_offset > 1
         console.log("is Created",  isCreated, packet_hex.substring(0,64))
-        console.log("..:: WARNING: insert as hex ::..")
+        /* console.log("..:: WARNING: insert as hex ::..") */
         let file_path = FILE_MEDIA_PATH+file_name
         let file_hex_path = file_path+"_hex"
         for (const cam_mode_index in orientation_cam_mode) {
             let searchValue = "_"+cam_mode_index
             let replaceValue = orientation_cam_mode[cam_mode_index]
-            console.log("file_path ? cam_mode_index =>", file_path, cam_mode_index, replaceValue)
+            /* console.log("file_path ? cam_mode_index =>", file_path, cam_mode_index, replaceValue) */
             if (file_path.indexOf(searchValue) > -1){
                 file_hex_path = file_path.replace(searchValue,"_"+replaceValue)+"_hex"
+                console.log('file_hex_path[orientation_cam_mode] replace:', file_hex_path, cam_mode_index)
                 break
             }
         }

@@ -4,10 +4,12 @@ Buffer.prototype.getBytes = proto.BytesHex
 Number.prototype.getBytes = proto.getBytes
 Boolean.prototype.getBytes = proto.getBytes
 const parser_mod = require('./data/parser')
+const LOG_MIN_LENGTH = 255
 var LOG_MODE = 0
 if (process && process?.argv){
   let arg_values = process.argv.slice(2)
   LOG_MODE = parseInt(arg_values[0])
+  console.log("LOG_MODE =>", LOG_MODE)
 }
 const net = require('net')
 var KEEP_ALIVE = 200000
@@ -24,8 +26,9 @@ let response_write = (data, data_type='hex', options={type: 'text/plain'}) => {
   let data_hex = data.toString(data_type)
   let data_log = data_hex
   if(LOG_MODE == 0){
-    let data_length = data_hex.length > 255 ? 255 : data_hex.length
+    let data_length = data_hex.length > LOG_MIN_LENGTH ? LOG_MIN_LENGTH : data_hex.length
     data_log = data_hex.substring(0, data_length)
+    console.log("LOG_MIN_LENGTH =>", LOG_MIN_LENGTH)
   }
   console.log(' \nREQ:', data_log, data.length )
   let respond = recent_response = response_value(data)
