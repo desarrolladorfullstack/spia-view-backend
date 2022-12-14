@@ -15,7 +15,7 @@ if (process && process?.argv != undefined && process.argv.length > 0){
   }
 }
 const net = require('net')
-var KEEP_ALIVE = 200000
+var KEEP_ALIVE = 3600000
 const port = 80
 const server = net.createServer()
 let recent_response = undefined
