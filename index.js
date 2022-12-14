@@ -6,10 +6,11 @@ Boolean.prototype.getBytes = proto.getBytes
 const parser_mod = require('./data/parser')
 const LOG_MIN_LENGTH = 255
 var LOG_MODE = 0
-if (process && process?.argv){
+if (process && process?.argv != undefined && process.argv.length > 0){
   let arg_values = process.argv.slice(2)
-  LOG_MODE = parseInt(arg_values[0])
-  console.log("LOG_MODE =>", LOG_MODE)
+  const log_mode_arg = arg_values[0]
+  LOG_MODE = parseInt(log_mode_arg)
+  console.log("LOG_MODE =>", LOG_MODE, `'${log_mode_arg}'`)
 }
 const net = require('net')
 var KEEP_ALIVE = 200000
