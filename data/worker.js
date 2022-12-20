@@ -1,5 +1,6 @@
-export let queue_commands = true;
+let queue_commands = true;
 const connections = {}
 module.exports = {
-    "conn": connections
+    "conn": connections,
+    "queue_commands":queue_commands
 }

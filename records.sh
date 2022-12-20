@@ -32,7 +32,7 @@ PGSQL_TABLE_PARENT_SEQUENCE="files_file_id_seq"
 TEMP_INSERT_FILE="temp_insert.sql"
 TEMP_SELECT_FILE="temp_select.sql"
 TEMP_SELECT_RESULT="temp_select_result.tmp"
-list_media_files=($(ls $MEDIA_FOLDER))
+list_media_files=($(ls "$MEDIA_FOLDER"))
 for file in ${list_media_files[*]}
 do
     {

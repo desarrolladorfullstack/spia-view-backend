@@ -1,6 +1,7 @@
 const mapper_mod = require('./modeler')
 const worker_mod = require('./worker')
 const proto_mod = require('./proto')
+const the_vars = require('./vars')
 const fs_mod = require('fs')
 const path_mod = require('path')
 const {exec} = require('child_process')
@@ -9,9 +10,11 @@ const CAM_INIT_BYTE_LENGTH = 4
 const CAM_SETTINGS_BYTE_LENGTH = 4
 const IMEI_LENGTH_BYTES = 2
 const IMEI_BLOCK_LENGTH = 17
-const RADIX_HEX = 16
+const RADIX_HEX = the_vars.RADIX_HEX
 const PACKET_BYTES = 1024
-const HEX = 'hex'
+const BYTE_ZERO = the_vars.BYTE_ZERO
+const HEX = the_vars.HEX
+const invalidDate = the_vars.INVALID['date']
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
@@ -27,6 +30,7 @@ let recent_device = undefined
 let recent_block = undefined
 let file_raw = {}
 let file_name = 'file_raw'
+let default_imei = '000f383630383936303530373934383538'
 var orientation_cam_mode = {
     "videor":"rear",
     "videof":"front",
@@ -48,7 +52,7 @@ const load_temp_packets = () => {
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
             if (!isDirectory) {
                 let queued_file_path = FILE_MEDIA_PATH+file
-                let reader_options = {encoding: 'utf-8'}
+                let reader_options = the_vars.UTF8_SETTING
                 fs_mod.readFile(queued_file_path, reader_options, function(err, data){
                     let queued_offset = parseInt(data)
                     if (queued_offset > 0) {
@@ -124,7 +128,6 @@ const file_req_response = (cam_input="videor") => {
     const response_cam = Buffer.concat([FILE_REQ_CAM_COMMAND, response_length, response_payload])
     return Buffer.from(response_cam, HEX)
 }
-
 function define_file_type_in_file_name(file_path, file_hex_path) {
     let mime_type_cmd = `file --mime-type ${file_path}`
     exec(mime_type_cmd, (error, stdout, stderr) => {
@@ -146,11 +149,11 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
             }
             let file_type = false
             console.log(`stdout [split_mime_type] => [[${split_mime_type}]]`)
-            let is_video = split_mime_type == "application/octet-stream"
+            let is_video = split_mime_type == the_vars.MIME_TYPES['video_raw']
             if (is_video) {
                 file_type = "_video"
             }
-            let is_image = split_mime_type == "image/jpeg"
+            let is_image = split_mime_type == the_vars.MIME_TYPES['image']
             if (is_image) {
                 file_type = "_image"
             }
@@ -176,13 +179,13 @@ function define_file_type_in_file_name(file_path, file_hex_path) {
                         console.warn(`stderr [move_file_as_type_cmd]: ${stderr}`, move_file_as_type_cmd)
                         return
                     }
+                    return
                     /* console.log(`stdout [move_file_as_type_cmd]: ${stdout}`, move_file_as_type_cmd) */
                 })
             }
         }
     })
 }
-
 function define_hex_file_types_for_records_flush(){
     /** generate hex file with file type definition => released file for records.sh */
     if (!fs_mod.existsSync(FILE_MEDIA_PATH)) {
@@ -231,80 +234,78 @@ function define_hex_file_types_for_records_flush(){
         }
     })
 }
-
-var CAM_COMMANDS = {
-    "init": (any=false) => { 
-        if (cam_mode != "videor" && change_cam_mode.hasOwnProperty(cam_mode)){
+function getInit (any = false) {
+        if (cam_mode != "videor" && change_cam_mode.hasOwnProperty(cam_mode)) {
             cam_mode = change_cam_mode[cam_mode]
         }
         console.log("cam mode init to", cam_mode)
-        return file_req_response(any)
-    },
-    "00050004": (any=false)=>{
+        return file_req_response(any) 
+}
+function getError(any = false)  {
         define_hex_file_types_for_records_flush()
-        if (any == CAM_INPUT_ERROR){
+        if (any == CAM_INPUT_ERROR) {
             cam_mode = change_cam_mode[cam_mode]
             console.log("cam mode switch to", cam_mode)
             return file_req_response(cam_mode)
         }
-        return 0x0000
-    },
-    "00010006": (any=false) => {
-        define_hex_file_types_for_records_flush()
-        packet_size = parseInt(any.substring(8, 16), RADIX_HEX)
-        packet_offset = 0
-        const recent_imei = recent_device?.imei/*.toString(HEX)*/
-        file_name = `file_raw_${new Date().getTime()}_${recent_imei}_${cam_mode}`
-        file_raw[file_name] = []
-        return packet_response()
-    },
-    "00030004": (any=false) =>{
-        const temp_packet_offset = load_temp_packets()[file_name]
-        req_offset = parseInt(Buffer.from(any.substring(8)), RADIX_HEX)
-        console.log("accept packet offset?", packet_offset, any.substring(0, 64), req_offset)
-        if (any.length > 16){
-            let packet_data_accepted = any.substring(16)
-            console.log("accept packet offset => already packet data:", packet_data_accepted.substring(0,64))
-            let is_packet_data_block = packet_data_accepted.substring(0,4) == "0004"
-            if (is_packet_data_block){
-                return CAM_COMMANDS["0004"](packet_data_accepted)
-            }
+        return BYTE_ZERO
+}
+function getStart(any) {
+    define_hex_file_types_for_records_flush()
+    packet_size = parseInt(any.substring(8, 16), RADIX_HEX)
+    packet_offset = 0
+    const recent_imei = recent_device?.imei/*.toString(HEX)*/
+    file_name = `file_raw_${new Date().getTime()}_${recent_imei}_${cam_mode}`
+    file_raw[file_name] = []
+    return packet_response()
+}
+function getSync(any = false) {
+    const temp_packet_offset = load_temp_packets()[file_name]
+    req_offset = parseInt(Buffer.from(any.substring(8)), RADIX_HEX)
+    console.log("accept packet offset?", packet_offset, any.substring(0, 64), req_offset)
+    if (any.length > 16) {
+        let packet_data_accepted = any.substring(16)
+        console.log("accept packet offset => already packet data:", packet_data_accepted.substring(0, 64))
+        let is_packet_data_block = packet_data_accepted.substring(0, 4) == "0004"
+        if (is_packet_data_block) {
+            return CAM_COMMANDS["0004"](packet_data_accepted)
         }
-        return true/*req_offset >= packet_offset*/
-    },
-    "0004": (any=false) => {
+    }
+    return true/*req_offset >= packet_offset*/
+}
+function getData(any = false) {
         /* packet_offset++ */
         if (recent_device == undefined) {
             console.error("recent_device not found")
             return packet_response()
         }
-        if (any.length <= 16){
+        if (any.length <= 16) {
             console.warn("no packet:", any)
             return true
         }
         console.log("recent_device packets:", recent_device.toString())
-        if(packet_offset > packet_size && packet_size > 0){
+        if (packet_offset > packet_size && packet_size > 0) {
             console.log(" -- > offset:", packet_offset)
         }
         const handled_error_fs = (error) => {
             if (error) {
-                console.error(['Error en escritura: ', error])
+                console.error(['Error in handled_error_fs: ', error])
             } else {
-                console.log("Archivo escrito correctamente!", file_name)
+                console.log("File content written successfully!", file_name)
             }
         }
         const packet_len = parseInt(
             Buffer.from(any.substring(4, 8), HEX), RADIX_HEX) || PACKET_BYTES
-        if (packet_len > PACKET_BYTES*2){
+        if (packet_len > PACKET_BYTES * 2) {
             console.log(" -- > len:", packet_len)
         }
         const packet_end = any.length - 4
         const packet_hex = any.substring(8, packet_end)
         let packet_data = Buffer.from(packet_hex, HEX)
         let is_packet_written = file_raw.hasOwnProperty(file_name)
-        if (is_packet_written){
+        if (is_packet_written) {
             is_packet_written = file_raw[file_name].includes(packet_hex.substring(0, 128))
-        }else{
+        } else {
             file_raw[file_name] = []
         }
         const heap_of_packets = false /* packet_size > 100 */
@@ -315,22 +316,22 @@ var CAM_COMMANDS = {
         }
         file_raw[file_name].push(packet_hex.substring(0, 128))
         const isCreated = packet_offset > 1
-        console.log("is Created",  isCreated, packet_hex.substring(0,64))
+        console.log("is Created", isCreated, packet_hex.substring(0, 64))
         /* console.log("..:: WARNING: insert as hex ::..") */
-        let file_path = FILE_MEDIA_PATH+file_name
-        let file_hex_path = file_path+"_hex"
+        let file_path = FILE_MEDIA_PATH + file_name
+        let file_hex_path = file_path + "_hex"
         for (const cam_mode_index in orientation_cam_mode) {
-            let searchValue = "_"+cam_mode_index
+            let searchValue = "_" + cam_mode_index
             let replaceValue = orientation_cam_mode[cam_mode_index]
             /* console.log("file_path ? cam_mode_index =>", file_path, cam_mode_index, replaceValue) */
-            if (file_path.indexOf(searchValue) > -1){
-                file_hex_path = file_path.replace(searchValue,"_"+replaceValue)+"_hex"
+            if (file_path.indexOf(searchValue) > -1) {
+                file_hex_path = file_path.replace(searchValue, "_" + replaceValue) + "_hex"
                 console.log('file_hex_path[orientation_cam_mode] replace:', file_hex_path, cam_mode_index)
                 break
             }
         }
-        let hex_packet_data = packet_hex+"\n"
-        if (isCreated){
+        let hex_packet_data = packet_hex + "\n"
+        if (isCreated) {
             fs_mod.appendFileSync(
                 file_path,
                 packet_data,
@@ -339,7 +340,7 @@ var CAM_COMMANDS = {
                 file_hex_path,
                 hex_packet_data,
                 (err) => handled_error_fs(err))
-        }else{
+        } else {
             fs_mod.writeFileSync(
                 file_path,
                 packet_data,
@@ -352,9 +353,14 @@ var CAM_COMMANDS = {
         /*define_file_type_in_file_name(file_path, file_hex_path)*/
 
         return packet_response()
-    }
 }
-
+var CAM_COMMANDS = {
+    "init": getInit,
+    "00050004": getError,
+    "00010006": getStart,
+    "00030004": getSync,
+    "0004": getData
+}
 function build_device(input_block) {
     const block_length = input_block.length
     let device = recent_device
@@ -363,7 +369,6 @@ function build_device(input_block) {
         device = worker_mod.conn[data_options['connection']]
     }
     console.log('response:', response_any, device)
-    let default_imei = '000f383630383936303530373934383538'
     if (device == undefined) {
         console.warn('DEVICE=>undefined')
         return false
@@ -386,12 +391,12 @@ function build_device(input_block) {
         const end_index = block_index + 8
         let timestamp = new Date(parseInt(
             events_block.subarray(block_index, end_index).toString(HEX), RADIX_HEX))
-        let is_timestamp = timestamp.toString() != 'Invalid Date'
+        let is_timestamp = timestamp.toString() != invalidDate
         is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
         if (!is_timestamp) {
             timestamp = new Date(parseInt(
                 events_block.subarray(block_index - 2, block_index + 6).toString(HEX), RADIX_HEX))
-            let is_timestamp_2 = timestamp.toString() != 'Invalid Date'
+            let is_timestamp_2 = timestamp.toString() != invalidDate
             is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
             if (!is_timestamp_2) {
                 break
@@ -501,7 +506,7 @@ function build_device(input_block) {
         //}
     }
 }
-const analyse_block = (bufferBlock) => {
+function analyse_block (bufferBlock) {
     let hexBlock = bufferBlock.toString(HEX)
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
@@ -564,7 +569,7 @@ const analyse_block = (bufferBlock) => {
     }
     return bufferBlock[9]
 }
-const read_block = (bufferBlock) => {
+function read_block (bufferBlock) {
     /* console.log("MOD::read_block? ", typeof bufferBlock) */
     let block_success = true
     try {
@@ -602,10 +607,9 @@ const read_block = (bufferBlock) => {
     /*console.log("MOD::read_block?? ", typeof block_success)*/
     return block_success
 }
-
 module.exports = {
     "blockParser": read_block,
     "deviceObject": recent_device,
-    "files_reset": () => define_hex_file_types_for_records_flush(),
+    "files_reset": define_hex_file_types_for_records_flush,
     "parser_options": data_options
 }
