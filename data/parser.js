@@ -102,7 +102,7 @@ const packet_response = (any=false) => {
             /* console.log('offset', offset_byte , count, start, end) */
             payload_hex[payload_hex.length-1-count]=offset_byte
         }
-        response_payload = Buffer.from(payload_hex.join(''),HEX)
+        response_payload = Buffer.from(payload_hex.join(''), HEX)
     }
     const response_length = Buffer.from(['00', payload_hex.length])
     /* console.log('payload_hex', packet_offset, payload_hex, response_payload) */
