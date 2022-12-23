@@ -37,7 +37,7 @@ function command_writer(socket, test=true){
     console.log("CMD:", success)
     return command_writer(socket, test)
   }).catch((failed)=>{
-    console.error("Error in command_writer");
+    console.error("Error in command_writer:", failed)
   })
 }
 function socket_handler(socket) {
@@ -52,7 +52,7 @@ function socket_handler(socket) {
   socket.on('timeout', onSocketTimeout)
   command_writer(socket, TEST_MODE)
   function onSocketTimeout() {
-    console.log('Connection from ' + remoteAddress + ' timeouted \n\tAT: ', new Date())
+    console.log('Connection from', remoteAddress ,'timeouted \n\tAT:', new Date())
     parser_mod.files_reset()
   }
   function onSocketData(data) {
@@ -65,14 +65,14 @@ function socket_handler(socket) {
       console.log("parser_options??", parser_mod.parser_options)
     }
     socket.write(response_write(data))
-    console.log("\nAT: ", new Date(), "\nRES: ", recent_response)
+    console.log("\nAT:", new Date(), "\nRES: ", recent_response)
   }
   function onSocketClose() {
-      console.log('Communication from ' + remoteAddress + ' closed \n\tAT: ', new Date())
+      console.log('Communication from', remoteAddress, 'closed \n\tAT: ', new Date())
       parser_mod.files_reset()
   }
   function onSocketError(err) {
-      console.log('Error in ' + remoteAddress + ' socket:', err.message, err.stack)
+      console.log('Error in', remoteAddress, 'socket:', err.message, err.stack)
       parser_mod.files_reset()
   }
 }
