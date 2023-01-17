@@ -18,7 +18,7 @@ if (process && process?.argv != undefined && process.argv.length > 0){
     console.log("LOG_MODE =>", LOG_MODE, `'${log_mode_arg}'`)
   }
   if (arg_values.length > 1){
-    TEST_MODE = true
+    TEST_MODE = (parseInt(arg_values[1]) == 1) ?? false
   }
   if (arg_values.length > 2){
     PORT_NUMBER = parseInt(arg_values[2]) ?? 80
@@ -32,14 +32,14 @@ function command_writer(socket, test=true){
     if (worker_mod.queue_commands){
       const command = sender_mod.sendCommand()
       socket.write(command)
-      resolve(command);
       if (test){
         worker_mod.queue_commands = false
       }
+      resolve(command)      
     }
   }).then((success)=>{
     console.log("CMD:", success.toString('hex') ?? success)
-    /* return command_writer(socket, test) */
+    return command_writer(socket, false)
   }).catch((failed)=>{
     console.error("Error in command_writer:", failed)
   })
