@@ -9,6 +9,7 @@ const worker_mod = require('./data/worker')
 const LOG_MIN_LENGTH = 255
 var LOG_MODE = 0
 var TEST_MODE = false
+var PORT_NUMBER = 80
 if (process && process?.argv != undefined && process.argv.length > 0){
   let arg_values = process.argv.slice(2)
   const log_mode_arg = arg_values[0]
@@ -19,10 +20,13 @@ if (process && process?.argv != undefined && process.argv.length > 0){
   if (arg_values.length > 1){
     TEST_MODE = true
   }
+  if (arg_values.length > 2){
+    PORT_NUMBER = parseInt(arg_values[2]) ?? 80
+  }
 }
 const net = require('net')
-var KEEP_ALIVE = 3600000
-const port = 80
+var KEEP_ALIVE = 360000
+const port = PORT_NUMBER ?? 80
 function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     if (worker_mod.queue_commands){
@@ -34,8 +38,8 @@ function command_writer(socket, test=true){
       }
     }
   }).then((success)=>{
-    console.log("CMD:", success)
-    return command_writer(socket, test)
+    console.log("CMD:", success.toString('hex') ?? success)
+    /* return command_writer(socket, test) */
   }).catch((failed)=>{
     console.error("Error in command_writer:", failed)
   })
@@ -65,7 +69,7 @@ function socket_handler(socket) {
       console.log("parser_options??", parser_mod.parser_options)
     }
     socket.write(response_write(data))
-    console.log("\nAT:", new Date(), "\nRES: ", recent_response)
+    console.log("\nAT:", new Date(), "\nRES: ", recent_response.toString('hex') ?? recent_response)
   }
   function onSocketClose() {
       console.log('Communication from', remoteAddress, 'closed \n\tAT: ', new Date())
