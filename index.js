@@ -30,8 +30,16 @@ const port = PORT_NUMBER ?? 80
 function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     if (worker_mod.queue_commands){
-      const command = sender_mod.sendCommand()
-      socket.write(command)
+      let hex_block = false;
+      if (worker_mod.queue_commands?.length > 0){
+        if (typeof worker_mod.queue_commands == "object"){
+          hex_block = Object.values(worker_mod.queue_commands)[0]
+        }else if(typeof worker_mod.queue_commands == "array"){
+          hex_block = worker_mod.queue_commands[0]
+        }
+      }
+      const command = sender_mod.sendCommand(hex_block, test)
+      socket.write(command) 
       if (test){
         worker_mod.queue_commands = false
       }
