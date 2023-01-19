@@ -530,7 +530,7 @@ function analyse_block (bufferBlock) {
         console.log("CMD VL03?", bufferBlock[3], isIMEI.toString())  
         if(isIMEI){
             isIMEI = bufferBlock.subarray(VL03_IMEI_INIT_LENGTH,VL03_IMEI_INIT_LENGTH+8)
-            recent_device = new mapper_mod.DeviceData(parseInt(isIMEI.toString()))
+            recent_device = new mapper_mod.DeviceData(parseInt(isIMEI.toString(HEX)))
             console.log("Init VL03 device:", recent_device.toString())        
             return true
         }
