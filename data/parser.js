@@ -361,6 +361,8 @@ var CAM_COMMANDS = {
     "00030004": getSync,
     "0004": getData
 }
+var VL03_PACKETS = ["7878"]
+const VL03_IMEI_INIT_LENGTH = 4
 function build_device(input_block) {
     const block_length = input_block.length
     let device = recent_device
@@ -509,7 +511,7 @@ function build_device(input_block) {
 function analyse_block (bufferBlock) {
     let hexBlock = bufferBlock.toString(HEX)
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
-    let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0
+    let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0    
     isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
     let cam_command_index = hexBlock.substring(0, 8)
     let isCamCommand = cam_command_index in CAM_COMMANDS
@@ -521,6 +523,19 @@ function analyse_block (bufferBlock) {
     }else{
         console.log("is Cam Command", isCamCommand, "=>", cam_command_index)
     }
+    /** BEGIN: VL03 */
+    let isVL03 = VL03_PACKETS.includes(hexBlock.substring(0, 4))
+    if (isVL03){        
+        isIMEI = parseInt(bufferBlock[3]) === 0x01;
+        console.log("CMD VL03?", bufferBlock[3], parseInt(bufferBlock[3]))  
+        if(!isIMEI){
+            isIMEI = bufferBlock.subarray(VL03_IMEI_INIT_LENGTH,VL03_IMEI_INIT_LENGTH+8)
+            recent_device = new mapper_mod.DeviceData(isIMEI)
+            console.log("Init VL03 device:", recent_device.toString())        
+            return true
+        }
+    }
+    /** END: VL03 */
     if (isIMEI) {
         const imei_id = bufferBlock.subarray(IMEI_LENGTH_BYTES, IMEI_BLOCK_LENGTH);
         recent_device = new mapper_mod.DeviceData(imei_id)
