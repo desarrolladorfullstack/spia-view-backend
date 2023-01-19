@@ -526,7 +526,7 @@ function analyse_block (bufferBlock) {
     /** BEGIN: VL03 */
     let isVL03 = VL03_PACKETS.includes(hexBlock.substring(0, 4))
     if (isVL03){        
-        isIMEI = parseInt(bufferBlock[3]) === 0x01;
+        isIMEI = bufferBlock[3] === 1;
         console.log("CMD VL03?", bufferBlock[3], parseInt(bufferBlock[3]))  
         if(!isIMEI){
             isIMEI = bufferBlock.subarray(VL03_IMEI_INIT_LENGTH,VL03_IMEI_INIT_LENGTH+8)
