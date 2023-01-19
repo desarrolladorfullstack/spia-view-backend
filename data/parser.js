@@ -527,8 +527,8 @@ function analyse_block (bufferBlock) {
     let isVL03 = VL03_PACKETS.includes(hexBlock.substring(0, 4))
     if (isVL03){        
         isIMEI = bufferBlock[3] === 1 || parseInt(bufferBlock[3]) === 1;
-        console.log("CMD VL03?", bufferBlock[3], parseInt(bufferBlock[3]))  
-        if(!isIMEI){
+        console.log("CMD VL03?", bufferBlock[3], isIMEI.toString())  
+        if(isIMEI){
             isIMEI = bufferBlock.subarray(VL03_IMEI_INIT_LENGTH,VL03_IMEI_INIT_LENGTH+8)
             recent_device = new mapper_mod.DeviceData(isIMEI)
             console.log("Init VL03 device:", recent_device.toString())        
