@@ -66,6 +66,7 @@ var crc = {
  }; 
  module.exports = {
     'calculate_crc': crc16_generic,
+    'calculate_crc_itu': crc16_X25,
     'crc_interface': crc,
     'test': test_crc
  }
