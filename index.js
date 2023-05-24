@@ -63,6 +63,7 @@ function socket_handler(socket) {
   socket.on('error', onSocketError)
   socket.on('timeout', onSocketTimeout)
   command_writer(socket, TEST_MODE)
+      .then((msg)=>console.log(`running command_writer!!! => ${msg}`))
   function onSocketTimeout() {
     console.log('Connection from', remoteAddress ,'timeouted \n\tAT:', new Date())
     parser_mod.files_reset()
