@@ -40,6 +40,7 @@ function command_writer(socket, test=true){
         }
       }
       const command = sender_mod.sendCommand(hex_block, test)
+      console.log('SEND COMMAND:', command)
       socket.write(command) 
       if (test){
         worker_mod.queue_commands = false
