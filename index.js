@@ -6,6 +6,7 @@ Boolean.prototype.getBytes = proto.getBytes
 const parser_mod = require('./data/parser')
 const sender_mod = require('./data/sender')
 const worker_mod = require('./data/worker')
+const the_vars = require('./data/vars')
 const LOG_MIN_LENGTH = 255
 var LOG_MODE = 0
 var TEST_MODE = false
@@ -30,7 +31,7 @@ const port = PORT_NUMBER ?? 80
 function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     if (worker_mod.queue_commands){
-      let hex_block = false;
+      let hex_block = false
       if (worker_mod.queue_commands?.length > 0){
         if (typeof worker_mod.queue_commands == "object"){
           hex_block = Object.values(worker_mod.queue_commands)[0]
@@ -46,15 +47,15 @@ function command_writer(socket, test=true){
       resolve(command)      
     }
   }).then((success)=>{
-    console.log("CMD:", success.toString('hex') ?? success)
+    console.log("CMD:", success.toString(the_vars.HEX) ?? success)
     return command_writer(socket, false)
   }).catch((failed)=>{
     console.error("Error in command_writer:", failed)
   })
 }
 function socket_handler(socket) {
-  const remoteAddress = socket.remoteAddress;
-  const remotePort = socket.remotePort;
+  const remoteAddress = socket.remoteAddress
+  const remotePort = socket.remotePort
   socket.setNoDelay(true)
   socket.setKeepAlive(true, 9*KEEP_ALIVE)
   socket.setTimeout(10*KEEP_ALIVE)
@@ -62,8 +63,6 @@ function socket_handler(socket) {
   socket.once('close', onSocketClose)
   socket.on('error', onSocketError)
   socket.on('timeout', onSocketTimeout)
-  command_writer(socket, TEST_MODE)
-      .then((msg)=>console.log(`running command_writer!!! => ${msg}`))
   function onSocketTimeout() {
     console.log('Connection from', remoteAddress ,'timeouted \n\tAT:', new Date())
     parser_mod.files_reset()
@@ -78,10 +77,14 @@ function socket_handler(socket) {
       console.log("parser_options??", parser_mod.parser_options)
     }
     socket.write(response_write(data))
-    console.log("\nAT:", new Date(), "\nRES: ", recent_response.toString('hex') ?? recent_response)
+    console.log("\nAT:", new Date(), "\nRES:",
+        recent_response.toString(the_vars.HEX) ?? recent_response)
+    command_writer(socket, TEST_MODE)
+        .then((msg)=>console.log(`running command_writer!!! => ${msg}`))
   }
   function onSocketClose() {
-      console.log('Communication from', remoteAddress, 'closed \n\tAT: ', new Date())
+      console.log('Communication from', remoteAddress,
+          'closed \n\tAT: ', new Date())
       parser_mod.files_reset()
   }
   function onSocketError(err) {
@@ -98,11 +101,15 @@ function response_value(data){
   /*console.log('<<--', response_any, typeof response_any)*/
   return response_any || default_response
 }
-function response_write(data, data_type='hex', options={type: 'text/plain'}){
+function response_write(
+    data, data_type=the_vars.HEX,
+    options={type: 'text/plain'}
+ ){
   let data_hex = data.toString(data_type)
   let data_log = data_hex
   if(LOG_MODE == 0){
-    let data_length = data_hex.length > LOG_MIN_LENGTH ? LOG_MIN_LENGTH : data_hex.length
+    const isLogMinLength = data_hex.length > LOG_MIN_LENGTH
+    let data_length = isLogMinLength ? LOG_MIN_LENGTH : data_hex.length
     data_log = data_hex.substring(0, data_length)
     console.log("LOG_MIN_LENGTH =>", LOG_MIN_LENGTH)
   }

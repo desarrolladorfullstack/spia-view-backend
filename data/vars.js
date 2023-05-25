@@ -8,5 +8,13 @@ module.exports = {
     'MIME_TYPES':{
         'image':"image/jpeg",
         'video_raw':"application/octet-stream"
+    },
+    'CMD':{
+        'REQUESTING': Buffer.from([142]),
+        'RESPONDING': Buffer.from([12]),
+        'TYPE':{
+            'SEND': Buffer.from([5]),
+            'RECEIVE': Buffer.from([6])
+        }
     }
 }
