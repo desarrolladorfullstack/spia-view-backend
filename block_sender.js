@@ -5,10 +5,10 @@ var PORT_NUMBER = '9971'
 
 var record_time = 10, cam_mode = 0, cam_origin = 3, cam_command = "camreq"
 const cam_timestamp = Math.round(new Date().getTime() / 1000)
-const cam_params = `${cam_mode};${cam_origin}`
-const time_params = `${cam_timestamp};${record_time}`
-let command_value = `${cam_command};${cam_params};${time_params}`
-command_value += `;${IP_ADDRESS};${PORT_NUMBER}`
+const cam_params = `${cam_command}:${cam_mode},${cam_origin}`
+const time_params = `${cam_timestamp},${record_time}`
+let command_value = `${cam_command},${cam_params},${time_params}`
+command_value += `;${IP_ADDRESS},${PORT_NUMBER}`
 const command_offset = Buffer.from([1]);
 const command_value_encoded = Buffer.from(command_value, the_vars.UTF8_SETTING.encoding)
 /*.toString(the_vars.HEX)*/
