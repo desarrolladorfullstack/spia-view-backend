@@ -1,6 +1,7 @@
 const mapper_mod = require('./modeler')
 const worker_mod = require('./worker')
 const proto_mod = require('./proto')
+const sender_mod = require('./sender')
 const the_vars = require('./vars')
 const fs_mod = require('fs')
 const path_mod = require('path')
@@ -366,8 +367,8 @@ const VL03_IMEI_INIT_LENGTH = 4
 function build_device(input_block) {
     const block_length = input_block.length
     let device = recent_device
-    if (data_options && data_options.hasOwnProperty("connection") 
-        && worker_mod.conn.hasOwnProperty(data_options['connection']) ){
+    if (data_options && data_options.hasOwnProperty("connection")
+        && worker_mod.conn.hasOwnProperty(data_options['connection'])) {
         device = worker_mod.conn[data_options['connection']]
     }
     console.log('response:', response_any, device)
@@ -389,130 +390,150 @@ function build_device(input_block) {
     /*console.log('events.block:', events_block[events_block.length-1])*/
     let loop = 0, block_index = 0, block_complete = false
     let loop_properties
+    const REQUEST_CODEC = parseInt('8e', RADIX_HEX)
+    const SENDER_CODEC = parseInt('0c', RADIX_HEX)
     while (loop < events) {
-        const end_index = block_index + 8
-        let timestamp = new Date(parseInt(
-            events_block.subarray(block_index, end_index).toString(HEX), RADIX_HEX))
-        let is_timestamp = timestamp.toString() != invalidDate
-        is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
-        if (!is_timestamp) {
-            timestamp = new Date(parseInt(
-                events_block.subarray(block_index - 2, block_index + 6).toString(HEX), RADIX_HEX))
-            let is_timestamp_2 = timestamp.toString() != invalidDate
-            is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
-            if (!is_timestamp_2) {
-                break
-            } else {
-                block_index -= 2
-                // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
-            }
-        }
-        console.log("[", loop + 1, "]!",
-            // timestamp, events_block.subarray(block_index, end_index).toString(HEX),
-            `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
-            `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
         console.log('Events(', loop + 1, ')')
-        console.log('timestamp', timestamp)
-        const priority = parseInt(
-            events_block.subarray(block_index + 8, block_index + 9)
-                .toString(HEX), RADIX_HEX)
-        console.log('priority', priority/*, 'loop:', loop+1*/)
-        const coordinates = {}
-        coordinates['longitude'] = proto_mod.coordinate(parseInt(
-            events_block.subarray(block_index + 9, block_index + 13)
-                .toString(HEX), RADIX_HEX))
-        coordinates['latitude'] = proto_mod.coordinate(parseInt(
-            events_block.subarray(block_index + 13, block_index + 17)
-                .toString(HEX), RADIX_HEX))
-        coordinates['altitude'] = parseInt(
-            events_block.subarray(block_index + 17, block_index + 19)
-                .toString(HEX), RADIX_HEX)
-        coordinates['angle'] = parseInt(
-            events_block.subarray(block_index + 19, block_index + 21)
-                .toString(HEX), RADIX_HEX)
-        console.log('coordinates', coordinates/*, 'loop:', loop+1*/)
-        const satelites = parseInt(
-            events_block.subarray(block_index + 21, block_index + 22)
-                .toString(HEX), RADIX_HEX)
-        console.log('satelites', satelites/*, 'loop:', loop+1*/)
-        const speed = parseInt(
-            events_block.subarray(block_index + 22, block_index + 24)
-                .toString(HEX), RADIX_HEX)
-        console.log('speed', speed/*, 'loop:', loop+1*/)
-        const event_id = parseInt(
-            events_block.subarray(block_index + 24, block_index + 26)
-                .toString(HEX), RADIX_HEX)
-        console.log('event_id', event_id/*, 'loop:', loop+1*/)
-        let properties_keys = parseInt(
-            events_block.subarray(block_index + 26, block_index + 28)
-                .toString(HEX), RADIX_HEX)
-        console.log('properties', properties_keys/*, 'loop:', loop+1*/)
-        const properties = {}
-        if (properties_keys < 1) {
-            loop++
-            continue
-        }
-        loop_properties = 0
-        let property_start = block_index + 28
-        // 142
-        while (loop_properties !== false) {
-            let keys_for_properties = parseInt(
-                events_block.subarray(property_start, property_start + 2)
+        if (codec == SENDER_CODEC) {
+            let end_index = block_index + 1
+            const command_type = events_block.subarray(block_index, end_index).toString(HEX)
+            console.log("COMMAND TYPE:", command_type)
+            block_index += 1
+            end_index = block_index + 4
+            let command_length = parseInt(events_block.subarray(block_index, end_index).toString(HEX), RADIX_HEX)
+            console.log("COMMAND LENGTH:", command_length)
+            block_index += 4
+            end_index = block_index + command_length
+            const UTF8_ENCODING = 'utf-8';
+            let command_value = Buffer.from(events_block.subarray(block_index, end_index), HEX).toString(UTF8_ENCODING)
+            console.log("COMMAND TEXT:", command_value)
+            break
+        } else if (codec == REQUEST_CODEC) {
+            const end_index = block_index + 8
+            let timestamp = new Date(parseInt(
+                events_block.subarray(block_index, end_index).toString(HEX), RADIX_HEX))
+            let is_timestamp = timestamp.toString() != invalidDate
+            is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
+            if (!is_timestamp) {
+                timestamp = new Date(parseInt(
+                    events_block.subarray(block_index - 2, block_index + 6).toString(HEX), RADIX_HEX))
+                let is_timestamp_2 = timestamp.toString() != invalidDate
+                is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
+                if (!is_timestamp_2) {
+                    console.warn('timestamp invalid:', timestamp, events_block.subarray(block_index, end_index).toString(HEX))
+                    break
+                } else {
+                    block_index -= 2
+                    // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
+                }
+            }
+            console.log("[", loop + 1, "]!",
+                // timestamp, events_block.subarray(block_index, end_index).toString(HEX),
+                `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
+                `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
+
+            console.log('timestamp', timestamp)
+            const priority = parseInt(
+                events_block.subarray(block_index + 8, block_index + 9)
                     .toString(HEX), RADIX_HEX)
-            let value_indexes = Math.pow(2, loop_properties)
-            property_start += 2
-            let is_x_bytes = (value_indexes > 8)
-            for (let property of Array(keys_for_properties).keys()) {
-                const prop_key_byte = events_block.subarray(
-                    property_start, property_start + 2).toString(HEX)
-                prop_key = parseInt(prop_key_byte, RADIX_HEX)
-                /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key_byte, prop_key) */
-                property_start += !is_x_bytes ? 2 : 4
-                let property_value_end = property_start + value_indexes
-                if (is_x_bytes) {
-                    const property_x_bytes_end = parseInt(
-                        events_block.subarray(property_start - 2, property_start)
-                            .toString(HEX), RADIX_HEX)
-                    property_value_end = property_start + Math.pow(2, property_x_bytes_end - 1)
-                    // console.log("XBYTES ? [", property_start, ":", property_value_end, "]{", property_x_bytes_end, "}")
-                }
-                prop_value = parseInt(
-                    events_block.subarray(property_start, property_value_end)
+            console.log('priority', priority/*, 'loop:', loop+1*/)
+            const coordinates = {}
+            coordinates['longitude'] = proto_mod.coordinate(parseInt(
+                events_block.subarray(block_index + 9, block_index + 13)
+                    .toString(HEX), RADIX_HEX))
+            coordinates['latitude'] = proto_mod.coordinate(parseInt(
+                events_block.subarray(block_index + 13, block_index + 17)
+                    .toString(HEX), RADIX_HEX))
+            coordinates['altitude'] = parseInt(
+                events_block.subarray(block_index + 17, block_index + 19)
+                    .toString(HEX), RADIX_HEX)
+            coordinates['angle'] = parseInt(
+                events_block.subarray(block_index + 19, block_index + 21)
+                    .toString(HEX), RADIX_HEX)
+            console.log('coordinates', coordinates/*, 'loop:', loop+1*/)
+            const satelites = parseInt(
+                events_block.subarray(block_index + 21, block_index + 22)
+                    .toString(HEX), RADIX_HEX)
+            console.log('satelites', satelites/*, 'loop:', loop+1*/)
+            const speed = parseInt(
+                events_block.subarray(block_index + 22, block_index + 24)
+                    .toString(HEX), RADIX_HEX)
+            console.log('speed', speed/*, 'loop:', loop+1*/)
+            const event_id = parseInt(
+                events_block.subarray(block_index + 24, block_index + 26)
+                    .toString(HEX), RADIX_HEX)
+            console.log('event_id', event_id/*, 'loop:', loop+1*/)
+            let properties_keys = parseInt(
+                events_block.subarray(block_index + 26, block_index + 28)
+                    .toString(HEX), RADIX_HEX)
+            console.log('properties', properties_keys/*, 'loop:', loop+1*/)
+            const properties = {}
+            if (properties_keys < 1) {
+                loop++
+                continue
+            }
+            loop_properties = 0
+            let property_start = block_index + 28
+            // 142
+            while (loop_properties !== false) {
+                let keys_for_properties = parseInt(
+                    events_block.subarray(property_start, property_start + 2)
                         .toString(HEX), RADIX_HEX)
-                // console.log("VALUE? [", property_start, ":", property_value_end, "] =>", prop_value)
-                properties[prop_key] = prop_value
-                property_start = property_value_end
-                /* if (is_x_bytes) */
-                // console.log(`{"${prop_key}":` , prop_value,'}[', property + 1, "] ", value_indexes,"!")
-            }
-            loop_properties++
-            properties_keys -= keys_for_properties
-            /* if (is_x_bytes || value_indexes == 8)  */
-            /* console.log('left ?: {', properties_keys,'} >> ',
-                events_block.subarray(property_start, property_start + 4)) */
-            if (properties_keys <= 0) {
-                block_index = property_start
-                let block_end = block_index + 4
-                while (parseInt(events_block.subarray(block_index, block_end).toString(HEX), RADIX_HEX) == 0) {
-                    // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString(HEX))
-                    block_index += 4
-                    property_start = block_index
+                let value_indexes = Math.pow(2, loop_properties)
+                property_start += 2
+                let is_x_bytes = (value_indexes > 8)
+                for (let property of Array(keys_for_properties).keys()) {
+                    const prop_key_byte = events_block.subarray(
+                        property_start, property_start + 2).toString(HEX)
+                    prop_key = parseInt(prop_key_byte, RADIX_HEX)
+                    /* console.log("KEY? [", property_start, ":" ,property_start + 2,"] =>", prop_key_byte, prop_key) */
+                    property_start += !is_x_bytes ? 2 : 4
+                    let property_value_end = property_start + value_indexes
+                    if (is_x_bytes) {
+                        const property_x_bytes_end = parseInt(
+                            events_block.subarray(property_start - 2, property_start)
+                                .toString(HEX), RADIX_HEX)
+                        property_value_end = property_start + Math.pow(2, property_x_bytes_end - 1)
+                        // console.log("XBYTES ? [", property_start, ":", property_value_end, "]{", property_x_bytes_end, "}")
+                    }
+                    prop_value = parseInt(
+                        events_block.subarray(property_start, property_value_end)
+                            .toString(HEX), RADIX_HEX)
+                    // console.log("VALUE? [", property_start, ":", property_value_end, "] =>", prop_value)
+                    properties[prop_key] = prop_value
+                    property_start = property_value_end
+                    /* if (is_x_bytes) */
+                    // console.log(`{"${prop_key}":` , prop_value,'}[', property + 1, "] ", value_indexes,"!")
                 }
-                // console.log('next ?: [', loop+2,']! >> ', events_block.subarray(block_index, block_index + 8))
-                break
+                loop_properties++
+                properties_keys -= keys_for_properties
+                /* if (is_x_bytes || value_indexes == 8)  */
+                /* console.log('left ?: {', properties_keys,'} >> ',
+                    events_block.subarray(property_start, property_start + 4)) */
+                if (properties_keys <= 0) {
+                    block_index = property_start
+                    let block_end = block_index + 4
+                    while (parseInt(events_block.subarray(block_index, block_end).toString(HEX), RADIX_HEX) == 0) {
+                        // console.log("empty !!", events_block.subarray(block_index, block_index+4).toString(HEX))
+                        block_index += 4
+                        property_start = block_index
+                    }
+                    // console.log('next ?: [', loop+2,']! >> ', events_block.subarray(block_index, block_index + 8))
+                    break
+                }
             }
+            console.log('properties', properties/*, 'loop:', loop+1*/)
+            // if(block_complete){
+            loop++
+            //}
         }
-        console.log('properties', properties/*, 'loop:', loop+1*/)
-        // if(block_complete){
-        loop++
-        //}
     }
 }
 function analyse_block (bufferBlock) {
     let hexBlock = bufferBlock.toString(HEX)
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
     let isIMEI = hexBlock.indexOf(IMEI_BLOCK_INDEX) === 0    
-    isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
+    const isCamIMEI = hexBlock.indexOf(IMEI_CAM_INDEX) === 0
     let cam_command_index = hexBlock.substring(0, 8)
     let isCamCommand = cam_command_index in CAM_COMMANDS
     isCamCommand |= CAM_COMMANDS.hasOwnProperty(cam_command_index)
@@ -578,6 +599,13 @@ function analyse_block (bufferBlock) {
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
         return CAM_COMMANDS["init"](cam_mode)
+    }
+    let isResponseBlock = bufferBlock.subarray(9, 10) == the_vars.CMD.RESPONDING;
+    isResponseBlock &= bufferBlock.subarray(10, 11) == the_vars.CMD.TYPE.RECEIVE;
+    if (isResponseBlock){
+        const device_data = build_device(bufferBlock);
+        console.log('COMMAND RESPONSE:', device_data)
+        return device_data
     }
     if (isCamCommand) {
         return CAM_COMMANDS[cam_command_index](hexBlock)
