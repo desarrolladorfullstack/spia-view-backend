@@ -371,7 +371,7 @@ function build_device(input_block) {
         && worker_mod.conn.hasOwnProperty(data_options['connection'])) {
         device = worker_mod.conn[data_options['connection']]
     }
-    console.log('response:', response_any, device)
+    console.log('response:', input_block, device)
     if (device == undefined) {
         console.warn('DEVICE=>undefined')
         return false
