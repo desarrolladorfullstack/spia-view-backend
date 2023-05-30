@@ -40,7 +40,7 @@ function command_writer(socket, test=true){
         }else if(typeof worker_mod.queue_commands == "array"){
           console.log("queue_commands typeof is array")
           hex_block = worker_mod.queue_commands[0]
-        }else if(typeof worker_mod.queue_commands == "Buffer"){
+        }else if(typeof worker_mod.queue_commands != "string"){
           console.log("queue_commands typeof is Buffer")
           hex_block = worker_mod.queue_commands
         }
