@@ -13,12 +13,12 @@ module.exports = {
 const QUEUE_COMMANDS_FILE_PATH = '';
 
 function load() {
-    fs_mod.readdir(QUEUE_COMMANDS_FILE_PATH, (err, files) => {
+    /*fs_mod.readdir(QUEUE_COMMANDS_FILE_PATH, (err, files) => {
         files.forEach(file => {
             const media_file = path_mod.resolve(QUEUE_COMMANDS_FILE_PATH, file)
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
-            if (!isDirectory) {
-                let queued_file_path = QUEUE_COMMANDS_FILE_PATH+file
+            if (!isDirectory) {*/
+                let queued_file_path = QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE
                 let reader_options = the_vars.UTF8_SETTING
                 fs_mod.readFile(queued_file_path, reader_options, function(err, data){
                     let queued_buffered_command = Buffer.from(data, the_vars.HEX)
@@ -26,9 +26,10 @@ function load() {
                         add_queue_commands(queued_buffered_command, false)
                     }
                 })
-            }
+
+    /*        }
         })
-    })
+    })*/
     return this
 }
 
@@ -52,6 +53,7 @@ function add_queue_commands(commands, update=true){
     if (update){
         save(commands)
     }
+    return this
 }
 
 function handled_error_fs(error) {

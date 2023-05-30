@@ -30,9 +30,8 @@ var KEEP_ALIVE = 360000
 const port = PORT_NUMBER ?? 80
 function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
-    worker_mod.load()
-    console.log("check queue_commands??:", worker_mod?.queue_commands)
-    if (worker_mod.queue_commands){
+    console.log("check queue_commands??:", worker_mod.load()?.queue_commands)
+    if (worker_mod.load().queue_commands){
       let hex_block = false
       if (worker_mod.queue_commands?.length > 0){
         if (typeof worker_mod.queue_commands == "object"){
