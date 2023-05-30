@@ -34,9 +34,14 @@ function command_writer(socket, test=true){
       let hex_block = false
       if (worker_mod.queue_commands?.length > 0){
         if (typeof worker_mod.queue_commands == "object"){
+          console.log("queue_commands typeof is object")
           hex_block = Object.values(worker_mod.queue_commands)[0]
         }else if(typeof worker_mod.queue_commands == "array"){
+          console.log("queue_commands typeof is array")
           hex_block = worker_mod.queue_commands[0]
+        }else if(typeof worker_mod.queue_commands == "Buffer"){
+          console.log("queue_commands typeof is Buffer")
+          hex_block = worker_mod.queue_commands
         }
       }
       const command = sender_mod.sendCommand(hex_block, test)

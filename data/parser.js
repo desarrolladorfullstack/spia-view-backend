@@ -391,7 +391,7 @@ function build_device(input_block) {
     console.log('codec:', Buffer.from([codec]), 'crc:', crc)
     /* device.crc = crc */
     let events_block = input_block.subarray(10, block_length - 5)
-    /*console.log('events.block:', events_block[events_block.length-1])*/
+    console.log('events.block:', events_block[events_block.length-1])
     let loop = 0, block_index = 0, block_complete = false
     let loop_properties
     const REQUEST_CODEC = parseInt('8e', RADIX_HEX)
@@ -620,7 +620,15 @@ function analyse_block (bufferBlock) {
         const response_value = build_device(bufferBlock)
         console.log('COMMAND RESPONSE:', response_value)
         if (response_value.indexOf(CAMERA_NOT_PRESENT) > -1) {
-            return sender_mod.setdigout(DIGOUT_ON,DIGOUT_TIMEOUT)
+           if (worker_mod.queue_commands){
+               const add_queue_commands = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
+               if (typeof worker_mod.queue_commands == 'array'){
+                   add_queue_commands.concat(worker_mod.queue_commands)
+               }else{
+                   add_queue_commands.concat([worker_mod.queue_commands])
+               }
+               worker_mod.queue_commands = add_queue_commands
+           }
         }
     }
     if (isCamCommand) {
