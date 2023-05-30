@@ -404,7 +404,7 @@ function build_device(input_block) {
             console.log("COMMAND LENGTH:", command_length)
             block_index += 4
             end_index = block_index + command_length
-            const UTF8_ENCODING = 'utf-8';
+            const UTF8_ENCODING = 'utf-8'
             let command_value = Buffer.from(events_block.subarray(block_index, end_index), HEX).toString(UTF8_ENCODING)
             console.log("COMMAND TEXT:", command_value)
             break
@@ -547,7 +547,7 @@ function analyse_block (bufferBlock) {
     /** BEGIN: VL03 */
     let isVL03 = VL03_PACKETS.includes(hexBlock.substring(0, 4))
     if (isVL03){        
-        isIMEI = /* bufferBlock[3] === 1 ||  */parseInt(bufferBlock[3]) === 1;
+        isIMEI = /* bufferBlock[3] === 1 ||  */parseInt(bufferBlock[3]) === 1
         console.log("CMD VL03?", bufferBlock[3], isIMEI.toString())  
         if(isIMEI){
             isIMEI = bufferBlock.subarray(VL03_IMEI_INIT_LENGTH,VL03_IMEI_INIT_LENGTH+8)
@@ -558,7 +558,7 @@ function analyse_block (bufferBlock) {
     }
     /** END: VL03 */
     if (isIMEI) {
-        const imei_id = bufferBlock.subarray(IMEI_LENGTH_BYTES, IMEI_BLOCK_LENGTH);
+        const imei_id = bufferBlock.subarray(IMEI_LENGTH_BYTES, IMEI_BLOCK_LENGTH)
         recent_device = new mapper_mod.DeviceData(imei_id)
         console.log("Init device:", recent_device.toString())
         /*000f383630383936303530373934383538*/
@@ -600,11 +600,11 @@ function analyse_block (bufferBlock) {
         console.log(recent_device.toString())
         return CAM_COMMANDS["init"](cam_mode)
     }
-    let isResponseBlock = bufferBlock.subarray(9, 10) == the_vars.CMD.RESPONDING;
-    isResponseBlock &= bufferBlock.subarray(10, 11) == the_vars.CMD.TYPE.RECEIVE;
-    console.log("isResponseBlock??:", bufferBlock.subarray(9, 10), bufferBlock.subarray(10, 11))
+    let isResponseBlock = bufferBlock.subarray(8, 9) == the_vars.CMD.RESPONDING
+    isResponseBlock &= bufferBlock.subarray(9, 10) == the_vars.CMD.TYPE.RECEIVE
+    console.log("isResponseBlock??:", bufferBlock.subarray(8, 9), bufferBlock.subarray(9, 10))
     if (isResponseBlock){
-        const device_data = build_device(bufferBlock);
+        const device_data = build_device(bufferBlock)
         console.log('COMMAND RESPONSE:', device_data)
         return device_data
     }
@@ -626,7 +626,7 @@ function read_block (bufferBlock) {
                     json = json.replace('"_id"','"imei"')
                     console.log("Add connection by options:", 
                         data_options['connection'],
-                        "<pre>",json,"</pre>");
+                        "<pre>",json,"</pre>")
                 }
                 if(block_success !== true){
                     let is_event_block = block_success == bufferBlock[9]
