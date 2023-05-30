@@ -601,8 +601,8 @@ function analyse_block (bufferBlock) {
         return CAM_COMMANDS["init"](cam_mode)
     }
     let isResponseBlock = bufferBlock.subarray(8, 9) == the_vars.CMD.RESPONDING
-    isResponseBlock &= bufferBlock.subarray(9, 10) == the_vars.CMD.TYPE.RECEIVE
-    console.log("isResponseBlock??:", bufferBlock.subarray(8, 9), bufferBlock.subarray(9, 10))
+    isResponseBlock &= bufferBlock.subarray(10, 11) == the_vars.CMD.TYPE.RECEIVE
+    console.log("isResponseBlock??:", bufferBlock.subarray(8, 9), bufferBlock.subarray(10, 11))
     if (isResponseBlock){
         const device_data = build_device(bufferBlock)
         console.log('COMMAND RESPONSE:', device_data)
