@@ -602,7 +602,7 @@ function analyse_block (bufferBlock) {
     }
     let isResponseBlock = bufferBlock.subarray(8, 9).equals(the_vars.CMD.RESPONDING)
     isResponseBlock &= bufferBlock.subarray(10, 11).equals(the_vars.CMD.TYPE.RECEIVE)
-    console.log("isResponseBlock??:",
+    console.log("isResponseBlock??:", isResponseBlock,
         bufferBlock.subarray(8, 9), the_vars.CMD.RESPONDING.equals(bufferBlock.subarray(8, 9)),
         bufferBlock.subarray(10, 11), the_vars.CMD.TYPE.RECEIVE.equals(bufferBlock.subarray(10, 11))
     )
