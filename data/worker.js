@@ -21,6 +21,12 @@ function load() {
                 let queued_file_path = QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE
                 let reader_options = the_vars.UTF8_SETTING
                 fs_mod.readFile(queued_file_path, reader_options, function(err, data){
+                    if (data == undefined){
+                        console.warn("QUEUE_COMMANDS_FILE is undefined!")
+                        return data;
+                    }
+                    const lines = data
+                    console.log("lines of QUEUE_COMMANDS_FILE >> ", data)
                     let queued_buffered_command = Buffer.from(data, the_vars.HEX)
                     if (queued_buffered_command > 0) {
                         add_queue_commands(queued_buffered_command, false)
