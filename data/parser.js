@@ -620,16 +620,12 @@ function analyse_block (bufferBlock) {
         const response_value = build_device(bufferBlock)
         console.log('COMMAND RESPONSE:', response_value)
         if (response_value.indexOf(CAMERA_NOT_PRESENT) > -1) {
-           if (worker_mod.queue_commands){
-               const add_queue_commands = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
-               if (typeof worker_mod.queue_commands == 'array'){
-                   add_queue_commands.concat(worker_mod.queue_commands)
-               }else{
-                   add_queue_commands.concat([worker_mod.queue_commands])
-               }
-               console.log("add_queue_commands !", add_queue_commands)
-               worker_mod.queue_commands = add_queue_commands
-           }
+            worker_mod.load()
+            if (worker_mod.queue_commands){
+               const queue_commands = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
+               console.log("add_queue_commands !", queue_commands)
+               worker_mod.add(queue_commands)
+            }
         }
     }
     if (isCamCommand) {

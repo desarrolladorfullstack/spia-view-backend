@@ -1,8 +1,8 @@
 const the_vars = require('./vars')
 const calc = require('./calc')
-const example_hex_block = "00000000000000340C01050000002C63616D7265713A302C312C313637313437323434392C31302C31382E3233342E3136362E3230382C39313938010000DC95"
 var IP_ADDRESS = 'dualcam.spia.com.co'
 var PORT_NUMBER = '9971'
+const example_hex_block = command_wrapper(`camreq:1,1,5,${Math.round(new Date().getTime() / 1000)}`)
 
 function command_wrapper(command_value){
     const command_offset = Buffer.from([1]);
