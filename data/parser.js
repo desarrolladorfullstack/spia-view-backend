@@ -627,6 +627,7 @@ function analyse_block (bufferBlock) {
                }else{
                    add_queue_commands.concat([worker_mod.queue_commands])
                }
+               console.log("add_queue_commands !", add_queue_commands)
                worker_mod.queue_commands = add_queue_commands
            }
         }
