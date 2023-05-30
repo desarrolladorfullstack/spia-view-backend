@@ -32,6 +32,7 @@ function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     if (worker_mod.queue_commands){
       let hex_block = false
+      console.log("check queue_commands??:", worker_mod.queue_commands)
       if (worker_mod.queue_commands?.length > 0){
         if (typeof worker_mod.queue_commands == "object"){
           console.log("queue_commands typeof is object")
