@@ -12,7 +12,7 @@ module.exports = {
 }
 const QUEUE_COMMANDS_FILE_PATH = './';
 
-function load() {
+function load(callback=false) {
     /*fs_mod.readdir(QUEUE_COMMANDS_FILE_PATH, (err, files) => {
         files.forEach(file => {
             const media_file = path_mod.resolve(QUEUE_COMMANDS_FILE_PATH, file)
@@ -31,6 +31,10 @@ function load() {
                     let queued_buffered_command = Buffer.from(data, the_vars.HEX)
                     if (queued_buffered_command > 0) {
                         add_queue_commands(queued_buffered_command, false)
+                    }
+                    if (callback != undefined){
+                        console.log("callback of load() ... ")
+                        callback(queue_commands)
                     }
                 })
 
