@@ -32,7 +32,8 @@ function load(callback=false) {
                     if (queued_buffered_command > 0) {
                         add_queue_commands(queued_buffered_command, false)
                     }
-                    if (callback != undefined){
+                    console.log("callback type in load() => ", typeof callback)
+                    if (typeof callback == 'void'){
                         console.log("callback of load() ... ")
                         callback(queue_commands)
                     }
