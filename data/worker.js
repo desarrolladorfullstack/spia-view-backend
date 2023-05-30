@@ -47,12 +47,12 @@ function save(commands, create=false) {
     }
     if (!create){
         fs_mod.appendFileSync(
-            QUEUE_COMMANDS_FILE,
+            QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,
             data_hex,
             (err) => handled_error_fs(err))
     }else{
         fs_mod.writeFileSync(
-            QUEUE_COMMANDS_FILE,
+            QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,
             data_hex,
             (err) => handled_error_fs(err))
     }
