@@ -10,7 +10,7 @@ module.exports = {
     "add": add_queue_commands,
     "queue_commands":queue_commands
 }
-const QUEUE_COMMANDS_FILE_PATH = '';
+const QUEUE_COMMANDS_FILE_PATH = './';
 
 function load() {
     /*fs_mod.readdir(QUEUE_COMMANDS_FILE_PATH, (err, files) => {
