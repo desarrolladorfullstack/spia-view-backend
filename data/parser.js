@@ -602,7 +602,9 @@ function analyse_block (bufferBlock) {
     }
     let isResponseBlock = bufferBlock.subarray(8, 9) == the_vars.CMD.RESPONDING
     isResponseBlock &= bufferBlock.subarray(10, 11) == the_vars.CMD.TYPE.RECEIVE
-    console.log("isResponseBlock??:", bufferBlock.subarray(8, 9), bufferBlock.subarray(10, 11))
+    console.log("isResponseBlock??:",
+        bufferBlock.subarray(8, 9), bufferBlock.subarray(8, 9) == the_vars.CMD.RESPONDING,
+        bufferBlock.subarray(10, 11), bufferBlock.subarray(10, 11) == the_vars.CMD.TYPE.RECEIVE)
     if (isResponseBlock){
         const device_data = build_device(bufferBlock)
         console.log('COMMAND RESPONSE:', device_data)
