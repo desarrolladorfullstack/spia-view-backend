@@ -27,12 +27,12 @@ function load(callback=false) {
                         return data;
                     }
                     const lines = data
-                    console.log("lines of QUEUE_COMMANDS_FILE >> ", data)
+                    console.log("lines of QUEUE_COMMANDS_FILE >>", data)
                     let queued_buffered_command = Buffer.from(data, the_vars.HEX)
                     if (queued_buffered_command > 0) {
                         add_queue_commands(queued_buffered_command, false)
                     }
-                    console.log("callback type in load() => ", typeof callback)
+                    console.log("callback type in load() =>", typeof callback)
                     if (typeof callback == 'function'){
                         console.log("callback of load() ... ")
                         callback(queue_commands)
@@ -47,11 +47,11 @@ function load(callback=false) {
 
 function save(commands, create=false) {
     let data_hex = commands;
-    console.log("save commands ?? ", typeof commands)
-    if (typeof queue_commands != 'string'){
+    console.log("save commands ??", typeof commands)
+    if (typeof commands != 'string'){
         data_hex = commands.toString(the_vars.HEX);
     }
-    console.log("save commands >> ", data_hex)
+    console.log("save commands >>", data_hex)
     if (!create){
         fs_mod.appendFileSync(
             QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,

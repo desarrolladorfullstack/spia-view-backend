@@ -602,7 +602,7 @@ function analyse_block (bufferBlock) {
             }
             define_hex_file_types_for_records_flush()
         } catch (analyse_block_e) {
-            console.error("MOD::analyse_block[ERR] ", analyse_block_e)
+            console.error("MOD::analyse_block[ERR]", analyse_block_e)
         }
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
@@ -665,9 +665,9 @@ function read_block (bufferBlock) {
             }
         }
         let data_read_log = block_success ?? Buffer.from(block_success, 16)
-        console.log("MOD::read_block-> ", data_read_log/* , typeof block_success */)
+        console.log("MOD::read_block->", data_read_log/* , typeof block_success */)
     } catch (e) {
-        console.error("MOD::read_block[ERR] ", e)
+        console.error("MOD::read_block[ERR]", e)
     }
     /*console.log("MOD::read_block?? ", typeof block_success)*/
     return block_success

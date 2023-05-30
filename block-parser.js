@@ -114,7 +114,7 @@ console.log('response:', response_any/*, device*/)
 let default_imei = '383630383936303530373934383538'
 if (device == undefined) {
     device = new mapper_mod.DeviceData(Buffer.from(default_imei, encoding))
-    console.log("New DEVICE: ", device.toString())
+    console.log("New DEVICE:", device.toString())
 }
 const codec = input_block[8]
 const events = input_block[9]
