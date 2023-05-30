@@ -23,6 +23,7 @@ function load() {
                 fs_mod.readFile(queued_file_path, reader_options, function(err, data){
                     if (data == undefined){
                         console.warn("QUEUE_COMMANDS_FILE is undefined!")
+                        save("", true)
                         return data;
                     }
                     const lines = data
@@ -39,15 +40,22 @@ function load() {
     return this
 }
 
-function save(commands) {
+function save(commands, create=false) {
     let data_hex = commands;
     if (typeof queue_commands == 'Buffer'){
         data_hex = commands.toString(the_vars.HEX);
     }
-    fs_mod.appendFileSync(
-        QUEUE_COMMANDS_FILE,
-        data_hex,
-        (err) => handled_error_fs(err))
+    if (!create){
+        fs_mod.appendFileSync(
+            QUEUE_COMMANDS_FILE,
+            data_hex,
+            (err) => handled_error_fs(err))
+    }else{
+        fs_mod.writeFileSync(
+            QUEUE_COMMANDS_FILE,
+            data_hex,
+            (err) => handled_error_fs(err))
+    }
 }
 function add_queue_commands(commands, update=true){
     if (typeof queue_commands == 'array'){
