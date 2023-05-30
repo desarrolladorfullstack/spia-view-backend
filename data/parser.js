@@ -593,18 +593,19 @@ function analyse_block (bufferBlock) {
                 }
             }
             define_hex_file_types_for_records_flush()
-        } catch (e) {
-            console.error("MOD::analyse_block[ERR] ", e)
+        } catch (analyse_block_e) {
+            console.error("MOD::analyse_block[ERR] ", analyse_block_e)
         }
         recent_device = new mapper_mod.DeviceData(bufferBlock, 2)
         console.log(recent_device.toString())
         return CAM_COMMANDS["init"](cam_mode)
     }
-    let isResponseBlock = bufferBlock.subarray(8, 9) == the_vars.CMD.RESPONDING
-    isResponseBlock &= bufferBlock.subarray(10, 11) == the_vars.CMD.TYPE.RECEIVE
+    let isResponseBlock = bufferBlock.subarray(8, 9).equals(the_vars.CMD.RESPONDING)
+    isResponseBlock &= bufferBlock.subarray(10, 11).equals(the_vars.CMD.TYPE.RECEIVE)
     console.log("isResponseBlock??:",
-        bufferBlock.subarray(8, 9), bufferBlock.subarray(8, 9) == the_vars.CMD.RESPONDING,
-        bufferBlock.subarray(10, 11), bufferBlock.subarray(10, 11) == the_vars.CMD.TYPE.RECEIVE)
+        bufferBlock.subarray(8, 9), the_vars.CMD.RESPONDING.equals(bufferBlock.subarray(8, 9)),
+        bufferBlock.subarray(10, 11), the_vars.CMD.TYPE.RECEIVE.equals(bufferBlock.subarray(10, 11))
+    )
     if (isResponseBlock){
         const device_data = build_device(bufferBlock)
         console.log('COMMAND RESPONSE:', device_data)
