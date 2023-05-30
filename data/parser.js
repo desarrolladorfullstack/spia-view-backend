@@ -19,6 +19,9 @@ const invalidDate = the_vars.INVALID['date']
 var IMEI_BLOCK_INDEX = '000f'
 var IMEI_CAM_INDEX = '00000005'
 var CAM_INPUT_ERROR = "0005000400000011"
+var CAMERA_NOT_PRESENT = 'Camera not present'
+var DIGOUT_ON = 1
+var DIGOUT_TIMEOUT = 600
 var RESUME_CAM_COMMAND = Buffer.from(['00', '02'])
 var FILE_REQ_CAM_COMMAND = Buffer.from(['00', '08'])
 var REPEAT_INIT_CAM_COMMAND = Buffer.from(['00', '09'])
@@ -371,11 +374,12 @@ function build_device(input_block) {
         && worker_mod.conn.hasOwnProperty(data_options['connection'])) {
         device = worker_mod.conn[data_options['connection']]
     }
-    console.log('response:', input_block, device)
+    console.log('build_device->response:', input_block)
     if (device == undefined) {
         console.warn('DEVICE=>undefined')
         return false
     }
+    console.log('build_device->device:', device)
     const codec = input_block[8]
     /* device.codec = codec */
     const events = input_block[9]
@@ -392,6 +396,7 @@ function build_device(input_block) {
     let loop_properties
     const REQUEST_CODEC = parseInt('8e', RADIX_HEX)
     const SENDER_CODEC = parseInt('0c', RADIX_HEX)
+    let result = undefined
     while (loop < events) {
         console.log('Events(', loop + 1, ')')
         if (codec == SENDER_CODEC) {
@@ -407,6 +412,7 @@ function build_device(input_block) {
             const UTF8_ENCODING = 'utf-8'
             let command_value = Buffer.from(events_block.subarray(block_index, end_index), HEX).toString(UTF8_ENCODING)
             console.log("COMMAND TEXT:", command_value)
+            result = command_value
             break
         } else if (codec == REQUEST_CODEC) {
             const end_index = block_index + 8
@@ -528,7 +534,9 @@ function build_device(input_block) {
             //}
         }
     }
+    return result
 }
+
 function analyse_block (bufferBlock) {
     let hexBlock = bufferBlock.toString(HEX)
     /* console.log("MOD::analyse_block? ", typeof hexBlock) */
@@ -609,9 +617,11 @@ function analyse_block (bufferBlock) {
     console.log("isResponseBlock?(2)?:", isResponseBlock,
         bufferBlock.subarray(10, 11), the_vars.CMD.TYPE.RECEIVE.equals(bufferBlock.subarray(10, 11)) )
     if (isResponseBlock){
-        const device_data = build_device(bufferBlock)
-        console.log('COMMAND RESPONSE:', device_data)
-        return device_data
+        const response_value = build_device(bufferBlock)
+        console.log('COMMAND RESPONSE:', response_value)
+        if (response_value.indexOf(CAMERA_NOT_PRESENT) > -1) {
+            return sender_mod.setdigout(DIGOUT_ON,DIGOUT_TIMEOUT)
+        }
     }
     if (isCamCommand) {
         return CAM_COMMANDS[cam_command_index](hexBlock)
