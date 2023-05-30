@@ -47,9 +47,11 @@ function load(callback=false) {
 
 function save(commands, create=false) {
     let data_hex = commands;
-    if (typeof queue_commands == 'Buffer'){
+    console.log("save commands ?? ", typeof commands)
+    if (typeof queue_commands != 'string'){
         data_hex = commands.toString(the_vars.HEX);
     }
+
     if (!create){
         fs_mod.appendFileSync(
             QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,
