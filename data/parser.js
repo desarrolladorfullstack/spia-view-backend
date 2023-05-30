@@ -620,8 +620,8 @@ function analyse_block (bufferBlock) {
         const response_value = build_device(bufferBlock)
         console.log('COMMAND RESPONSE:', response_value)
         if (response_value.indexOf(CAMERA_NOT_PRESENT) > -1) {
-            worker_mod.load((result)=>{
-                if (result){
+            worker_mod.load(function (result) {
+                if (result) {
                     const queue_commands = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
                     console.log("add_queue_commands !", queue_commands)
                     worker_mod.add(queue_commands)
