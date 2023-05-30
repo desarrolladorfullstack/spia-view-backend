@@ -30,29 +30,31 @@ var KEEP_ALIVE = 360000
 const port = PORT_NUMBER ?? 80
 function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
-    console.log("check queue_commands??:", worker_mod.load()?.queue_commands)
-    if (worker_mod.load().queue_commands){
-      let hex_block = false
-      if (worker_mod.queue_commands?.length > 0){
-        if (typeof worker_mod.queue_commands == "object"){
-          console.log("queue_commands typeof is object")
-          hex_block = Object.values(worker_mod.queue_commands)[0]
-        }else if(typeof worker_mod.queue_commands == "array"){
-          console.log("queue_commands typeof is array")
-          hex_block = worker_mod.queue_commands[0]
-        }else if(typeof worker_mod.queue_commands != "string"){
-          console.log("queue_commands typeof is Buffer")
-          hex_block = worker_mod.queue_commands
+    worker_mod.load(function(){
+      console.log("check queue_commands??:", worker_mod?.queue_commands)
+      if (worker_mod.load().queue_commands){
+        let hex_block = false
+        if (worker_mod.queue_commands?.length > 0){
+          if (typeof worker_mod.queue_commands == "object"){
+            console.log("queue_commands typeof is object")
+            hex_block = Object.values(worker_mod.queue_commands)[0]
+          }else if(typeof worker_mod.queue_commands == "array"){
+            console.log("queue_commands typeof is array")
+            hex_block = worker_mod.queue_commands[0]
+          }else if(typeof worker_mod.queue_commands != "string"){
+            console.log("queue_commands typeof is Buffer")
+            hex_block = worker_mod.queue_commands
+          }
         }
+        const command = sender_mod.sendCommand(hex_block, test)
+        console.log('SEND COMMAND:', command)
+        socket.write(command)
+        if (test){
+          worker_mod.queue_commands = false
+        }
+        resolve(command)
       }
-      const command = sender_mod.sendCommand(hex_block, test)
-      console.log('SEND COMMAND:', command)
-      socket.write(command) 
-      if (test){
-        worker_mod.queue_commands = false
-      }
-      resolve(command)      
-    }
+    })
   }).then((success)=>{
     console.log("CMD:", success.toString(the_vars.HEX) ?? success)
     return command_writer(socket, false)

@@ -51,7 +51,7 @@ function save(commands, create=false) {
     if (typeof queue_commands != 'string'){
         data_hex = commands.toString(the_vars.HEX);
     }
-
+    console.log("save commands >> ", data_hex)
     if (!create){
         fs_mod.appendFileSync(
             QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,
