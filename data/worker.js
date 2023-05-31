@@ -50,17 +50,18 @@ function save(commands, create=false) {
     console.log("save commands ??", typeof commands)
     if (typeof commands != 'string'){
         data_hex = commands.toString(the_vars.HEX);
+        console.log("data_hex >>", `${data_hex}`, data_hex)
     }
-    console.log("save commands >>", data_hex, typeof data_hex)
+    console.log("save commands >>", `${data_hex}`, typeof data_hex)
     if (!create){
         fs_mod.appendFileSync(
             QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,
-            data_hex,
+            `${data_hex}`,
             (err) => handled_error_fs(err))
     }else{
         fs_mod.writeFileSync(
             QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,
-            data_hex,
+            `${data_hex}`,
             (err) => handled_error_fs(err))
     }
 }
