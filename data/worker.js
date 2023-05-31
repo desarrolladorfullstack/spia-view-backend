@@ -69,11 +69,11 @@ function save(commands, create=false) {
             save(command, create)
         }
         return;
-    }else if (commands.constructor.name === 'String'){
+    }else if (commands.constructor.name === 'Buffer'){
         data_hex = commands.toString(the_vars.HEX);
         console.log("data_hex >>", `${data_hex}`, data_hex)
     }
-    console.log("save commands >>", `${data_hex}`, data_hex.constructor.name)
+    console.log("save commands >>", `[${data_hex}]`, data_hex.constructor.name)
     if (!create){
         fs_mod.appendFileSync(
             QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,
