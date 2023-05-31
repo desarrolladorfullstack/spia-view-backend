@@ -50,7 +50,9 @@ function load(callback=false) {
 function save(commands, create=false) {
     let data_hex = commands;
     console.log("save commands ??", typeof commands)
-    if (typeof commands != 'string'){
+    if (typeof commands == 'boolean'){
+        data_hex = commands.toString()
+    }else if (typeof commands != 'string'){
         data_hex = commands.toString(the_vars.HEX);
         console.log("data_hex >>", `${data_hex}`, data_hex)
     }
