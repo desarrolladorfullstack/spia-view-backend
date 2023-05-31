@@ -51,14 +51,18 @@ function command_writer(socket, test=true){
             hex_block = worker_mod.queue_commands
           }
         }
-        console.log('command_writer TEST:', test)
-        const command = sender_mod.sendCommand(hex_block, test)
-        console.log('SEND COMMAND:', command)
-        socket.write(command)
-        if (test){
-          worker_mod.queue_commands = false
+        if(test){
+          console.log('command_writer TEST:', test)
         }
-        resolve(command)
+        const command = sender_mod.sendCommand(hex_block, test)
+        if(command) {
+          console.log('SEND COMMAND:', command)
+          socket.write(command)
+          if (test) {
+            worker_mod.queue_commands = false
+          }
+          resolve(command)
+        }
       }
     })
   }).then((success)=>{
