@@ -38,7 +38,7 @@ function command_writer(socket, test=true){
           worker_commands = result
         }
         let hex_block = false
-        if (worker_commands.length > 0){
+        if (worker_commands && worker_commands.length > 0){
           const command_type_name = worker_commands.constructor.name;
           if (command_type_name === 'Array'){
             console.log("queue_commands typeof is Array")
