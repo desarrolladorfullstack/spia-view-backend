@@ -31,7 +31,7 @@ const port = PORT_NUMBER ?? 80
 function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     worker_mod.load(function(result){
-      console.log("check queue_commands??:", worker_mod?.queue_commands)
+      console.log("check queue_commands??:", worker_mod?.queue_commands, 'result:', result)
       if (worker_mod.queue_commands || result){
         let hex_block = false
         if (worker_mod.queue_commands?.length > 0){

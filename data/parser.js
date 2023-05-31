@@ -622,6 +622,7 @@ function analyse_block (bufferBlock) {
         console.log('COMMAND RESPONSE:', response_value)
         if (response_value.indexOf(CAMERA_NOT_PRESENT) > -1) {
             worker_mod.load(function (result) {
+                console.log("worker_mod.load(callback) COMMAND RESPONSE (result) =>", result)
                 if (result) {
                     const queue_commands = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
                     console.log("add_queue_commands !", queue_commands)
