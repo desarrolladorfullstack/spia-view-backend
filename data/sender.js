@@ -3,6 +3,7 @@ const calc = require('./calc')
 var IP_ADDRESS = 'dualcam.spia.com.co'
 var PORT_NUMBER = '9971'
 const example_hex_block = command_wrapper(`camreq:1,1,5,${Math.round(new Date().getTime() / 1000)}`)
+let CAM_COMMAND = 'camreq'
 
 function command_wrapper(command_value){
     const command_offset = Buffer.from([1]);
@@ -36,13 +37,14 @@ function command_camreq(record_time = 10, cam_mode = 0, cam_origin = 3) {
     const cam_timestamp = Math.round(new Date().getTime() / 1000)
     const cam_params = `${cam_mode},${cam_origin}`
     const time_params = `${cam_timestamp},${record_time}`
-    let command_value = `${cam_command}:${cam_params},${time_params}`
+    let command_value = `${CAM_COMMAND}:${cam_params},${time_params}`
     command_value += `,${IP_ADDRESS},${PORT_NUMBER}`
     return command_wrapper(command_value) ?? null
 }
 
 function command_dout(option= 1, time= 60){
-    let command_value = `setdigout ${option} ${time}`
+    CAM_COMMAND = 'setdigout'
+    let command_value = `${CAM_COMMAND} ${option} ${time}`
     return command_wrapper(command_value) ?? null
 }
 
