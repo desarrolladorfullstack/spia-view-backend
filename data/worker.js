@@ -19,7 +19,8 @@ function load(callback=false) {
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
             if (!isDirectory) {*/
                 let queued_file_path = QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE
-                let reader_options = the_vars.UTF8_SETTING
+                let reader_options = {}
+                reader_options = the_vars.UTF8_SETTING
                 fs_mod.readFile(queued_file_path, reader_options, function(err, data){
                     if (data == undefined){
                         console.warn("QUEUE_COMMANDS_FILE is undefined!")
@@ -64,7 +65,7 @@ function save(commands, create=false) {
     if (typeof commands == 'boolean'){
         data_hex = commands.toString()
     }else if (typeof commands != 'string'){
-        data_hex = commands.toString(the_vars.HEX);
+        data_hex = Buffer.from(commands, the_vars.UTF8_SETTING.encoding).toString(the_vars.HEX);
         console.log("data_hex >>", `${data_hex}`, data_hex)
     }
     console.log("save commands >>", `${data_hex}`, typeof data_hex)
