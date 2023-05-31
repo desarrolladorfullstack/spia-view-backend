@@ -70,7 +70,8 @@ function save(commands, create=false) {
     }
 }
 function add_queue_commands(commands, update=true){
-    if (typeof queue_commands == 'array'){
+    console.log("add_queue_commands:", commands, "update:", update)
+    if (typeof queue_commands == 'object' && Object.keys(queue_commands).includes("0")){
         queue_commands.concat(commands)
     }else{
         queue_commands = [queue_commands]
