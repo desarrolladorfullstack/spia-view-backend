@@ -32,7 +32,7 @@ function command_wrapper(command_value){
     the_command = Buffer.concat([Buffer.alloc(4), the_command_size, the_command])
     return the_command
 }
-function test_dualcam_command(record_time = 10, cam_mode = 0, cam_origin = 3, cam_command = "camreq") {
+function command_camreq(record_time = 10, cam_mode = 0, cam_origin = 3) {
     const cam_timestamp = Math.round(new Date().getTime() / 1000)
     const cam_params = `${cam_mode},${cam_origin}`
     const time_params = `${cam_timestamp},${record_time}`
@@ -48,7 +48,7 @@ function command_dout(option= 1, time= 60){
 
 function sendCommand(hex_block=false, test=false) {
     if (!hex_block && test){
-        hex_block = /*(test ? */test_dualcam_command() /*: command_dout(1, 300))*/
+        hex_block = /*(test ? */command_camreq() /*: command_dout(1, 300))*/
             ?? Buffer.from(example_hex_block, the_vars.HEX)
     }else if (typeof hex_block == 'string'){
         Buffer.from(hex_block, the_vars.HEX)
@@ -58,5 +58,6 @@ function sendCommand(hex_block=false, test=false) {
 }
 module.exports = {
     "sendCommand":sendCommand,
-    "setdigout":command_dout
+    "setdigout":command_dout,
+    "camreq":command_camreq
 }
