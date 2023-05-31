@@ -1,5 +1,6 @@
 
 module.exports = {
+    TIMEZONE_LOCAL:'America/Bogota',
     'HEX':'hex',
     'RADIX_HEX':16,
     'BYTE_ZERO':0x0000,

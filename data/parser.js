@@ -415,6 +415,7 @@ function build_device(input_block) {
             result = command_value
             break
         } else if (codec == REQUEST_CODEC) {
+            process.env.TZ = the_vars.TIMEZONE_LOCAL
             const end_index = block_index + 8
             let timestamp = new Date(parseInt(
                 events_block.subarray(block_index, end_index).toString(HEX), RADIX_HEX))
@@ -434,7 +435,7 @@ function build_device(input_block) {
                 }
             }
             console.log("[", loop + 1, "]!",
-                // timestamp, events_block.subarray(block_index, end_index).toString(HEX),
+                 timestamp, events_block.subarray(block_index, end_index).toString(HEX),
                 `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
                 `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
 
