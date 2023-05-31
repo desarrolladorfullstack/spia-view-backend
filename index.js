@@ -32,7 +32,7 @@ function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     worker_mod.load(function(result){
       console.log("check queue_commands??:", worker_mod?.queue_commands, 'result:', result)
-      if (worker_mod?.queue_commands || result){
+      if (worker_mod?.queue_commands !== undefined || result){
         let worker_commands = worker_mod?.queue_commands
         if ((worker_commands === undefined || !worker_commands) && result){
           worker_commands = result
