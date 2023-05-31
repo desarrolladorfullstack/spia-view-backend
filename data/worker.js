@@ -33,6 +33,9 @@ function load(callback=false) {
                         `=> ${typeof queued_buffered_command}` )
                     if (queued_buffered_command.length > 0) {
                         add_queue_commands(queued_buffered_command, false)
+                    }else if (lines.length <= 0){
+                        queue_commands = false
+                        console.log("lines 0 =>", queue_commands)
                     }
                     console.log("callback type in load() =>", typeof callback)
                     if (typeof callback == 'function'){
