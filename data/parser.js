@@ -456,7 +456,7 @@ function build_device(input_block) {
             coordinates['angle'] = parseInt(
                 events_block.subarray(block_index + 19, block_index + 21)
                     .toString(HEX), RADIX_HEX)
-            console.log('coordinates', coordinates/*, 'loop:', loop+1*/)
+            console.log('coordinates', JSON.stringify(coordinates)/*, 'loop:', loop+1*/)
             const satelites = parseInt(
                 events_block.subarray(block_index + 21, block_index + 22)
                     .toString(HEX), RADIX_HEX)
@@ -528,7 +528,7 @@ function build_device(input_block) {
                     break
                 }
             }
-            console.log('properties', properties/*, 'loop:', loop+1*/)
+            console.log('properties', JSON.stringify(properties)/*, 'loop:', loop+1*/)
             // if(block_complete){
             loop++
             //}
