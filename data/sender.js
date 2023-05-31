@@ -52,7 +52,7 @@ function sendCommand(hex_block=false, test=false) {
     if (!hex_block && test){
         hex_block = /*(test ? */command_camreq() /*: command_dout(1, 300))*/
             ?? Buffer.from(example_hex_block, the_vars.HEX)
-    }else if (typeof hex_block == 'string'){
+    }else if (hex_block.constructor.name === 'String'){
         Buffer.from(hex_block, the_vars.HEX)
     }
     console.log('sendCommand >>', hex_block)

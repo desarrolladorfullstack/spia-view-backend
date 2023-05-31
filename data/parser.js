@@ -584,7 +584,7 @@ function analyse_block (bufferBlock) {
             let settings = bufferBlock.subarray(imei_byte_start, imei_byte_start + CAM_SETTINGS_BYTE_LENGTH)
             let imei_hex_block = bufferBlock.subarray(CAM_INIT_BYTE_LENGTH, imei_byte_start).toString(HEX)
             bufferBlock = parseInt(imei_hex_block, RADIX_HEX)
-            console.log('cam imei??', typeof bufferBlock, bufferBlock)
+            console.log('cam imei??', bufferBlock.constructor.name, bufferBlock)
             let cam_mode_bin = parseInt(settings.subarray(0,2).toString(HEX),RADIX_HEX)
                 .toString(2).padStart(8, '0').substring(2,6)
             console.log('cam settings??', cam_mode_bin, parseInt(settings.toString(HEX),RADIX_HEX))

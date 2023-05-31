@@ -35,7 +35,7 @@ function load(callback=false) {
                     if (data && queued_buffered_command){
                         console.log("queued_buffered_command >> ",
                             `('${queued_buffered_command.toString(the_vars.HEX)}')`,
-                            `=> ${typeof queued_buffered_command}` )
+                            `=> ${queued_buffered_command.constructor.name}` )
                     }
                     if (queued_buffered_command.length > 0) {
                         add_queue_commands(queued_buffered_command, false)
@@ -45,9 +45,9 @@ function load(callback=false) {
                         console.log("lines 0 =>", queue_commands)
                     }
                     if ((callback)){
-                        console.log("callback type in load() =>", typeof callback)
+                        console.log("callback type in load() =>", callback.constructor.name)
                     }
-                    if (typeof callback == 'function'){
+                    if (callback.constructor.name === 'Function'){
                         console.log("callback of load() ... ")
                         callback(queue_commands)
                     }
@@ -61,14 +61,19 @@ function load(callback=false) {
 
 function save(commands, create=false) {
     let data_hex = commands;
-    console.log("save commands ??", typeof commands)
+    console.log("save commands ??", commands.constructor.name)
     if (typeof commands == 'boolean'){
         data_hex = commands.toString()
-    }else if (typeof commands != 'string'){
-        data_hex = Buffer.from(commands, the_vars.UTF8_SETTING.encoding).toString(the_vars.HEX);
+    }else if (['Array', 'Object'].includes(commands.constructor.name)){
+        for (const command of commands){
+            save(command, create)
+        }
+        return;
+    }else if (commands.constructor.name === 'String'){
+        data_hex = commands.toString(the_vars.HEX);
         console.log("data_hex >>", `${data_hex}`, data_hex)
     }
-    console.log("save commands >>", `${data_hex}`, typeof data_hex)
+    console.log("save commands >>", `${data_hex}`, data_hex.constructor.name)
     if (!create){
         fs_mod.appendFileSync(
             QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,

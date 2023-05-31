@@ -32,16 +32,21 @@ function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     worker_mod.load(function(result){
       console.log("check queue_commands??:", worker_mod?.queue_commands, 'result:', result)
-      if (worker_mod.queue_commands || result){
+      if (worker_mod?.queue_commands || result){
+        let worker_commands = worker_mod?.queue_commands
+        if ((worker_commands === undefined || !worker_commands) && result){
+          worker_commands = result
+        }
         let hex_block = false
-        if (worker_mod.queue_commands?.length > 0){
-          if (typeof worker_mod.queue_commands == "object"){
-            console.log("queue_commands typeof is object")
-            hex_block = Object.values(worker_mod.queue_commands)[0]
-          }else if(typeof worker_mod.queue_commands == "array"){
-            console.log("queue_commands typeof is array")
+        if (worker_commands.length > 0){
+          const command_type_name = worker_commands.constructor.name;
+          if (command_type_name === 'Array'){
+            console.log("queue_commands typeof is Array")
             hex_block = worker_mod.queue_commands[0]
-          }else if(typeof worker_mod.queue_commands != "string"){
+          }else if (command_type_name === 'Object'){
+            console.log("queue_commands typeof is Object")
+            hex_block = Object.values(worker_mod.queue_commands)[0]
+          }else if(command_type_name === 'Buffer') {
             console.log("queue_commands typeof is Buffer")
             hex_block = worker_mod.queue_commands
           }
