@@ -374,7 +374,7 @@ function build_device(input_block) {
         && worker_mod.conn.hasOwnProperty(data_options['connection'])) {
         device = worker_mod.conn[data_options['connection']]
     }
-    console.log('build_device->response:', input_block)
+    /*console.log('build_device->response:', input_block.toString(the_vars.HEX))*/
     if (device == undefined) {
         console.warn('DEVICE=>undefined')
         return false
@@ -391,7 +391,7 @@ function build_device(input_block) {
     console.log('codec:', Buffer.from([codec]), 'crc:', crc)
     /* device.crc = crc */
     let events_block = input_block.subarray(10, block_length - 5)
-    console.log('events.block:', events_block/*[events_block.length-1]*/)
+    console.log('events.block:', events_block.toString(the_vars.HEX)/*[events_block.length-1]*/)
     let loop = 0, block_index = 0, block_complete = false
     let loop_properties
     const REQUEST_CODEC = parseInt('8e', RADIX_HEX)
