@@ -26,10 +26,12 @@ function load(callback=false) {
                         save("", true)
                         return data;
                     }
-                    const lines = data
-                    console.log("lines of QUEUE_COMMANDS_FILE >>", data)
+                    const lines = data.toString()
+                    console.log(`lines of QUEUE_COMMANDS_FILE >> [${data}] => '${lines}'` )
                     let queued_buffered_command = Buffer.from(data, the_vars.HEX)
-                    if (queued_buffered_command > 0) {
+                    console.log(`queued_buffered_command >> ('${queued_buffered_command}')`,
+                        `=> ${typeof queued_buffered_command}` )
+                    if (queued_buffered_command.length > 0) {
                         add_queue_commands(queued_buffered_command, false)
                     }
                     console.log("callback type in load() =>", typeof callback)
