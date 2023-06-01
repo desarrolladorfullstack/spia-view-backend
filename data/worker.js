@@ -22,14 +22,14 @@ function load(callback=false) {
                 let reader_options = {}
                 reader_options = the_vars.UTF8_SETTING
                 fs_mod.readFile(queued_file_path, reader_options, function(err, data){
-                    if (data == undefined){
-                        console.warn("QUEUE_COMMANDS_FILE is undefined!")
+                    if (data === undefined/* || data.toString() <= 0*/){
+                        console.log("QUEUE_COMMANDS_FILE is undefined!")
                         save("", true)
                         return data;
                     }
                     const lines = data.toString()
                     if (data && lines.length > 0){
-                        console.log(`lines of QUEUE_COMMANDS_FILE >> [${data}] => '${lines}'` )
+                        console.log(`lines of QUEUE_COMMANDS_FILE >> (${data}) => '${lines}'` )
                     }
                     let queued_buffered_command = Buffer.from(data, the_vars.HEX)
                     if (data && queued_buffered_command){
@@ -61,7 +61,7 @@ function load(callback=false) {
 
 function save(commands, create=false) {
     let data_hex = commands;
-    console.log("save commands ??", commands.constructor.name)
+    console.log("save commands ??:", commands.constructor.name)
     if (typeof commands == 'boolean'){
         data_hex = commands.toString()
     }else if (['Array', 'Object'].includes(commands.constructor.name)){
@@ -73,7 +73,7 @@ function save(commands, create=false) {
         data_hex = commands.toString(the_vars.HEX);
         console.log("data_hex >>", `${data_hex}`, data_hex)
     }
-    console.log("save commands >>", `[${data_hex}]`, data_hex.constructor.name)
+    console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name)
     if (!create){
         fs_mod.appendFileSync(
             QUEUE_COMMANDS_FILE_PATH+QUEUE_COMMANDS_FILE,

@@ -173,7 +173,7 @@ while (loop < events) {
             `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
             `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
 
-        console.log('timestamp', timestamp)
+        console.log('timestamp:', timestamp.toLocaleString())
         const priority = parseInt(
             events_block.subarray(block_index + 8, block_index + 9)
                 .toString(encoding), radix_hex)
