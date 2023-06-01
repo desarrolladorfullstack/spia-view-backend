@@ -53,9 +53,11 @@ function sendCommand(hex_block=false, test=false) {
         hex_block = /*(test ? */command_camreq() /*: command_dout(1, 300))*/
             ?? Buffer.from(example_hex_block, the_vars.HEX)
     }else if (hex_block.constructor.name === 'String'){
-        Buffer.from(hex_block, the_vars.HEX)
+        hex_block = Buffer.from(hex_block, the_vars.HEX)
     }
-    console.log('sendCommand >>', hex_block)
+    if (hex_block.constructor.name !== 'Buffer'){
+        console.log(`sendCommand T(${hex_block.constructor.name}):`, hex_block)
+    }
     return hex_block
 }
 module.exports = {

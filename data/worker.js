@@ -45,11 +45,12 @@ function load(callback=false) {
                         console.log("lines 0 =>", queue_commands)
                     }
                     if ((callback)){
-                        console.log("callback type in load() =>", callback.constructor.name)
-                    }
-                    if (callback.constructor.name === 'Function'){
-                        console.log("callback of load() ... ")
-                        callback(queue_commands)
+                        if (callback.constructor.name === 'Function'){
+                            console.log("callback of load() ... ")
+                            callback(queue_commands)
+                        }else{
+                            console.log("callback type in load() =>", callback.constructor.name)
+                        }
                     }
                 })
 
@@ -87,12 +88,20 @@ function save(commands, create=false) {
     }
 }
 function add_queue_commands(commands, update=true){
-    console.log("add_queue_commands:", commands, "update:", update)
-    if (typeof queue_commands == 'object' && Object.keys(queue_commands).includes("0")){
-        queue_commands.concat(commands)
-    }else{
+    const queue_commands_type_name = queue_commands.constructor.name;
+    if (update){
+        console.log(`add_queue_commands T(${queue_commands_type_name}):`, commands,
+            /* "update:", update*/)
+    }
+    if (queue_commands === false){
+        queue_commands = [commands]
+    } else if (queue_commands_type_name === 'Array') {
+        queue_commands.concat([commands])
+    } else if (queue_commands_type_name === 'Object'){
+        queue_commands = {queue_commands, ...commands}
+    } else{
         queue_commands = [queue_commands]
-        queue_commands.concat(commands)
+        queue_commands.concat([commands])
     }
     if (update){
         save(commands)

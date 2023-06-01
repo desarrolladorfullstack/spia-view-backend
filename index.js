@@ -31,7 +31,9 @@ const port = PORT_NUMBER ?? 80
 function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     worker_mod.load(function(result){
-      console.log("check queue_commands??:", worker_mod?.queue_commands, 'result:', result)
+      if( (worker_mod?.queue_commands) || (result)){
+        console.log("check queue_commands??:", worker_mod?.queue_commands, 'result:', result)
+      }
       if (worker_mod?.queue_commands !== undefined || result){
         let worker_commands = worker_mod?.queue_commands
         if ((worker_commands === undefined || !worker_commands) && result){
@@ -56,8 +58,11 @@ function command_writer(socket, test=true){
         }
         const command = sender_mod.sendCommand(hex_block, test)
         if(command) {
-          console.log('SEND COMMAND:', command)
-          socket.write(command)
+          try{
+            socket.write(command)
+          }catch (socker_write_e){
+            console.log('SEND COMMAND:', command, 'ERROR:', socker_write_e)
+          }
           if (test) {
             worker_mod.queue_commands = false
           }
@@ -66,7 +71,9 @@ function command_writer(socket, test=true){
       }
     })
   }).then((success)=>{
-    console.log("CMD:", success.toString(the_vars.HEX) ?? success)
+    if(success.length > 0){
+      console.log("CMD:", success.toString(the_vars.HEX) ?? success)
+    }
     return command_writer(socket, false)
   }).catch((failed)=>{
     console.error("Error in command_writer:", failed)
