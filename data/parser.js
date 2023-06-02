@@ -444,7 +444,8 @@ function build_device(input_block) {
                     console.log("[", loop + 1, "]!",
                         timestamp, events_block.subarray(block_index, end_index).toString(HEX),
                         `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
-                        `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`)
+                        `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`,
+                        "curdate:", timestamp.getFullYear(), current_date.getMonth(), current_date.getDate())
                 }
 
                 console.log('timestamp:', timestamp.toLocaleString())
