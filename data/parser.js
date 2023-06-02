@@ -424,15 +424,15 @@ function build_device(input_block, mode=1) {
             else if (codec == REQUEST_CODEC) {
                 process.env.TZ = the_vars.TIMEZONE_LOCAL
                 const end_index = block_index + 8
-                let timestamp_hex = events_block.subarray(block_index, end_index);
-                let timestamp = parseInt(timestamp_hex.toString(HEX), RADIX_HEX);
+                let timestamp_hex = events_block.subarray(block_index, end_index)
+                let timestamp = parseInt(timestamp_hex.toString(HEX), RADIX_HEX)
                 let event_date = new Date(timestamp)
                 let is_timestamp = event_date.toString() != invalidDate
                 is_timestamp &= event_date.getFullYear() < new Date().getFullYear() + 1
                 if (!is_timestamp) {
-                    const timestamp_hex_2 = events_block.subarray(block_index - 2, block_index + 6);
+                    const timestamp_hex_2 = events_block.subarray(block_index - 2, block_index + 6)
                     timestamp = parseInt(
-                        timestamp_hex_2.toString(HEX), RADIX_HEX);
+                        timestamp_hex_2.toString(HEX), RADIX_HEX)
                     event_date = new Date(timestamp)
                     let is_timestamp_2 = event_date.toString() != invalidDate
                     is_timestamp_2 &= event_date.getFullYear() < new Date().getFullYear() + 1
@@ -446,21 +446,22 @@ function build_device(input_block, mode=1) {
                         // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
                     }
                 }
-                const current_date = new Date();
+                const current_date = new Date()
                 if (event_date.getFullYear() < current_date.getFullYear()
                     || event_date.getMonth() < current_date.getMonth()
                     || event_date.getDate() < current_date.getDate()) {
                     console.log("[", loop + 1, "]!",
                         event_date, timestamp_hex,
                         `${event_date.getFullYear()}/${event_date.getMonth() + 1}/${event_date.getDate()}`,
-                        `${event_date.getHours()}:${event_date.getMinutes()}:${event_date.getMinutes()}`,
+                        `${event_date.getHours()}:${event_date.getMinutes()}:${event_date.getSeconds()}`,
                         "current_date:",
                         `${current_date.getFullYear()}/${current_date.getMonth() + 1}/${current_date.getDate()}`)
                 }
 
                 console.log('timestamp:', event_date.toLocaleString())
                 if (mode === 1){
-                    properties_json.timestamp = (timestamp - (event_date.getTimezoneOffset()*60*1000))/1000
+                    timestamp -= (event_date.getTimezoneOffset()*60*1000)
+                    properties_json.timestamp = Math.floor(timestamp/1000)
                 }
                 const priority = parseInt(
                     events_block.subarray(block_index + 8, block_index + 9)
