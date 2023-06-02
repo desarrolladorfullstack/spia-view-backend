@@ -399,7 +399,7 @@ function build_device(input_block, mode=1) {
     let result = undefined
     while (loop < events) {
         console.log('====== EVENT: ', loop + 1, ' ======')
-        const properties_json = {}
+        let properties_json = {}
         if (mode > 1){
             properties_json.codec = codec
             properties_json.crc = crc
@@ -467,6 +467,7 @@ function build_device(input_block, mode=1) {
                     events_block.subarray(block_index + 8, block_index + 9)
                         .toString(HEX), RADIX_HEX)
                 console.log('priority', priority/*, 'loop:', loop+1*/)
+                properties_json.priority = priority
                 const coordinates = {}
                 coordinates['longitude'] = proto_mod.coordinate(parseInt(
                     events_block.subarray(block_index + 9, block_index + 13)
@@ -481,6 +482,7 @@ function build_device(input_block, mode=1) {
                     events_block.subarray(block_index + 19, block_index + 21)
                         .toString(HEX), RADIX_HEX)
                 console.log('coordinates:', JSON.stringify(coordinates)/*, 'loop:', loop+1*/)
+                properties_json = {properties_json, ...coordinates}
                 const satelites = parseInt(
                     events_block.subarray(block_index + 21, block_index + 22)
                         .toString(HEX), RADIX_HEX)
