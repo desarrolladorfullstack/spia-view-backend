@@ -482,7 +482,7 @@ function build_device(input_block, mode=1) {
                     events_block.subarray(block_index + 19, block_index + 21)
                         .toString(HEX), RADIX_HEX)
                 console.log('coordinates:', JSON.stringify(coordinates)/*, 'loop:', loop+1*/)
-                properties_json = {properties_json, ...coordinates}
+                properties_json = {...properties_json, ...coordinates}
                 const satelites = parseInt(
                     events_block.subarray(block_index + 21, block_index + 22)
                         .toString(HEX), RADIX_HEX)

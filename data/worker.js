@@ -98,7 +98,7 @@ function add_queue_commands(commands, update=true){
     } else if (queue_commands_type_name === 'Array') {
         queue_commands.concat([commands])
     } else if (queue_commands_type_name === 'Object'){
-        queue_commands = {queue_commands, ...commands}
+        queue_commands = {...queue_commands, ...commands}
     } else{
         queue_commands = [queue_commands]
         queue_commands.concat([commands])
