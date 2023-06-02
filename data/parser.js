@@ -367,7 +367,7 @@ var CAM_COMMANDS = {
 }
 var VL03_PACKETS = ["7878"]
 const VL03_IMEI_INIT_LENGTH = 4
-function build_device(input_block) {
+function build_device(input_block, mode=1) {
     const block_length = input_block.length
     let device = recent_device
     if (data_options && data_options.hasOwnProperty("connection")
@@ -399,6 +399,11 @@ function build_device(input_block) {
     let result = undefined
     while (loop < events) {
         console.log('====== EVENT: ', loop + 1, ' ======')
+        const properties_json = {}
+        if (mode > 1){
+            properties_json.codec = codec
+            properties_json.crc = crc
+        }
         try {
             if (codec == SENDER_CODEC) {
                 let end_index = block_index + 1
@@ -419,36 +424,44 @@ function build_device(input_block) {
             else if (codec == REQUEST_CODEC) {
                 process.env.TZ = the_vars.TIMEZONE_LOCAL
                 const end_index = block_index + 8
-                let timestamp = new Date(parseInt(
-                    events_block.subarray(block_index, end_index).toString(HEX), RADIX_HEX))
-                let is_timestamp = timestamp.toString() != invalidDate
-                is_timestamp &= timestamp.getFullYear() < new Date().getFullYear() + 1
+                let timestamp_hex = events_block.subarray(block_index, end_index);
+                let timestamp = parseInt(timestamp_hex.toString(HEX), RADIX_HEX);
+                let event_date = new Date(timestamp)
+                let is_timestamp = event_date.toString() != invalidDate
+                is_timestamp &= event_date.getFullYear() < new Date().getFullYear() + 1
                 if (!is_timestamp) {
-                    timestamp = new Date(parseInt(
-                        events_block.subarray(block_index - 2, block_index + 6).toString(HEX), RADIX_HEX))
-                    let is_timestamp_2 = timestamp.toString() != invalidDate
-                    is_timestamp_2 &= timestamp.getFullYear() < new Date().getFullYear() + 1
+                    const timestamp_hex_2 = events_block.subarray(block_index - 2, block_index + 6);
+                    timestamp = parseInt(
+                        timestamp_hex_2.toString(HEX), RADIX_HEX);
+                    event_date = new Date(timestamp)
+                    let is_timestamp_2 = event_date.toString() != invalidDate
+                    is_timestamp_2 &= event_date.getFullYear() < new Date().getFullYear() + 1
                     if (!is_timestamp_2) {
-                        console.warn('timestamp invalid:', timestamp, events_block.subarray(block_index, end_index).toString(HEX))
+                        console.warn('timestamp invalid:', event_date, timestamp_hex, timestamp_hex_2)
                         break
                     }
                     else {
+                        timestamp_hex = timestamp_hex_2
                         block_index -= 2
                         // console.log('is_timestamp_2 ?: [', loop+1,']! >> ', events_block.subarray(block_index, block_index + 8))
                     }
                 }
                 const current_date = new Date();
-                if (timestamp.getFullYear() < current_date.getFullYear()
-                    || timestamp.getMonth() < current_date.getMonth()
-                    || timestamp.getDate() < current_date.getDate()) {
+                if (event_date.getFullYear() < current_date.getFullYear()
+                    || event_date.getMonth() < current_date.getMonth()
+                    || event_date.getDate() < current_date.getDate()) {
                     console.log("[", loop + 1, "]!",
-                        timestamp, events_block.subarray(block_index, end_index).toString(HEX),
-                        `${timestamp.getFullYear()}/${timestamp.getMonth() + 1}/${timestamp.getDate()}`,
-                        `${timestamp.getHours()}:${timestamp.getMinutes()}:${timestamp.getMinutes()}`,
-                        "curdate:", timestamp.getFullYear(), current_date.getMonth(), current_date.getDate())
+                        event_date, timestamp_hex,
+                        `${event_date.getFullYear()}/${event_date.getMonth() + 1}/${event_date.getDate()}`,
+                        `${event_date.getHours()}:${event_date.getMinutes()}:${event_date.getMinutes()}`,
+                        "current_date:",
+                        `${current_date.getFullYear()}/${current_date.getMonth() + 1}/${current_date.getDate()}`)
                 }
 
-                console.log('timestamp:', timestamp.toLocaleString())
+                console.log('timestamp:', event_date.toLocaleString())
+                if (mode === 1){
+                    properties_json.timestamp = (timestamp - (event_date.getTimezoneOffset()*60*1000))/1000
+                }
                 const priority = parseInt(
                     events_block.subarray(block_index + 8, block_index + 9)
                         .toString(HEX), RADIX_HEX)
@@ -554,8 +567,9 @@ function build_device(input_block) {
         } catch (loop_events_e) {
             console.log('loop_events:', loop, 'ERROR:', loop_events_e)
         }
+        console.log("properties_json:", properties_json)
         if(loop < events){
-            console.log('====== Events->LEFT:', loop+1 ,'======')
+            console.log('====== Events->LEFT:', events-loop,'======')
         }
     }
     return result
