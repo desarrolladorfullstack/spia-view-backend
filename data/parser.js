@@ -562,7 +562,9 @@ function build_device(input_block, mode=1) {
                         console.log('loop_properties:', loop_properties, 'ERROR:', loop_properties_e)
                     }
                 }
-                console.log('properties', JSON.stringify(properties)/*, 'loop:', loop+1*/)
+                if(properties.length > properties_json.length){
+                    console.log(`event[${loop + 1}](properties):`, JSON.stringify(properties)/*, 'loop:', loop+1*/)
+                }
                 // if(block_complete){
                 loop++
                 //}
@@ -570,7 +572,7 @@ function build_device(input_block, mode=1) {
         } catch (loop_events_e) {
             console.log('loop_events:', loop, 'ERROR:', loop_events_e)
         }
-        console.log("properties_json:", properties_json)
+        console.log("properties(json):", JSON.stringify(properties_json))
         if(loop < events){
             console.log('====== Events->LEFT:', events-loop,'======')
         }
