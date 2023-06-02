@@ -93,7 +93,7 @@ function add_queue_commands(commands, update=true){
         console.log(`add_queue_commands T(${queue_commands_type_name}):`, commands,
             /* "update:", update*/)
     }
-    if (queue_commands === false){
+    if (queue_commands_type_name === 'Boolean'){
         queue_commands = [commands]
     } else if (queue_commands_type_name === 'Array') {
         queue_commands.concat([commands])
