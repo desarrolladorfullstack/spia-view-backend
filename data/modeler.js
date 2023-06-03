@@ -141,8 +141,9 @@ class DeviceEvent extends EventType {
 
         }else if (this._event_object !== undefined){
             for (const property_key in this._event_object){
-                const anyProperty = Object.create(this._event_object).filter(
-                    (value, index)=> index === property_key);
+                const anyProperty = Object.fromEntries(
+                    Object.entries(this._event_object).filter(
+                        ([index])=> index === property_key) );
                 this.addProperty(anyProperty);
             }
         }
