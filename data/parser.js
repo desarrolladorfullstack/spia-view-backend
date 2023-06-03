@@ -466,7 +466,7 @@ function build_device(input_block, mode=1) {
                 const priority = parseInt(
                     events_block.subarray(block_index + 8, block_index + 9)
                         .toString(HEX), RADIX_HEX)
-                console.log('priority', priority/*, 'loop:', loop+1*/)
+                /*console.log('priority', priority/!*, 'loop:', loop+1*!/)*/
                 properties_json.priority = priority
                 const coordinates = {}
                 coordinates['longitude'] = proto_mod.coordinate(parseInt(
@@ -481,17 +481,17 @@ function build_device(input_block, mode=1) {
                 coordinates['angle'] = parseInt(
                     events_block.subarray(block_index + 19, block_index + 21)
                         .toString(HEX), RADIX_HEX)
-                console.log('coordinates:', JSON.stringify(coordinates)/*, 'loop:', loop+1*/)
+                /*console.log('coordinates:', JSON.stringify(coordinates)/!*, 'loop:', loop+1*!/)*/
                 properties_json = {...properties_json, ...coordinates}
                 const satelites = parseInt(
                     events_block.subarray(block_index + 21, block_index + 22)
                         .toString(HEX), RADIX_HEX)
-                console.log('satelites:', satelites/*, 'loop:', loop+1*/)
+                /*console.log('satelites:', satelites/!*, 'loop:', loop+1*!/)*/
                 properties_json.satelites = satelites
                 const speed = parseInt(
                     events_block.subarray(block_index + 22, block_index + 24)
                         .toString(HEX), RADIX_HEX)
-                console.log('speed:', speed/*, 'loop:', loop+1*/)
+                /*console.log('speed:', speed/!*, 'loop:', loop+1*!/)*/
                 properties_json.speed = speed
                 const event_id = parseInt(
                     events_block.subarray(block_index + 24, block_index + 26)
@@ -501,7 +501,7 @@ function build_device(input_block, mode=1) {
                 let properties_keys = parseInt(
                     events_block.subarray(block_index + 26, block_index + 28)
                         .toString(HEX), RADIX_HEX)
-                console.log(`properties K[${properties_keys}]`/*, 'loop:', loop+1*/)
+                console.log(`inner_properties K[${properties_keys}]`/*, 'loop:', loop+1*/)
                 const properties = {}
                 if (properties_keys < 1) {
                     loop++
@@ -567,6 +567,9 @@ function build_device(input_block, mode=1) {
                 }
                 if(properties.length > properties_json.length){
                     console.log(`event[${loop + 1}](properties):`, JSON.stringify(properties)/*, 'loop:', loop+1*/)
+                }
+                if (properties.length > 0){
+                    properties_json = {...properties_json, ...properties}
                 }
                 // if(block_complete){
                 loop++
