@@ -56,19 +56,45 @@ class EventProperty {
 }
 class EventType {
     _event_type_id = undefined
-    events = ['switch-on', 'switch-off']
+    __event_keys = ['switch-on', 'switch-off']
+    __property_keys = {'1':'Digital Input 1'}
+    __property_values = {'1':{'0':'no', '1':'yes'}}
     _properties = undefined
-    adProperty(any_property) {
+    addProperty(any_property) {
         if (this._properties == undefined) {
             this._properties = {}
         }
+        if (any_property.constructor.name === 'Object'){
+            let property_key = Object.keys(any_property)[0]
+            let property_value = any_property[property_key]
+            property_value = this.checkPropertyValue(property_key, property_value)
+            property_key = this.checkProperty(property_key)
+            any_property = {}
+            any_property[property_key] = property_value
+        }
         this._properties.push(any_property)
+    }
+
+    checkPropertyValue(property_key, property_value) {
+        if (Object.keys(this.__property_values).includes(property_key)){
+            if (Object.keys(this.__property_values[property_key]).includes(property_value)){
+                return this.__property_values[property_key][property_value]
+            }
+        }
+        return property_value;
+    }
+
+    checkProperty(property_key) {
+        if (Object.keys(this.__property_keys).includes(property_key)){
+            return this.__property_keys[property_key]
+        }
+        return property_key;
     }
     set event_type_id(any_id) {
         this._event_type_id = any_id
     }
     getname() {
-        const type_name = this.events[this._event_type_id - 1]
+        const type_name = this.__event_keys[this._event_type_id - 1]
         /* console.log('type_name?:', type_name) */
         return type_name
     }
@@ -83,7 +109,7 @@ class EventType {
 }
 class DeviceEvent extends EventType {
     _event_id = undefined
-    _event_type = undefined
+    _event_object = undefined
     _event_block = undefined
     _codec = undefined
     _crc = undefined
@@ -94,12 +120,44 @@ class DeviceEvent extends EventType {
         this._codec = any_codec
     }
     parseEvent() {
+        if (this._event_block !== undefined){
 
+        }else if (this._event_object !== undefined){
+            if (this._event_object?.event_id !== undefined){
+                this._event_type_id = this._event_id = this._event_object.event_id
+            }
+            if (this._event_object?.codec !== undefined){
+                this._codec = this._event_object.codec
+            }
+            if (this._event_object?.crc !== undefined){
+                this._crc = this._event_object.crc
+            }
+            this.parseProperties()
+            this.saveEvent()
+        }
     }
-    constructor(event_block = undefined) {
+    parseProperties() {
+        if (this._event_block !== undefined){
+
+        }else if (this._event_object !== undefined){
+            for (const property_key in this._event_object){
+                const anyProperty = Object.create(this._event_object).filter(
+                    (value, index)=> index === property_key);
+                this.addProperty(anyProperty);
+            }
+        }
+    }
+    constructor(event_data = undefined) {
         super()
-        this._event_block = event_block
+        if (event_data.constructor.name === 'Buffer'){
+            this._event_block = event_data
+        }else if(event_data.constructor.name === 'Object'){
+            this._event_object = event_data
+        }
         this.parseEvent()
+    }
+    saveEvent() {
+        /*TODO : write .spia (HEX data (key value) for DB spiaview inserts (evnts & properties)*/
     }
     toString() {
         return `Event:(${this._event_id})::${super.toString()}`
@@ -120,7 +178,7 @@ class Device extends Imei {
         if (this._events == undefined) {
             this._events = {}
         }
-        this._events.push(any_event)
+        this._events.push(new DeviceEvent(any_event))
     }
     set type(any_type_id) {
         this.#_type = any_type_id

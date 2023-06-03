@@ -583,6 +583,7 @@ function build_device(input_block, mode=1) {
             console.log('loop_events:', loop, 'ERROR:', loop_events_e)
         }
         console.log(`properties(json)[${Object.keys(properties_json).length}]:`, JSON.stringify(properties_json))
+        device.addEvent(properties_json)
         if(loop < events){
             console.log('====== Events->LEFT:', events-loop,'======')
         }
