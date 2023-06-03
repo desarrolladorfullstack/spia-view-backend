@@ -570,6 +570,8 @@ function build_device(input_block, mode=1) {
                 }
                 if (properties.length > 0){
                     properties_json = {...properties_json, ...properties}
+                }else{
+                    console.log(`(inner properties[${properties.length}]):`, JSON.stringify(properties)/*, 'loop:', loop+1*/)
                 }
                 // if(block_complete){
                 loop++
