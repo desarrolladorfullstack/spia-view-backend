@@ -565,13 +565,15 @@ function build_device(input_block, mode=1) {
                         console.log('loop_properties:', loop_properties, 'ERROR:', loop_properties_e)
                     }
                 }
-                if(properties.length > properties_json.length){
-                    console.log(`event[${loop + 1}](properties):`, JSON.stringify(properties)/*, 'loop:', loop+1*/)
+                if(Object.keys(properties).length > Object.keys(properties_json).length){
+                    console.log(`event[${loop + 1}](properties):`,
+                        JSON.stringify(properties)/*, 'loop:', loop+1*/)
                 }
-                if (properties.length > 0){
+                if (Object.keys(properties).length > 0){
                     properties_json = {...properties_json, ...properties}
                 }else{
-                    console.log(`(inner properties[${properties.length}]):`, JSON.stringify(properties)/*, 'loop:', loop+1*/)
+                    console.log(`(inner properties[${Object.keys(properties).length}]):`,
+                        JSON.stringify(properties)/*, 'loop:', loop+1*/)
                 }
                 // if(block_complete){
                 loop++
@@ -580,7 +582,7 @@ function build_device(input_block, mode=1) {
         } catch (loop_events_e) {
             console.log('loop_events:', loop, 'ERROR:', loop_events_e)
         }
-        console.log("properties(json):", JSON.stringify(properties_json))
+        console.log(`properties(json)[${Object.keys(properties_json).length}]:`, JSON.stringify(properties_json))
         if(loop < events){
             console.log('====== Events->LEFT:', events-loop,'======')
         }
