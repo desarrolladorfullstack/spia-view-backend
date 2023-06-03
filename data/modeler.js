@@ -72,7 +72,7 @@ class EventType {
             any_property = {}
             any_property[property_key] = property_value
         }
-        this._properties.push(any_property)
+        this._properties = {...this._properties, ...any_property}
     }
 
     checkPropertyValue(property_key, property_value) {
