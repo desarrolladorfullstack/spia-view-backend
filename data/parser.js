@@ -565,14 +565,14 @@ function build_device(input_block, mode=1) {
                         console.log('loop_properties:', loop_properties, 'ERROR:', loop_properties_e)
                     }
                 }
-                if(Object.keys(properties).length > Object.keys(properties_json).length){
-                    console.log(`event[${loop + 1}](properties):`,
-                        JSON.stringify(properties)/*, 'loop:', loop+1*/)
-                }
                 if (Object.keys(properties).length > 0){
                     properties_json = {...properties_json, ...properties}
                 }else{
                     console.log(`(inner properties[${Object.keys(properties).length}]):`,
+                        JSON.stringify(properties)/*, 'loop:', loop+1*/)
+                }
+                if(Object.keys(properties).length > Object.keys(properties_json).length){
+                    console.log(`event[${loop + 1}](properties):`,
                         JSON.stringify(properties)/*, 'loop:', loop+1*/)
                 }
                 // if(block_complete){
