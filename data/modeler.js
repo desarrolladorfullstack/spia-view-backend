@@ -177,7 +177,7 @@ class Device extends Imei {
     }
     addEvent(any_event) {
         if (this._events == undefined) {
-            this._events = {}
+            this._events = [] /* {} */
         }
         this._events.push(new DeviceEvent(any_event))
     }
