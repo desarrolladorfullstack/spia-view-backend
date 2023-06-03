@@ -487,14 +487,17 @@ function build_device(input_block, mode=1) {
                     events_block.subarray(block_index + 21, block_index + 22)
                         .toString(HEX), RADIX_HEX)
                 console.log('satelites:', satelites/*, 'loop:', loop+1*/)
+                properties_json.satelites = satelites
                 const speed = parseInt(
                     events_block.subarray(block_index + 22, block_index + 24)
                         .toString(HEX), RADIX_HEX)
                 console.log('speed:', speed/*, 'loop:', loop+1*/)
+                properties_json.speed = speed
                 const event_id = parseInt(
                     events_block.subarray(block_index + 24, block_index + 26)
                         .toString(HEX), RADIX_HEX)
                 console.log('event_id:', event_id/*, 'loop:', loop+1*/)
+                properties_json.event_id = event_id
                 let properties_keys = parseInt(
                     events_block.subarray(block_index + 26, block_index + 28)
                         .toString(HEX), RADIX_HEX)
