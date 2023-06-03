@@ -33,73 +33,74 @@ class Imei extends DeviceType {
     }
 }
 class EventProperty {
+    #_PROPERTY_KEYS = {'1':'Digital Input 1'}
+    #_PROPERTY_VALUES = {'1':{'0':'no', '1':'yes'}}
     _property_id = undefined
-    properties = ['latitude', 'longitude']
     _property_value = undefined
-    _property_stamp = undefined
-    _property_block = undefined
+    /*_property_stamp = undefined*/
+    #_property_block = undefined
+    #_property_object = undefined
     parseProperty() {
+        if (this.#_property_block !== undefined){
 
+        }else if (this.#_property_object !== undefined){
+            this._property_id = Object.keys(this.#_property_object)[0]
+            this._property_value = this.#_property_object[this._property_id]
+        }
+    }
+    getvalue() {
+        let value_name = this._property_value
+        if (Object.keys(this.#_PROPERTY_VALUES).includes(this._property_id)){
+            if (Object.keys(this.#_PROPERTY_VALUES[this._property_id]).includes(this._property_value)){
+                value_name = this.#_PROPERTY_VALUES[this._property_id][this._property_value]
+            }
+        }
+        return value_name;
     }
     getname() {
-        const type_name = this.properties[this._property_id - 1]
+        let type_name = this._property_id
         /* console.log('type_name?:', type_name) */
+        if (Object.keys(this.#_PROPERTY_KEYS).includes(this._property_id)){
+            type_name = this.#_PROPERTY_KEYS[this._property_id]
+        }
         return type_name
     }
-    constructor(property_block = undefined) {
-        this._property_block = property_block
+    constructor(property_data = undefined) {
+        if (property_data.constructor.name === 'Buffer'){
+            this.#_property_block = property_data
+        }else if(property_data.constructor.name === 'Object'){
+            this.#_property_object = property_data
+        }
         this.parseProperty()
     }
     toString() {
-        return `${this.getname()}=>${this._property_value},`
+        return `${this.getname()}=>${this.getvalue()},`
     }
 }
 class EventType {
-    _event_type_id = undefined
-    __event_keys = ['switch-on', 'switch-off']
-    __property_keys = {'1':'Digital Input 1'}
-    __property_values = {'1':{'0':'no', '1':'yes'}}
+    #_event_type_id = undefined
+    #_EVENT_KEYS = ['switch-on', 'switch-off']
+    #_event_timestamp = undefined
     _properties = undefined
     addProperty(any_property) {
         if (this._properties == undefined) {
-            this._properties = {}
+            this._properties = [] /* {} */
         }
-        if (any_property.constructor.name === 'Object'){
-            let property_key = Object.keys(any_property)[0]
-            let property_value = any_property[property_key]
-            property_value = this.checkPropertyValue(property_key, property_value)
-            property_key = this.checkProperty(property_key)
-            any_property = {}
-            any_property[property_key] = property_value
-        }
-        this._properties = {...this._properties, ...any_property}
-    }
-
-    checkPropertyValue(property_key, property_value) {
-        if (Object.keys(this.__property_values).includes(property_key)){
-            if (Object.keys(this.__property_values[property_key]).includes(property_value)){
-                return this.__property_values[property_key][property_value]
-            }
-        }
-        return property_value;
-    }
-
-    checkProperty(property_key) {
-        if (Object.keys(this.__property_keys).includes(property_key)){
-            return this.__property_keys[property_key]
-        }
-        return property_key;
+        this._properties.push(new EventProperty(any_property))
     }
     set event_type_id(any_id) {
-        this._event_type_id = any_id
+        this.#_event_type_id = any_id
+    }
+    set event_timestamp(value) {
+        this.#_event_timestamp = value;
     }
     getname() {
-        const type_name = this.__event_keys[this._event_type_id - 1]
+        const type_name = this.#_EVENT_KEYS[this.#_event_type_id - 1]
         /* console.log('type_name?:', type_name) */
         return type_name
     }
     constructor(event_type_id = 1) {
-        this._event_type_id = event_type_id
+        this.#_event_type_id = event_type_id
     }
     toString() {
         let properties_msg = this._properties ? `Events:(${this._properties.toString()})` : ""
@@ -109,8 +110,9 @@ class EventType {
 }
 class DeviceEvent extends EventType {
     _event_id = undefined
-    _event_object = undefined
-    _event_block = undefined
+    _event_datetime = undefined
+    #_event_object = undefined
+    #_event_block = undefined
     _codec = undefined
     _crc = undefined
     set crc(any_crc) {
@@ -120,29 +122,33 @@ class DeviceEvent extends EventType {
         this._codec = any_codec
     }
     parseEvent() {
-        if (this._event_block !== undefined){
+        if (this.#_event_block !== undefined){
 
-        }else if (this._event_object !== undefined){
-            if (this._event_object?.event_id !== undefined){
-                this._event_type_id = this._event_id = this._event_object.event_id
+        }else if (this.#_event_object !== undefined){
+            if (this.#_event_object?.event_id !== undefined){
+                this.event_type_id = this._event_id = this.#_event_object.event_id
             }
-            if (this._event_object?.codec !== undefined){
-                this._codec = this._event_object.codec
+            if (this.#_event_object?.timestamp !== undefined){
+                this.event_timestamp = this.#_event_object.timestamp
+                this._event_datetime = new Date(this.#_event_object.timestamp)
             }
-            if (this._event_object?.crc !== undefined){
-                this._crc = this._event_object.crc
+            if (this.#_event_object?.codec !== undefined){
+                this._codec = this.#_event_object.codec
+            }
+            if (this.#_event_object?.crc !== undefined){
+                this._crc = this.#_event_object.crc
             }
             this.parseProperties()
             this.saveEvent()
         }
     }
     parseProperties() {
-        if (this._event_block !== undefined){
+        if (this.#_event_block !== undefined){
 
-        }else if (this._event_object !== undefined){
-            for (const property_key in this._event_object){
+        }else if (this.#_event_object !== undefined){
+            for (const property_key in this.#_event_object){
                 const anyProperty = Object.fromEntries(
-                    Object.entries(this._event_object).filter(
+                    Object.entries(this.#_event_object).filter(
                         ([index])=> index === property_key) );
                 this.addProperty(anyProperty);
             }
@@ -151,9 +157,9 @@ class DeviceEvent extends EventType {
     constructor(event_data = undefined) {
         super()
         if (event_data.constructor.name === 'Buffer'){
-            this._event_block = event_data
+            this.#_event_block = event_data
         }else if(event_data.constructor.name === 'Object'){
-            this._event_object = event_data
+            this.#_event_object = event_data
         }
         this.parseEvent()
     }
