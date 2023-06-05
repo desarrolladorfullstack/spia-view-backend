@@ -726,8 +726,10 @@ function read_block (bufferBlock) {
                 }
             }
         }
-        let data_read_log = block_success ?? Buffer.from(block_success, 16)
-        console.log("MOD::read_block->", data_read_log/* , typeof block_success */)
+        if(block_success){
+            let data_read_log = block_success ?? Buffer.from(block_success, 16)
+            console.log("MOD::read_block->", data_read_log/* , typeof block_success */)
+        }
     } catch (e) {
         console.error("MOD::read_block[ERR]", e)
     }

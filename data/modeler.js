@@ -1,12 +1,12 @@
 class DeviceType {
     #_type_id = undefined
-    #devices = ['gps', 'dualcam']
+    #_DEVICES = ['gps', 'dualcam']
     set type_id(any_id) {
         this.#_type_id = any_id
     }
     type_name = undefined
     getname() {
-        this.type_name = this.#devices[this.#_type_id - 1]
+        this.type_name = this.#_DEVICES[this.#_type_id - 1]
         /* console.log('type_name?:', type_name) */
         return this.type_name
     }
@@ -50,9 +50,11 @@ class EventProperty {
     }
     getvalue() {
         let value_name = this._property_value
-        if (Object.keys(this.#_PROPERTY_VALUES).includes(this._property_id)){
-            if (Object.keys(this.#_PROPERTY_VALUES[this._property_id]).includes(this._property_value)){
-                value_name = this.#_PROPERTY_VALUES[this._property_id][this._property_value]
+        let property_key = this._property_id.toString()
+        if (Object.keys(this.#_PROPERTY_VALUES).includes(property_key)){
+            let property_value_key = this._property_value.toString()
+            if (Object.keys(this.#_PROPERTY_VALUES[property_key]).includes(property_value_key)){
+                value_name = this.#_PROPERTY_VALUES[property_key][property_value_key]
             }
         }
         return value_name;
@@ -60,8 +62,9 @@ class EventProperty {
     getname() {
         let type_name = this._property_id
         /* console.log('type_name?:', type_name) */
-        if (Object.keys(this.#_PROPERTY_KEYS).includes(this._property_id)){
-            type_name = this.#_PROPERTY_KEYS[this._property_id]
+        let property_key = this._property_id.toString()
+        if (Object.keys(this.#_PROPERTY_KEYS).includes(property_key)){
+            type_name = this.#_PROPERTY_KEYS[property_key]
         }
         return type_name
     }
@@ -79,7 +82,7 @@ class EventProperty {
 }
 class EventType {
     #_event_type_id = undefined
-    #_EVENT_KEYS = ['switch-on', 'switch-off']
+    #_EVENT_KEYS = {'499':'Dualcam'} /*['switch-on', 'switch-off']*/
     #_event_timestamp = undefined
     _properties = undefined
     addProperty(any_property) {
@@ -95,15 +98,22 @@ class EventType {
         this.#_event_timestamp = value;
     }
     getname() {
-        const type_name = this.#_EVENT_KEYS[this.#_event_type_id - 1]
+        let type_name = this.#_event_type_id
         /* console.log('type_name?:', type_name) */
+        let event_key = this.#_event_type_id.toString()
+        if (Object.keys(this.#_EVENT_KEYS).includes(event_key)){
+            type_name = this.#_EVENT_KEYS[event_key]
+        }
         return type_name
     }
     constructor(event_type_id = 1) {
         this.#_event_type_id = event_type_id
     }
     toString() {
-        let properties_msg = this._properties ? `Events:(${this._properties.toString()})` : ""
+        let properties_msg = ""
+        if (this._properties) {
+            properties_msg = `,Properties:(${this._properties.toString()})`
+        }
         let msg = `(EventType:${this.getname()},${properties_msg}])`
         return msg
     }
@@ -164,7 +174,7 @@ class DeviceEvent extends EventType {
         this.parseEvent()
     }
     saveEvent() {
-        /*TODO : write .spia (HEX data (key value) for DB spiaview inserts (evnts & properties)*/
+        /*TODO : write .spia (HEX data (key value) for DB spiaview inserts (events & properties)*/
     }
     toString() {
         return `Event:(${this._event_id})::${super.toString()}`
@@ -196,7 +206,10 @@ class Device extends Imei {
         this.#_type = type_id
     }
     toString() {
-        let events_msg = this._events ? `Events:(${this._events.toString()})` : ""
+        let events_msg = ""
+        if (this._events) {
+            events_msg = `,Events:(${this._events.toString()})`
+        }
         let msg = `Device:[${super.toString()}${events_msg}]`
         return msg
     }
