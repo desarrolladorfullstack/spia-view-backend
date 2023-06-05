@@ -77,7 +77,7 @@ class EventProperty {
         this.parseProperty()
     }
     toString() {
-        return `${this.getname()}=>${this.getvalue()},`
+        return `${this.getname()}=>${this.getvalue()}`
     }
 }
 class EventType {
@@ -114,7 +114,7 @@ class EventType {
         if (this._properties) {
             properties_msg = `,Properties:(${this._properties.toString()})`
         }
-        let msg = `(EventType:${this.getname()},${properties_msg}])`
+        let msg = `(EventType:${this.getname()}${properties_msg}])`
         return msg
     }
 }
