@@ -175,6 +175,7 @@ class DeviceEvent extends EventType {
     }
     saveEvent() {
         /*TODO : write .spia (HEX data (key value) for DB spiaview inserts (events & properties)*/
+        console.log("saveEvent:", this.getname())
     }
     toString() {
         return `Event:(${this._event_id})::${super.toString()}`
