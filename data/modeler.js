@@ -1,3 +1,7 @@
+const worker_mod = require("./worker");
+var SPIA_DATA_PATH = '/home/node/data/'
+var SPIA_FILE_EXT = '.spia'
+var SPIA_DEVICE = 'undefined'
 class DeviceType {
     #_type_id = undefined
     #_DEVICES = ['gps', 'dualcam']
@@ -179,8 +183,17 @@ class DeviceEvent extends EventType {
     }
     saveEvent() {
         /*TODO : write .spia (HEX data (key value) for DB spiaview inserts (events & properties)*/
-        console.log("saveEvent:", this.getname(), 'at:', this._event_datetime, this.event_timestamp)
-
+        console.log("saveEvent:", this.getname(),
+            '. At:', this._event_datetime, this.event_timestamp)
+        const spia_file = this.event_timestamp + SPIA_FILE_EXT;
+        let event_value = Object.values(this._properties).find(
+            prop_object=>prop_object._property_id === this._event_id)
+        let data_hex = `${this._event_id}\t${event_value.toString()}`
+        const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/';
+        let exists_spia_file = worker_mod.checkDir(spia_file_path)
+        exists_spia_file &= worker_mod.checkFile(spia_file_path+spia_file);
+        worker_mod.writeFile(spia_file_path+spia_file,
+            data_hex, !exists_spia_file)
     }
     toString() {
         return `Event:(${this._event_id})::${super.toString()}`
@@ -193,6 +206,7 @@ class Device extends Imei {
 
     set imei(any_imei) {
         this.#_imei = any_imei
+        SPIA_DEVICE = this._id.toString()
     }
     get imei() {
         return this.#_imei
@@ -208,7 +222,7 @@ class Device extends Imei {
     }
     constructor(imei_id = undefined, type_id = 1) {
         super(imei_id, type_id)
-        this.#_imei = imei_id
+        this.imei = imei_id
         this.#_type = type_id
     }
     toString() {
