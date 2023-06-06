@@ -139,6 +139,7 @@ class DeviceEvent extends EventType {
                 this.event_type_id = this._event_id = this.#_event_object.event_id
             }
             if (this.#_event_object?.timestamp !== undefined){
+                console.log('parseEvent:', this.#_event_object.timestamp)
                 this.event_timestamp = this.#_event_object.timestamp
                 this._event_datetime = new Date(this.#_event_object.timestamp)
             }
