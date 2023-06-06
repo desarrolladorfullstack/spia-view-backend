@@ -187,7 +187,7 @@ class DeviceEvent extends EventType {
             '. At:', this._event_datetime, this.event_timestamp)
         const spia_file = this.event_timestamp + SPIA_FILE_EXT;
         let event_value = Object.values(this._properties).find(
-            prop_object=>prop_object._property_id == this._event_id)
+            prop_object=>prop_object._property_id.toString() === this._event_id.toString())
         console.log("properties in Event:", Object.values(this._properties))
         if (event_value !== undefined){
             event_value = event_value.toString()
