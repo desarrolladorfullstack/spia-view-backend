@@ -196,16 +196,20 @@ class DeviceEvent extends EventType {
         const event_id = Buffer.from(this._event_id.toString()).toString(the_vars.HEX)
         let data_hex = `${event_id}\t${event_value}`
         const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/'
-        let exists_spia_file = worker_mod.checkDir(spia_file_path)
-        console.log('exists_spia_file(1)', exists_spia_file)
-        if(exists_spia_file){
-            exists_spia_file = worker_mod.checkFile(spia_file_path+spia_file)
-            console.log('exists_spia_file(2)', exists_spia_file)
-        }
-        /*if(!exists_spia_file){*/
-            worker_mod.writeFile(spia_file_path+spia_file,
-                data_hex, !exists_spia_file)
-        /*}*/
+        worker_mod.checkDir(spia_file_path, (exists_spia_folder)=>{
+            console.log('exists_spia_folder:', exists_spia_folder)
+            /*if(exists_spia_folder){*/
+                /*exists_spia_file = */
+                worker_mod.checkFile(spia_file_path+spia_file, (exists_spia_file)=>{
+                    console.log('exists_spia_file:', exists_spia_file)
+                    /*if(!exists_spia_file){*/
+                    worker_mod.writeFile(spia_file_path+spia_file,
+                        data_hex, !exists_spia_file)
+                    /*}*/
+                })
+            /*}*/
+        })
+
     }
     toString() {
         return `Event:(${this._event_id})::${super.toString()}`

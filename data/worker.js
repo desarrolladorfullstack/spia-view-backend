@@ -102,23 +102,31 @@ function add_queue_commands(commands, update=true){
     return this
 }
 
-function check_dir(path='/home/node/data/', strict=true){
+function check_dir(path='/home/node/data/', callback, strict=true){
     let exists = false
     const path_struct = path_mod.parse(path)
     console.log("check_dir>>", path_struct.dir, path_struct.base)
-    fs_mod.readdir(`${path_struct.dir}/`, (err, files) => {
-        if (!err){
-            files.forEach(file => {
-                const inner_file = path_mod.resolve(path_struct.dir, file)
+    fs_mod.readdir(`${path_struct.dir}/`, (err, folders) => {
+        if (!err && folders && folders.length > 0){
+            folders.forEach(folder => {
+                const inner_file = path_mod.resolve(path_struct.dir, folder)
                 const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
                 console.log('check_dir->exists?:', inner_file, isDirectory)
                 if (isDirectory) {
-                    console.log('check_dir->exists:', inner_file, file)
+                    console.log('check_dir->exists:', inner_file, folder)
                     exists = true
                 }
             })
+            if (/*exists/!*!== false*!/ &&*/ (callback)){
+                if (callback.constructor.name === 'Function'){
+                    console.log("callback of load() ... ")
+                    callback(exists)
+                }else{
+                    console.log("callback type in load() =>", callback.constructor.name)
+                }
+            }
         }else{
-            console.log("readdir ERROR:", path)
+            console.log("readdir ERROR:", path, folders)
         }
     })
     if (strict && !exists){
@@ -129,15 +137,15 @@ function check_dir(path='/home/node/data/', strict=true){
             console.log(`Directory (${path}) created successfully!`)
         })
     }
-    return exists !== false
+    return this/*exists !== false*/
 }
 
-function check_file(path='/home/node/.worker'){
+function check_file(path='/home/node/.worker', callback){
     let exists = false
     const path_struct = path_mod.parse(path)
     console.log("check_file>>", path_struct.dir, path_struct.base)
     fs_mod.readdir(`${path_struct.dir}/`, (err, files) => {
-        if(!err){
+        if(!err && files && files.length > 0){
             files.forEach(file => {
                 const inner_file = path_mod.resolve(path_struct.dir, file)
                 const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
@@ -147,11 +155,19 @@ function check_file(path='/home/node/.worker'){
                     exists = true
                 }
             })
+            if (/*exists/!*!== false*!/ &&*/ (callback)){
+                if (callback.constructor.name === 'Function'){
+                    console.log("callback of load() ... ")
+                    callback(exists)
+                }else{
+                    console.log("callback type in load() =>", callback.constructor.name)
+                }
+            }
         }else{
-            console.log("readdir ERROR.", path)
+            console.log("readdir ERROR.", path, files)
         }
     })
-    return exists !== false
+    return this/*exists !== false*/
 }
 
 function write_file(file_path='./.worker', data= false, create=false){
