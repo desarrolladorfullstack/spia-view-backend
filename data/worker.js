@@ -105,7 +105,7 @@ function add_queue_commands(commands, update=true){
 function check_dir(path='/home/node/data/', strict=true){
     let exists = false
     const path_struct = path_mod.parse(path)
-    console.log("path_dir>>", path_struct.dir)
+    console.log("check_dir>>", path_struct.dir, path_struct.name)
     fs_mod.readdir(path_struct.dir, (err, files) => {
         if (!err){
             files.forEach(file => {
@@ -128,13 +128,13 @@ function check_dir(path='/home/node/data/', strict=true){
             console.log(`Directory (${path}) created successfully!`)
         })
     }
-    return exists
+    return exists !== false
 }
 
 function check_file(path='/home/node/.worker'){
     let exists = false
     const path_struct = path_mod.parse(path)
-    console.log("path_dir>>", path_struct.dir)
+    console.log("check_file>>", path_struct.dir, path_struct.name)
     fs_mod.readdir(path_struct.dir, (err, files) => {
         if(!err){
             files.forEach(file => {
@@ -149,7 +149,7 @@ function check_file(path='/home/node/.worker'){
             console.log("readdir ERROR.", path)
         }
     })
-    return exists
+    return exists !== false
 }
 
 function write_file(file_path='./.worker', data= false, create=false){
