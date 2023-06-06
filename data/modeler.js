@@ -188,7 +188,10 @@ class DeviceEvent extends EventType {
         const spia_file = this.event_timestamp + SPIA_FILE_EXT;
         let event_value = Object.values(this._properties).find(
             prop_object=>prop_object._property_id === this._event_id)
-        let data_hex = `${this._event_id}\t${event_value.toString()}`
+        if (event_value !== undefined){
+            event_value = event_value.toString()
+        }
+        let data_hex = `${this._event_id}\t${event_value}`
         const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/';
         let exists_spia_file = worker_mod.checkDir(spia_file_path)
         exists_spia_file &= worker_mod.checkFile(spia_file_path+spia_file);
