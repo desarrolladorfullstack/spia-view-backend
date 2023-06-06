@@ -82,7 +82,7 @@ class EventProperty {
 }
 class EventType {
     #_event_type_id = undefined
-    #_EVENT_KEYS = {'499':'Dualcam'} /*['switch-on', 'switch-off']*/
+    #_EVENT_KEYS = {'499':'Dualcam', '252':'Unplug'} /*['switch-on', 'switch-off']*/
     #_event_timestamp = undefined
     _properties = undefined
     addProperty(any_property) {
@@ -175,7 +175,8 @@ class DeviceEvent extends EventType {
     }
     saveEvent() {
         /*TODO : write .spia (HEX data (key value) for DB spiaview inserts (events & properties)*/
-        console.log("saveEvent:", this.getname())
+        console.log("saveEvent:", this.getname(), 'at:', this._event_datetime, this.event_timestamp)
+
     }
     toString() {
         return `Event:(${this._event_id})::${super.toString()}`
