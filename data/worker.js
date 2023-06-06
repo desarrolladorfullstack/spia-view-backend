@@ -109,35 +109,36 @@ function check_dir(path='/home/node/data/', callback, strict=true){
     fs_mod.readdir(`${path_struct.dir}/`, (err, folders) => {
         if (!err && folders && folders.length > 0){
             folders.forEach(folder => {
-                const inner_file = path_mod.resolve(path_struct.dir, folder)
-                const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
-                console.log('check_dir->exists?:', inner_file, isDirectory)
-                if (isDirectory) {
-                    console.log('check_dir->exists:', inner_file, folder)
+                const inner_dir = path_mod.resolve(path_struct.dir, folder)
+                const isDirectory = fs_mod.lstatSync(inner_dir).isDirectory()
+                console.log('check_dir->exists?:', inner_dir, isDirectory)
+                if (isDirectory && path.indexOf(inner_dir) > -1) {
+                    console.log('check_dir->exists:', inner_dir, folder)
                     exists = true
                 }
             })
-            if (/*exists/!*!== false*!/ &&*/ (callback)){
-                if (callback.constructor.name === 'Function'){
-                    console.log("callback of load() ... ")
-                    if (strict && !exists){
-                        fs_mod.mkdir(path, (err) => {
-                            if (err) {
-                                return console.log('mkdir ERROR:', err)
-                            }else{
-                                callback(exists)
-                            }
-                            console.log(`Directory (${path}) created successfully!`)
-                        })
-                    }else{
-                        callback(exists)
-                    }
-                }else{
-                    console.log("callback type in load() =>", callback.constructor.name)
-                }
-            }
+
         }else{
             console.log("readdir ERROR:", path, folders)
+        }
+        if (/*exists/!*!== false*!/ &&*/ (callback)){
+            if (callback.constructor.name === 'Function'){
+                console.log("callback of load() ... ")
+                if (strict && !exists){
+                    fs_mod.mkdir(path, (err) => {
+                        if (err) {
+                            return console.log('mkdir ERROR:', err)
+                        }else{
+                            callback(exists)
+                        }
+                        console.log(`Directory (${path}) created successfully!`)
+                    })
+                }else{
+                    callback(exists)
+                }
+            }else{
+                console.log("callback type in load() =>", callback.constructor.name)
+            }
         }
     })
     return this/*exists !== false*/
@@ -153,21 +154,22 @@ function check_file(path='/home/node/.worker', callback){
                 const inner_file = path_mod.resolve(path_struct.dir, file)
                 const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
                 console.log('check_file->exists?:', inner_file, !isDirectory)
-                if (!isDirectory) {
+                if (!isDirectory && path.indexOf(inner_file) > -1) {
                     console.log('check_file->exists:', inner_file, file)
                     exists = true
                 }
             })
-            if (/*exists/!*!== false*!/ &&*/ (callback)){
-                if (callback.constructor.name === 'Function'){
-                    console.log("callback of load() ... ")
-                    callback(exists)
-                }else{
-                    console.log("callback type in load() =>", callback.constructor.name)
-                }
-            }
+
         }else{
             console.log("readdir ERROR.", path, files)
+        }
+        if (/*exists/!*!== false*!/ &&*/ (callback)){
+            if (callback.constructor.name === 'Function'){
+                console.log("callback of load() ... ")
+                callback(exists)
+            }else{
+                console.log("callback type in load() =>", callback.constructor.name)
+            }
         }
     })
     return this/*exists !== false*/
