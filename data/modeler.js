@@ -57,7 +57,7 @@ class EventProperty {
                 value_name = this.#_PROPERTY_VALUES[property_key][property_value_key]
             }
         }
-        return value_name;
+        return value_name
     }
     getname() {
         let type_name = this._property_id
@@ -95,7 +95,10 @@ class EventType {
         this.#_event_type_id = any_id
     }
     set event_timestamp(value) {
-        this.#_event_timestamp = value;
+        this.#_event_timestamp = value
+    }
+    get _event_timestamp() {
+        return this.#_event_timestamp
     }
     getname() {
         let type_name = this.#_event_type_id
@@ -139,9 +142,9 @@ class DeviceEvent extends EventType {
                 this.event_type_id = this._event_id = this.#_event_object.event_id
             }
             if (this.#_event_object?.timestamp !== undefined){
-                console.log('parseEvent:', this.#_event_object.timestamp)
+                /*console.log('parseEvent:', this.#_event_object.timestamp)*/
                 this.event_timestamp = this.#_event_object.timestamp
-                this._event_datetime = new Date(this.#_event_object.timestamp)
+                this._event_datetime = new Date(this.#_event_object.timestamp*1000)
             }
             if (this.#_event_object?.codec !== undefined){
                 this._codec = this.#_event_object.codec
@@ -160,8 +163,8 @@ class DeviceEvent extends EventType {
             for (const property_key in this.#_event_object){
                 const anyProperty = Object.fromEntries(
                     Object.entries(this.#_event_object).filter(
-                        ([index])=> index === property_key) );
-                this.addProperty(anyProperty);
+                        ([index])=> index === property_key) )
+                this.addProperty(anyProperty)
             }
         }
     }
