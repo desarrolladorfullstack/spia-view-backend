@@ -105,14 +105,15 @@ function add_queue_commands(commands, update=true){
 function check_dir(path='/home/node/data/', strict=true){
     let exists = false
     const path_struct = path_mod.parse(path)
-    console.log("check_dir>>", path_struct.dir, path_struct.name)
+    console.log("check_dir>>", path_struct.dir, path_struct.base)
     fs_mod.readdir(path_struct.dir, (err, files) => {
         if (!err){
             files.forEach(file => {
                 const inner_file = path_mod.resolve(path_struct.dir, file)
                 const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
+                console.log('check_dir->exists?:', inner_file, isDirectory)
                 if (isDirectory) {
-                    console.log('check_dir: exists?:', inner_file, file)
+                    console.log('check_dir->exists:', inner_file, file)
                     exists = true
                 }
             })
@@ -134,14 +135,15 @@ function check_dir(path='/home/node/data/', strict=true){
 function check_file(path='/home/node/.worker'){
     let exists = false
     const path_struct = path_mod.parse(path)
-    console.log("check_file>>", path_struct.dir, path_struct.name)
+    console.log("check_file>>", path_struct.dir, path_struct.base)
     fs_mod.readdir(path_struct.dir, (err, files) => {
         if(!err){
             files.forEach(file => {
                 const inner_file = path_mod.resolve(path_struct.dir, file)
                 const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
+                console.log('check_file->exists?:', inner_file, !isDirectory)
                 if (!isDirectory) {
-                    console.log('check_file: exists?:', inner_file, file)
+                    console.log('check_file->exists:', inner_file, file)
                     exists = true
                 }
             })
