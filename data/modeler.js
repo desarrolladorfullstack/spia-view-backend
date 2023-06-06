@@ -186,18 +186,20 @@ class DeviceEvent extends EventType {
         /*TODO : write .spia (HEX data (key value) for DB spiaview inserts (events & properties)*/
         console.log("saveEvent:", this.getname(),
             '. At:', this._event_datetime, this.event_timestamp)
-        const spia_file = this.event_timestamp + SPIA_FILE_EXT;
+        const spia_file = this.event_timestamp + SPIA_FILE_EXT
         let event_value = Object.values(this._properties).find(
             prop_object=>prop_object._property_id.toString() === this._event_id.toString())
-        console.log("properties in Event:", Object.values(this._properties))
+        /*console.log("properties in Event:", Object.values(this._properties))*/
         if (event_value !== undefined){
             event_value = Buffer.from(event_value._property_value.toString()).toString(the_vars.HEX)
         }
-        const event_id = Buffer.from(this._event_id.toString()).toString(the_vars.HEX);
+        const event_id = Buffer.from(this._event_id.toString()).toString(the_vars.HEX)
         let data_hex = `${event_id}\t${event_value}`
-        const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/';
+        const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/'
         let exists_spia_file = worker_mod.checkDir(spia_file_path)
-        exists_spia_file &= worker_mod.checkFile(spia_file_path+spia_file);
+        console.log('exists_spia_file(1)', exists_spia_file)
+        exists_spia_file &= worker_mod.checkFile(spia_file_path+spia_file)
+        console.log('exists_spia_file(2)', exists_spia_file)
         /*if(!exists_spia_file){*/
             worker_mod.writeFile(spia_file_path+spia_file,
                 data_hex, !exists_spia_file)

@@ -116,15 +116,17 @@ function check_dir(path='/home/node/data/', strict=true){
                     exists = true
                 }
             })
+        }else{
+            console.log("readdir ERROR:", path)
         }
     })
     if (strict && !exists){
         fs_mod.mkdir(path, (err) => {
             if (err) {
-                return console.log('mkdir ERROR:', err);
+                return console.log('mkdir ERROR:', err)
             }
             console.log(`Directory (${path}) created successfully!`)
-        });
+        })
     }
     return exists
 }
@@ -143,6 +145,8 @@ function check_file(path='/home/node/.worker'){
                     exists = true
                 }
             })
+        }else{
+            console.log("readdir ERROR.", path)
         }
     })
     return exists
