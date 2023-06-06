@@ -120,7 +120,18 @@ function check_dir(path='/home/node/data/', callback, strict=true){
             if (/*exists/!*!== false*!/ &&*/ (callback)){
                 if (callback.constructor.name === 'Function'){
                     console.log("callback of load() ... ")
-                    callback(exists)
+                    if (strict && !exists){
+                        fs_mod.mkdir(path, (err) => {
+                            if (err) {
+                                return console.log('mkdir ERROR:', err)
+                            }else{
+                                callback(exists)
+                            }
+                            console.log(`Directory (${path}) created successfully!`)
+                        })
+                    }else{
+                        callback(exists)
+                    }
                 }else{
                     console.log("callback type in load() =>", callback.constructor.name)
                 }
@@ -129,14 +140,6 @@ function check_dir(path='/home/node/data/', callback, strict=true){
             console.log("readdir ERROR:", path, folders)
         }
     })
-    if (strict && !exists){
-        fs_mod.mkdir(path, (err) => {
-            if (err) {
-                return console.log('mkdir ERROR:', err)
-            }
-            console.log(`Directory (${path}) created successfully!`)
-        })
-    }
     return this/*exists !== false*/
 }
 
