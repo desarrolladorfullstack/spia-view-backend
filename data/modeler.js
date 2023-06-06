@@ -194,7 +194,7 @@ class DeviceEvent extends EventType {
         }
         let data_hex = `${this._event_id}\t${event_value}`
         const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/';
-        let exists_spia_file = worker_mod.checkDir(SPIA_DEVICE, SPIA_DATA_PATH)
+        let exists_spia_file = worker_mod.checkDir(spia_file_path)
         exists_spia_file &= worker_mod.checkFile(spia_file_path+spia_file);
         worker_mod.writeFile(spia_file_path+spia_file,
             data_hex, !exists_spia_file)
