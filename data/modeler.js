@@ -97,7 +97,7 @@ class EventType {
     set event_timestamp(value) {
         this.#_event_timestamp = value
     }
-    get _event_timestamp() {
+    get event_timestamp() {
         return this.#_event_timestamp
     }
     getname() {
