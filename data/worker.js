@@ -114,7 +114,7 @@ function check_dir(path='/home/node/', strict=true){
         })
     })
     if (strict && !exists){
-        fs.mkdir(path, (err) => {
+        fs_mod.mkdir(path, (err) => {
             if (err) {
                 return console.log('mkdir ERROR:', err);
             }
