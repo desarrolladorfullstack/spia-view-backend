@@ -106,14 +106,16 @@ function check_dir(path='/home/node/data/', strict=true){
     let exists = false
     const path_struct = path_mod.parse(path)
     fs_mod.readdir(path_struct.dir, (err, files) => {
-        files.forEach(file => {
-            const inner_file = path_mod.resolve(path_struct.dir, file)
-            const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
-            if (isDirectory) {
-                console.log('check_dir: exists?:', inner_file, file)
-                exists = true
-            }
-        })
+        if (!err){
+            files.forEach(file => {
+                const inner_file = path_mod.resolve(path_struct.dir, file)
+                const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
+                if (isDirectory) {
+                    console.log('check_dir: exists?:', inner_file, file)
+                    exists = true
+                }
+            })
+        }
     })
     if (strict && !exists){
         fs_mod.mkdir(path, (err) => {
@@ -130,14 +132,16 @@ function check_file(path='/home/node/.worker'){
     let exists = false
     const path_struct = path_mod.parse(path)
     fs_mod.readdir(path_struct.dir, (err, files) => {
-        files.forEach(file => {
-            const inner_file = path_mod.resolve(path_struct.dir, file)
-            const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
-            if (!isDirectory) {
-                console.log('check_file: exists?:', inner_file, file)
-                exists = true
-            }
-        })
+        if(!err){
+            files.forEach(file => {
+                const inner_file = path_mod.resolve(path_struct.dir, file)
+                const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
+                if (!isDirectory) {
+                    console.log('check_file: exists?:', inner_file, file)
+                    exists = true
+                }
+            })
+        }
     })
     return exists
 }
