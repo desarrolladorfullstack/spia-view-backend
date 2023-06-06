@@ -1,4 +1,5 @@
-const worker_mod = require("./worker");
+const worker_mod = require("./worker")
+const the_vars = require("./vars")
 var SPIA_DATA_PATH = '/home/node/data/'
 var SPIA_FILE_EXT = '.spia'
 var SPIA_DEVICE = 'undefined'
@@ -37,7 +38,7 @@ class Imei extends DeviceType {
     }
 }
 class EventProperty {
-    #_PROPERTY_KEYS = {'1':'Digital Input 1'}
+    #_PROPERTY_KEYS = {'1':'Digital Input 1','252':'Unplug','499':'Dualcam'}
     #_PROPERTY_VALUES = {'1':{'0':'no', '1':'yes'}}
     _property_id = undefined
     _property_value = undefined
@@ -190,9 +191,10 @@ class DeviceEvent extends EventType {
             prop_object=>prop_object._property_id.toString() === this._event_id.toString())
         console.log("properties in Event:", Object.values(this._properties))
         if (event_value !== undefined){
-            event_value = event_value.toString()
+            event_value = Buffer.from(event_value._property_value).toString(the_vars.HEX)
         }
-        let data_hex = `${this._event_id}\t${event_value}`
+        const event_id = Buffer.from(this._event_id).toString(the_vars.HEX);
+        let data_hex = `${event_id}\t${event_value}`
         const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/';
         let exists_spia_file = worker_mod.checkDir(spia_file_path)
         exists_spia_file &= worker_mod.checkFile(spia_file_path+spia_file);
