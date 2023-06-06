@@ -196,8 +196,10 @@ class DeviceEvent extends EventType {
         const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/';
         let exists_spia_file = worker_mod.checkDir(spia_file_path)
         exists_spia_file &= worker_mod.checkFile(spia_file_path+spia_file);
-        worker_mod.writeFile(spia_file_path+spia_file,
-            data_hex, !exists_spia_file)
+        /*if(!exists_spia_file){*/
+            worker_mod.writeFile(spia_file_path+spia_file,
+                data_hex, !exists_spia_file)
+        /*}*/
     }
     toString() {
         return `Event:(${this._event_id})::${super.toString()}`
