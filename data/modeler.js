@@ -195,6 +195,15 @@ class DeviceEvent extends EventType {
         }
         const event_id = Buffer.from(this._event_id.toString()).toString(the_vars.HEX)
         let data_hex = `${event_id}\t${event_value}`
+        for (const prop_object of this._properties){
+            if (prop_object._property_id.toString() !== this._event_id.toString()){
+                const prop_key =  Buffer.from(prop_object._property_id.toString())
+                    .toString(the_vars.HEX)
+                const prop_value =  Buffer.from(prop_object._property_value.toString())
+                    .toString(the_vars.HEX)
+                data_hex += "\n" + `${prop_key}\t${prop_value}`
+            }
+        }
         const spia_file_path = SPIA_DATA_PATH+SPIA_DEVICE+'/'
         worker_mod.checkDir(spia_file_path, (exists_spia_folder)=>{
             console.log('exists_spia_folder:', exists_spia_folder)
@@ -203,8 +212,8 @@ class DeviceEvent extends EventType {
                 worker_mod.checkFile(spia_file_path+spia_file, (exists_spia_file)=>{
                     console.log('exists_spia_file:', exists_spia_file)
                     /*if(!exists_spia_file){*/
-                    worker_mod.writeFile(spia_file_path+spia_file,
-                        data_hex, !exists_spia_file)
+                        worker_mod.writeFile(spia_file_path+spia_file,
+                            data_hex + "\n", !exists_spia_file)
                     /*}*/
                 })
             /*}*/
