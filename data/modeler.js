@@ -3,6 +3,7 @@ const the_vars = require("./vars")
 var SPIA_DATA_PATH = '/home/node/data/'
 var SPIA_FILE_EXT = '.spia'
 var SPIA_DEVICE = 'undefined'
+var LOOP_SAVE_EVENT = 3
 class DeviceType {
     #_type_id = undefined
     #_DEVICES = ['gps', 'dualcam']
@@ -182,7 +183,7 @@ class DeviceEvent extends EventType {
         }
         this.parseEvent()
     }
-    saveEvent() {
+    saveEvent(loop=0) {
         /*TODO : write .spia (HEX data (key value) for DB spiaview inserts (events & properties)*/
         console.log("saveEvent:", this.getname(),
             '. At:', this._event_datetime, this.event_timestamp)
@@ -214,9 +215,9 @@ class DeviceEvent extends EventType {
                     if(!exists_spia_file){
                         worker_mod.writeFile(spia_file_path+spia_file,
                             data_hex + "\n~", !exists_spia_file)
-                    }else{
+                    }else if (loop < LOOP_SAVE_EVENT){
                         this.event_timestamp += 1
-                        this.saveEvent()
+                        this.saveEvent(loop+1)
                     }
                 })
             /*}*/
