@@ -111,7 +111,7 @@ function check_dir(path='/home/node/data/', callback, strict=true){
             folders.forEach(folder => {
                 const inner_dir = path_mod.resolve(path_struct.dir, folder)
                 const isDirectory = fs_mod.lstatSync(inner_dir).isDirectory()
-                console.log('check_dir->exists?:', inner_dir, isDirectory)
+                /*console.log('check_dir->exists?:', inner_dir, isDirectory)*/
                 if (isDirectory && path.indexOf(inner_dir) > -1) {
                     console.log('check_dir->exists:', inner_dir, folder)
                     exists = true
@@ -152,7 +152,7 @@ function check_file(path='/home/node/.worker', callback){
             files.forEach(file => {
                 const inner_file = path_mod.resolve(path_struct.dir, file)
                 const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
-                console.log('check_file->exists?:', inner_file, !isDirectory)
+                /*console.log('check_file->exists?:', inner_file, !isDirectory)*/
                 if (!isDirectory && path.indexOf(inner_file) > -1) {
                     console.log('check_file->exists:', inner_file, file)
                     exists = true

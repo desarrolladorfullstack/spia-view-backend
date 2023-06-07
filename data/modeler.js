@@ -213,7 +213,7 @@ class DeviceEvent extends EventType {
                     console.log('exists_spia_file:', exists_spia_file)
                     /*if(!exists_spia_file){*/
                         worker_mod.writeFile(spia_file_path+spia_file,
-                            data_hex + "\n", !exists_spia_file)
+                            data_hex + "~", !exists_spia_file)
                     /*}*/
                 })
             /*}*/
