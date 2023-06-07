@@ -117,9 +117,8 @@ function check_dir(path='/home/node/data/', callback, strict=true){
                     exists = true
                 }
             })
-
-        }else{
-            console.log("readdir ERROR:", path, folders)
+        }else if (err){
+            console.warn("check_dir->readdir ", path, folders, '\n\t ERROR:', err)
         }
         if (/*exists/!*!== false*!/ &&*/ (callback)){
             if (callback.constructor.name === 'Function'){
@@ -159,9 +158,8 @@ function check_file(path='/home/node/.worker', callback){
                     exists = true
                 }
             })
-
-        }else{
-            console.log("readdir ERROR.", path, files)
+        }else if (err){
+            console.warn("check_file->readdir ", path, files, "\n\t ERROR:", err)
         }
         if (/*exists/!*!== false*!/ &&*/ (callback)){
             if (callback.constructor.name === 'Function'){
