@@ -6,7 +6,7 @@ const example_hex_block = command_wrapper(`camreq:1,1,5,${Math.round(new Date().
 let CAM_COMMAND = 'camreq'
 
 function command_wrapper(command_value){
-    const command_offset = Buffer.from([1]);
+    const command_offset = Buffer.from([1])
     const command_value_encoded = Buffer.from(command_value, the_vars.UTF8_SETTING.encoding)
     /*.toString(the_vars.HEX)*/
     const command_value_length = Buffer.from((command_value_encoded.length)
@@ -27,7 +27,7 @@ function command_wrapper(command_value){
     let crc16_ARC = calc.calculate_crc(0, utf8_command, 'ARC')
     crc16_ARC = Buffer.from(crc16_ARC, the_vars.HEX)
     command_alloc = 4 - crc16_ARC.length
-    let command_crc = Buffer.from(crc16_ARC, the_vars.HEX);
+    let command_crc = Buffer.from(crc16_ARC, the_vars.HEX)
     command_crc = Buffer.concat([Buffer.alloc(command_alloc), command_crc])
     the_command = Buffer.concat([the_command, command_crc])
     the_command = Buffer.concat([Buffer.alloc(4), the_command_size, the_command])

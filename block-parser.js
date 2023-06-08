@@ -144,7 +144,7 @@ while (loop < events) {
         console.log("COMMAND LENGTH:", command_length)
         block_index += 4
         end_index = block_index + command_length
-        const UTF8_ENCODING = 'utf-8';
+        const UTF8_ENCODING = 'utf-8'
         let command_value = Buffer.from(events_block.subarray(block_index, end_index), encoding).toString(UTF8_ENCODING)
         console.log("COMMAND TEXT:", command_value)
         break

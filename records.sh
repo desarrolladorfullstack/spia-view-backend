@@ -133,7 +133,7 @@ do
             block=""
             block_count=32
             declare -a block_inserts
-            lines="";
+            lines=""
             for line in ${lines_insert[*]}
             do
               lines="$lines$line"

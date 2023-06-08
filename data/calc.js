@@ -16,7 +16,7 @@ function crc16_generic(init_value, data, poly=0x8408) {
             }
         }
     }
-    return RetVal;
+    return RetVal
 }
 
 function crc16_X25(packet, hex = true) {
@@ -53,7 +53,7 @@ var crc = {
         /* Init value for the first message is zero and for the upcoming messages it is the CRC value of the previous message */
         crc = previous_crc
         for (idx = 0; idx < payload_length; idx++) {
-            let bit;
+            let bit
             /* Use XOR operation for initial value and payload */
             crc ^= payload[idx]
             for (bit = 0; bit < 8; bit++) {
@@ -97,15 +97,15 @@ class crc16_arc{
      * @desc  Calculates the CRC16-ARC (CRC16-IBM or CRC16-ANSI with 0xA001).
      */
     #CrcArcStr(text_input) {
-        let CrcArcTable = crc_mod.CRC16_ARC;
-        const len = text_input.length;
-        let crc = 0;
+        let CrcArcTable = crc_mod.CRC16_ARC
+        const len = text_input.length
+        let crc = 0
         for (let n = 0; n < len; n++)
         {
-            let c = text_input.charCodeAt(n);
+            let c = text_input.charCodeAt(n)
             crc = CrcArcTable[(crc ^ c) & 0xFF] ^ ((crc >> 8) & 0xFF)
         }
-        return crc;
+        return crc
     }
 
 

@@ -379,7 +379,10 @@ function build_device(input_block, mode=1) {
         console.warn('DEVICE=>undefined')
         return false
     }
-    const device_events = device._events !== undefined ? device._events.length : 0;
+    let device_events = 0
+    if (device._events !== undefined) {
+        device_events = device._events.length
+    }
     console.log(`build_device->device [Events:${device_events}]`)
     const codec = input_block[8]
     /* device.codec = codec */
