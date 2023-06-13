@@ -92,9 +92,9 @@ function save(commands, create = false) {
         return
     } else if (commands.constructor.name === 'Buffer') {
         data_hex = commands.toString(the_vars.HEX)
-        console.log("data_hex >>", `${data_hex}`, data_hex)
+        /* console.log("data_hex >>", `${data_hex}`, data_hex) */
     }
-    console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name)
+    console.log("save commands >>"/* , `(${data_hex})` */, data_hex.constructor.name)
     write_file(QUEUE_COMMANDS_FILE_PATH + QUEUE_COMMANDS_FILE, `${data_hex}`, create)
     return this
 }

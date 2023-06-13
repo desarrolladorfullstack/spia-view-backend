@@ -398,7 +398,7 @@ function build_device(input_block, mode = 1) {
     console.log('codec:', Buffer.from([codec]), 'crc:', crc)
     /* device.crc = crc */
     let events_block = input_block.subarray(10, block_length - 5)
-    console.log('events.block:', events_block.toString(the_vars.HEX)/*[events_block.length-1]*/)
+    console.log('events.block:', events_block.length/* .toString(the_vars.HEX) *//*[events_block.length-1]*/)
     let loop = 0, block_index = 0, block_complete = false
     let loop_properties
     const REQUEST_CODEC = parseInt('8e', RADIX_HEX)
