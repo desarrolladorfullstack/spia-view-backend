@@ -56,13 +56,13 @@ function command_writer(socket, test=true){
           const command_type_name = worker_commands.constructor.name
           if (command_type_name === 'Array'){
             console.log("queue_commands typeof is Array")
-            hex_block = worker_mod.queue_commands[0]
+            hex_block = worker_commands[0]
           }else if (command_type_name === 'Object'){
             console.log("queue_commands typeof is Object")
-            hex_block = Object.values(worker_mod.queue_commands)[0]
+            hex_block = Object.values(worker_commands)[0]
           }else if(command_type_name === 'Buffer') {
             console.log("queue_commands typeof is Buffer")
-            hex_block = worker_mod.queue_commands
+            hex_block = worker_commands
           }
         }
         if(test){
