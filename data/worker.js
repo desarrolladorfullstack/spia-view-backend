@@ -211,10 +211,33 @@ function write_file(file_path = './.worker', data = false, create = false) {
 
 function shift_queue_commands(callback = false){
     load((result)=>{
-        const worker_file = QUEUE_COMMANDS_FILE_PATH + QUEUE_COMMANDS_FILE
         if (result && result.length > 0){
-            console.log('ready to shift queue commands:', result)
-            /* write_file(worker_file) */
+            data = result
+            if (data.constructor.name === 'Array'){
+                data.shift()
+                if (data && data.length <= 0){                                        
+                    console.log('queue commands ready for truncate[!]')
+                }else{
+                    for (let command_value of data) {
+                        let command_extracted = command_value
+                            .toString(the_vars.UTF8_SETTING.encoding)
+                        command_extracted = command_extracted
+                            .substring(15, command_extracted.length-3)                    
+                        console.log('ready to shift queue commands[!]:', command_extracted)
+                    }
+                }                
+            }else{                
+                console.log('ready to shift queue commands:', data)
+            }
+            save(data, true)
+            if ((callback)) {
+                if (callback.constructor.name === 'Function') {
+                    console.log("callback of load() ... ")
+                    callback(data)
+                } else {
+                    console.log("callback type in load() =>", callback.constructor.name)
+                }
+            }
         }
     })
     return this
