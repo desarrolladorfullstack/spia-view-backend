@@ -681,9 +681,13 @@ function analyse_block(bufferBlock) {
     }
     if (isResponseBlock) {
         const response_value = build_device(bufferBlock)
-        console.log(`DEVICE: ${getDeviceFromWorker()}`, 'COMMAND RESPONSE:', response_value)
+        console.log(`DEVICE: ${getDeviceFromWorker()?._id}`,
+            'COMMAND RESPONSE:', response_value)
         if (response_value.indexOf(CAMERA_NOT_PRESENT) > -1) {
             worker_mod.load(function (result) {
+                if (result.constructor.name === 'Array' && result.length > 0){
+                    result = result[0]
+                }
                 console.log("worker_mod.load(callback) COMMAND RESPONSE (result) =>", result
                     , "(queue_commands) =>", worker_mod?.queue_commands)
                 if (result === false) {

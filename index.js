@@ -32,7 +32,18 @@ function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     worker_mod.load(function(result){
       if( (worker_mod?.queue_commands) || (result)){
-        console.log("check queue_commands??:", worker_mod?.queue_commands, 'result:', result)
+        console.log("check queue_commands??:", worker_mod?.queue_commands)
+        if(result.constructor.name == 'Array'){
+          for (let command_value of result) {
+            let command_extracted = command_value
+                .toString(the_vars.UTF8_SETTING.encoding)
+            command_extracted = command_extracted
+                .substring(15, command_extracted.length-3)
+            console.log('check result?[!]:', command_extracted)
+          }
+        }else{
+          console.log('check result??:', result)
+        }
       }
       if (worker_mod?.queue_commands !== undefined || result){
         let worker_commands = worker_mod?.queue_commands

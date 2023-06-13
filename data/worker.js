@@ -32,7 +32,7 @@ function load(callback = false) {
         }
         const lines = data.toString()
         if (data && lines.length > 0) {
-            console.log(`lines of QUEUE_COMMANDS_FILE >> (${data}) => '${lines}'`)
+            console.log(`lines of QUEUE_COMMANDS_FILE >> [${data.length}] => [${lines.length}]`)
         }
         let queued_buffered_command = Buffer.from(data, the_vars.HEX)
         if (data && queued_buffered_command) {
@@ -121,7 +121,7 @@ function add_queue_commands(commands, update = true) {
 function check_dir(path = '/home/node/data/', callback, strict = true) {
     let exists = false
     const path_struct = path_mod.parse(path)
-    console.log("check_dir>>", path_struct.dir, path_struct.base)
+    /* console.log("check_dir>>", path_struct.dir, path_struct.base) */
     fs_mod.readdir(`${path_struct.dir}/`, (err, folders) => {
         if (!err && folders && folders.length > 0) {
             folders.forEach(folder => {
@@ -162,7 +162,7 @@ function check_dir(path = '/home/node/data/', callback, strict = true) {
 function check_file(path = '/home/node/.worker', callback) {
     let exists = false
     const path_struct = path_mod.parse(path)
-    console.log("check_file>>", path_struct.dir, path_struct.base)
+    /* console.log("check_file>>", path_struct.dir, path_struct.base) */
     fs_mod.readdir(`${path_struct.dir}/`, (err, files) => {
         if (!err && files && files.length > 0) {
             files.forEach(file => {
