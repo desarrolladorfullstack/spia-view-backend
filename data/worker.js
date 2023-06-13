@@ -96,6 +96,7 @@ function save(commands, create = false) {
     }
     console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name)
     write_file(QUEUE_COMMANDS_FILE_PATH + QUEUE_COMMANDS_FILE, `${data_hex}`, create)
+    return this
 }
 function add_queue_commands(commands, update = true) {
     const queue_commands_type_name = queue_commands.constructor.name
@@ -229,7 +230,7 @@ function shift_queue_commands(callback = false){
             }else{                
                 console.log('ready to shift queue commands:', data)
             }
-            save(data, true)
+            save(data, true).load()
             if ((callback)) {
                 if (callback.constructor.name === 'Function') {
                     console.log("callback of load() ... ")
