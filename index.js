@@ -83,7 +83,9 @@ function command_writer(socket, test=true){
     })
   }).then((success)=>{
     if(success.length > 0){
-      console.log("CMD:", success.toString(the_vars.HEX) ?? success)
+      let command_value = success.toString(the_vars.UTF8_SETTING.encoding)
+      command_value = command_value.substring(15, command_value.length-4)
+      console.log("CMD:", command_value ?? success)
     }
     return command_writer(socket, false)
   }).catch((failed)=>{
