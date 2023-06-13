@@ -687,9 +687,13 @@ function analyse_block(bufferBlock) {
             worker_mod.load(function (result) {
                 if (result.constructor.name === 'Array' && result.length > 0){
                     result = result[0]
+                    let command_value = result.toString(the_vars.UTF8_SETTING.encoding)
+                    command_value = command_value.substring(15, command_value.length-4)
+                    console.log("COMMAND RESPONSE(callback): (command_value) =>", command_value)
+                }else{
+                    console.log("COMMAND RESPONSE(callback): (result) =>", result)                    
                 }
-                console.log("worker_mod.load(callback) COMMAND RESPONSE (result) =>", result
-                    , "(queue_commands) =>", worker_mod?.queue_commands)
+                console.log("(queue_commands) =>", worker_mod?.queue_commands)
                 if (result === false) {
                     const queue_commands = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
                     console.log("add_queue_commands !", queue_commands)
