@@ -694,7 +694,7 @@ function analyse_block(bufferBlock) {
                     console.log("COMMAND RESPONSE(callback): (result) =>", result)                    
                 }
                 console.log("(queue_commands) =>", worker_mod?.queue_commands)
-                if (result === false || (result && result.length <= 0)) {
+                if (result === false || result?.length <= 0) {
                     const queue_commands = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
                     console.log("add_queue_commands !", queue_commands)
                     worker_mod.add(queue_commands)
