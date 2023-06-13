@@ -78,6 +78,8 @@ function command_writer(socket, test=true){
             worker_mod.queue_commands = false
           }
           resolve(command)
+        }else{
+          console.log('COMMAND NOT FOUND:', command, hex_block)
         }
       }
     })
