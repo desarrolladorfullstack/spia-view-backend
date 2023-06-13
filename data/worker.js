@@ -230,15 +230,8 @@ function shift_queue_commands(callback = false){
             }else{                
                 console.log('ready to shift queue commands:', data)
             }
-            save(data, true).load()
-            if ((callback)) {
-                if (callback.constructor.name === 'Function') {
-                    console.log("callback of load() ... ")
-                    callback(data)
-                } else {
-                    console.log("callback type in load() =>", callback.constructor.name)
-                }
-            }
+            save(data, true)
+            load(callback)
         }
     })
     return this
