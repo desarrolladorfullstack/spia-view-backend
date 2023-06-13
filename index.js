@@ -32,31 +32,24 @@ function command_writer(socket, test=true){
   return new Promise((resolve, reject)=>{
     worker_mod.load(function(result){
       if( (worker_mod?.queue_commands) || (result)){
-        console.log("check queue_commands??:", worker_mod?.queue_commands)
-        if(result.constructor.name == 'Array'){
-          for (let command_value of result) {
-            let command_extracted = command_value
-                .toString(the_vars.UTF8_SETTING.encoding)
-            command_extracted = command_extracted
-                .substring(15, command_extracted.length-3)
-            console.log('check result?[!]:', command_extracted)
-          }
-        }else{
-          console.log('check result??:', result)
-        }
+        console.log("check queue_commands??:", worker_mod?.queue_commands)        
       }
       if (worker_mod?.queue_commands !== undefined || result){
         let worker_commands = worker_mod?.queue_commands
-        if ((worker_commands === undefined || !worker_commands) && (result)){
-          console.log('worker_command is result:', result)
+        if ((worker_commands === undefined || !worker_commands) && (result)){         
+          console.log('worker_command is result > ', result.constructor.name)
           worker_commands = result
         }
         let hex_block = false
         if (worker_commands && worker_commands.length > 0){
           const command_type_name = worker_commands.constructor.name
           if (command_type_name === 'Array'){
-            console.log("queue_commands typeof is Array")
             hex_block = worker_commands[0]
+            let command_extracted = hex_block
+                  .toString(the_vars.UTF8_SETTING.encoding)
+            command_extracted = command_extracted
+                .substring(15, command_extracted.length-3)
+            console.log('queue_commands typeof is Array[!]:', command_extracted)
           }else if (command_type_name === 'Object'){
             console.log("queue_commands typeof is Object")
             hex_block = Object.values(worker_commands)[0]
@@ -88,7 +81,7 @@ function command_writer(socket, test=true){
     if(success.length > 0){
       let command_value = success.toString(the_vars.UTF8_SETTING.encoding)
       command_value = command_value.substring(15, command_value.length-4)
-      console.log("CMD:", command_value ?? success, success.constructor.name)
+      console.log("CMD:", command_value ?? success/* , success.constructor.name */)
     }
     return command_writer(socket, false)
   }).catch((failed)=>{
