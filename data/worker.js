@@ -11,7 +11,8 @@ module.exports = {
     "queue_commands": queue_commands,
     "checkDir": check_dir,
     "checkFile": check_file,
-    "writeFile": write_file
+    "writeFile": write_file,
+    "shift":shift_queue_commands
 }
 const QUEUE_COMMANDS_FILE_PATH = './'
 
@@ -205,6 +206,17 @@ function write_file(file_path = './.worker', data = false, create = false) {
             data,
             (err) => handled_error_fs(err))
     }
+    return this
+}
+
+function shift_queue_commands(callback = false){
+    load((result)=>{
+        const worker_file = QUEUE_COMMANDS_FILE_PATH + QUEUE_COMMANDS_FILE
+        if (result && result.length > 0){
+            console.log('ready to shift queue commands:', result)
+            /* write_file(worker_file) */
+        }
+    })
     return this
 }
 
