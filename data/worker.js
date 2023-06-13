@@ -201,6 +201,9 @@ function write_file(file_path = './.worker', data = false, create = false) {
         console.log('write_file: add', data, ' on beginning of ', original)
         save(data + "\n", true)
         save(original, false)
+        load((result)=>{
+            console.log('write_file: prepend =>', result)
+        })
        })        
     } else {
         fs_mod.writeFileSync(
