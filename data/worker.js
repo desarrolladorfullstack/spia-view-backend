@@ -48,6 +48,14 @@ function load(callback = false) {
                 command_extracted = command_extracted
                     .substring(15, command_extracted.length-3)
                 console.log('queue_commands added!!', command_extracted)
+            } else if (queue_commands.constructor.name === 'Array') {
+                for (let command_value of queue_commands) {
+                    let command_extracted = command_value
+                        .toString(the_vars.UTF8_SETTING.encoding)
+                    command_extracted = command_extracted
+                        .substring(15, command_extracted.length-3)
+                    console.log('queue_commands added [!]', command_extracted)
+                }
             } else {
                 console.log('queue_commands added!', queue_commands)
             }
