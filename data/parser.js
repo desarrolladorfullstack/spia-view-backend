@@ -367,13 +367,16 @@ var CAM_COMMANDS = {
 }
 var VL03_PACKETS = ["7878"]
 const VL03_IMEI_INIT_LENGTH = 4
-function build_device(input_block, mode=1) {
-    const block_length = input_block.length
-    let device = recent_device
+function getDeviceFromWorker(){
     if (data_options && data_options.hasOwnProperty("connection")
         && worker_mod.conn.hasOwnProperty(data_options['connection'])) {
-        device = worker_mod.conn[data_options['connection']]
+        return worker_mod.conn[data_options['connection']]
     }
+    return recent_device
+}
+function build_device(input_block, mode=1) {
+    const block_length = input_block.length
+    let device = getDeviceFromWorker()
     /*console.log('build_device->response:', input_block.toString(the_vars.HEX))*/
     if (device == undefined) {
         console.warn('DEVICE=>undefined')
@@ -678,7 +681,8 @@ function analyse_block (bufferBlock) {
     }
     if (isResponseBlock){
         const response_value = build_device(bufferBlock)
-        console.log('COMMAND RESPONSE:', response_value)
+        console.log('DEVICE:', getDeviceFromWorker()?.imei, 
+            'COMMAND RESPONSE:', response_value)
         if (response_value.indexOf(CAMERA_NOT_PRESENT) > -1) {
             worker_mod.load(function (result) {
                 console.log("worker_mod.load(callback) COMMAND RESPONSE (result) =>", result
@@ -693,6 +697,8 @@ function analyse_block (bufferBlock) {
                     worker_mod.add(queue_commands)
                 }
             })
+        }else{
+            
         }
     }
     if (isCamCommand) {
