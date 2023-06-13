@@ -197,10 +197,11 @@ function write_file(file_path = './.worker', data = false, create = false) {
         return false
     }
     if (!create) {
-        fs_mod.appendFileSync(
-            file_path,
-            "\n" + data,
-            (err) => handled_error_fs(err))
+       load((original)=>{
+        console.log('write_file: add', data, ' on beginning of ', original)
+        save(data + "\n", true)
+        save(original, false)
+       })        
     } else {
         fs_mod.writeFileSync(
             file_path,
