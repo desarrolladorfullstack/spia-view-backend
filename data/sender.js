@@ -34,6 +34,7 @@ function command_wrapper(command_value){
     return the_command
 }
 function command_camreq(record_time = 10, cam_mode = 0, cam_origin = 3) {
+    CAM_COMMAND = 'camreq'
     const cam_timestamp = Math.round(new Date().getTime() / 1000)
     const cam_params = `${cam_mode},${cam_origin}`
     const time_params = `${cam_timestamp},${record_time}`
