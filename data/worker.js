@@ -33,49 +33,51 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
     }
     let reader_options = {}
     reader_options = the_vars.UTF8_SETTING
-    fs_mod.readFile(queued_file_path, reader_options, function (err, data) {
-        if (data === undefined/* || data.toString() <= 0*/) {
-            console.log("QUEUE_COMMANDS_FILE is undefined!")
-            save("", true, filename)
-            return false
-        }
-        const lines = data.toString()
-        if (data && lines.length > 0) {
-            console.log(`lines of QUEUE_COMMANDS_FILE >> [${data.length}] => [${lines.length}]`)
-        }
-        let queued_buffered_command = Buffer.from(data, the_vars.HEX)
-        if (data && queued_buffered_command) {
-            if (queued_buffered_command.length <= 0) {
-                console.log("queued_buffered_command ??:",
-                    `${queued_buffered_command.toString(the_vars.HEX)}`)
-            } else {
-                console.log("queued_buffered_command >> ",
-                    `[${queued_buffered_command.length /* toString(the_vars.HEX) */}]`,
-                    `=> ${queued_buffered_command.constructor.name}`)
+    fs_mod.readFile(queued_file_path, reader_options, function (err, data) {        
+        if (data !== undefined /* && data.toString() > 0 */){
+            const lines = data.toString()
+            if (data && lines.length > 0) {
+                console.log(`lines of QUEUE_COMMANDS_FILE >> [${data.length}] => [${lines.length}]`)
             }
-        }
-        if (queued_buffered_command.length > 0) {
-            add_queue_commands(queued_buffered_command, false)
-            if (queue_commands.constructor.name === 'Buffer') {
-                let command_extracted = queue_commands
-                    .toString(the_vars.UTF8_SETTING.encoding)
-                command_extracted = command_extracted
-                    .substring(15, command_extracted.length - 3)
-                console.log('queue_commands added!!', command_extracted)
-            } else if (queue_commands.constructor.name === 'Array') {
-                for (let command_value of queue_commands) {
-                    let command_extracted = command_value
+            let queued_buffered_command = Buffer.from(data, the_vars.HEX)
+            if (data && queued_buffered_command) {
+                if (queued_buffered_command.length <= 0) {
+                    console.log("queued_buffered_command ??:",
+                        `${queued_buffered_command.toString(the_vars.HEX)}`)
+                } else {
+                    console.log("queued_buffered_command >> ",
+                        `[${queued_buffered_command.length /* toString(the_vars.HEX) */}]`,
+                        `=> ${queued_buffered_command.constructor.name}`)
+                }
+            }
+            if (queued_buffered_command.length > 0) {
+                add_queue_commands(queued_buffered_command, false)
+                if (queue_commands.constructor.name === 'Buffer') {
+                    let command_extracted = queue_commands
                         .toString(the_vars.UTF8_SETTING.encoding)
                     command_extracted = command_extracted
                         .substring(15, command_extracted.length - 3)
-                    console.log('queue_commands added [!]', command_extracted)
+                    console.log('queue_commands added!!', command_extracted)
+                } else if (queue_commands.constructor.name === 'Array') {
+                    for (let command_value of queue_commands) {
+                        let command_extracted = command_value
+                            .toString(the_vars.UTF8_SETTING.encoding)
+                        command_extracted = command_extracted
+                            .substring(15, command_extracted.length - 3)
+                        console.log('queue_commands added [!]', command_extracted)
+                    }
+                } else {
+                    console.log('queue_commands added!', queue_commands)
                 }
-            } else {
-                console.log('queue_commands added!', queue_commands)
+            } else if (lines.length <= 0) {
+                queue_commands = false
+                console.log("lines 0 =>", queue_commands)
             }
-        } else if (lines.length <= 0) {
+        }else if (data === undefined/* || data.toString() <= 0*/) {
+            console.log("QUEUE_COMMANDS_FILE is undefined!")
+            save("", true, filename)
             queue_commands = false
-            console.log("lines 0 =>", queue_commands)
+            /* return false */
         }
         if ((callback)) {
             if (callback.constructor.name === 'Function') {
