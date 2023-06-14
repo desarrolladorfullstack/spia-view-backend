@@ -85,14 +85,17 @@ function command_writer(socket, test = true) {
       worker_mod.shift((updated)=>{
         console.log("worker_mod.shift:", updated)
         /* if (updated){ */
-          return command_writer(socket, false)
+          /* return */ command_writer(socket, false)
+          return command_value
         /* } */
       })
     }else{      
-      return command_writer(socket, false)
+      /* return */ command_writer(socket, false)
+      return success
     }
   }).catch((failed) => {
     console.error("Error in command_writer:", failed)
+    return failed
   })
 }
 function socket_handler(socket) {
@@ -128,6 +131,8 @@ function socket_handler(socket) {
     console.log('Communication from', `${remoteAddress}:${remotePort}`,
       'closed \n\tAT: ', new Date())
     parser_mod.files_reset()
+    command_writer(socket, TEST_MODE)
+      .then((msg) => console.log(`running command_writer!!! => ${msg}`))
   }
   function onSocketError(err) {
     console.log('Error in', remoteAddress, 'socket:', err.message, err.stack)
