@@ -50,6 +50,12 @@ function command_dout(option= 1, time= 60){
     return command_wrapper(command_value) ?? null
 }
 
+function command_del(){
+    CAM_COMMAND = 'deleterecords'
+    let command_value = `${CAM_COMMAND}`
+    return command_wrapper(command_value) ?? null
+}
+
 function sendCommand(hex_block=false, test=false) {
     if (!hex_block && test){
         hex_block = /*(test ? */command_dout() /*: command_dout(1, 300))*/
@@ -65,5 +71,6 @@ function sendCommand(hex_block=false, test=false) {
 module.exports = {
     "sendCommand":sendCommand,
     "setdigout":command_dout,
-    "camreq":command_camreq
+    "camreq":command_camreq,
+    "delete":command_del
 }

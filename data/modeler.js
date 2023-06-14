@@ -1,4 +1,5 @@
 const worker_mod = require("./worker")
+const sender_mod = require('./sender')
 const the_vars = require("./vars")
 var SPIA_DATA_PATH = '/home/node/data/'
 var SPIA_FILE_EXT = '.spia'
@@ -218,6 +219,22 @@ class DeviceEvent extends EventType {
                         console.log('exists_spia_file:', exists_spia_file)
                         this.event_timestamp += 1
                         this.saveEvent(loop+1)
+                    }else{
+                        worker_mod.load(function (result) {
+                            if (result.constructor.name === 'Array' && result.length > 0){
+                                result = result[0]
+                                let command_value = result.toString(the_vars.UTF8_SETTING.encoding)
+                                command_value = command_value.substring(15, command_value.length-4)
+                                console.log("LOOP_SAVE_EVENT(callback): (command_value) =>", command_value)
+                            }else{
+                                console.log("LOOP_SAVE_EVENT(callback): (result) =>", result)                    
+                            }
+                            if (result.constructor.name !== "Boolean"){
+                                const queue_commands = [sender_mod.delete()]
+                                console.log("add_queue_commands !", queue_commands)
+                                worker_mod.add(queue_commands)
+                            }
+                        })
                     }
                 })
             /*}*/
