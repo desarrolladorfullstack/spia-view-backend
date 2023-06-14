@@ -83,6 +83,7 @@ function command_writer(socket, test = true) {
       command_value = command_value.substring(15, command_value.length - 4)
       console.log("CMD:", command_value ?? success/* , success.constructor.name */)
       worker_mod.shift((updated)=>{
+        console.log("worker_mod.shift:", updated)
         /* if (updated){ */
           return command_writer(socket, false)
         /* } */
