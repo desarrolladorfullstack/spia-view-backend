@@ -276,7 +276,7 @@ function shift_queue_commands(callback = false, filename = QUEUE_COMMANDS_FILE) 
                 console.log('ready to shift queue commands:', data)
             }
             save(data, true, filename)
-            load(callback)
+            load(callback, filename)
         }
     }, filename)
     return this
