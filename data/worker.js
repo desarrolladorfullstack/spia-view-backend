@@ -13,7 +13,7 @@ module.exports = {
     "checkDir": check_dir,
     "checkFile": check_file,
     "writeFile": write_file,
-    "shift":shift_queue_commands
+    "shift": shift_queue_commands
 }
 const QUEUE_COMMANDS_FILE_PATH = './extra/'
 
@@ -24,8 +24,9 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
             if (!isDirectory) {*/
     let queued_file_path = filename
-    if (add_path){
+    if (add_path) {
         queued_file_path = QUEUE_COMMANDS_FILE_PATH + queued_file_path
+        console.log("Adding file path in load():", queued_file_path)
     }
     let reader_options = {}
     reader_options = the_vars.UTF8_SETTING
@@ -41,13 +42,13 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
         }
         let queued_buffered_command = Buffer.from(data, the_vars.HEX)
         if (data && queued_buffered_command) {
-            if (queued_buffered_command.length <= 0){
+            if (queued_buffered_command.length <= 0) {
                 console.log("queued_buffered_command ??:",
-                `${queued_buffered_command.toString(the_vars.HEX)}`)
-            }else{                
-            console.log("queued_buffered_command >> ",
-                `[${queued_buffered_command.length /* toString(the_vars.HEX) */}]`,
-                `=> ${queued_buffered_command.constructor.name}`)
+                    `${queued_buffered_command.toString(the_vars.HEX)}`)
+            } else {
+                console.log("queued_buffered_command >> ",
+                    `[${queued_buffered_command.length /* toString(the_vars.HEX) */}]`,
+                    `=> ${queued_buffered_command.constructor.name}`)
             }
         }
         if (queued_buffered_command.length > 0) {
@@ -56,14 +57,14 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
                 let command_extracted = queue_commands
                     .toString(the_vars.UTF8_SETTING.encoding)
                 command_extracted = command_extracted
-                    .substring(15, command_extracted.length-3)
+                    .substring(15, command_extracted.length - 3)
                 console.log('queue_commands added!!', command_extracted)
             } else if (queue_commands.constructor.name === 'Array') {
                 for (let command_value of queue_commands) {
                     let command_extracted = command_value
                         .toString(the_vars.UTF8_SETTING.encoding)
                     command_extracted = command_extracted
-                        .substring(15, command_extracted.length-3)
+                        .substring(15, command_extracted.length - 3)
                     console.log('queue_commands added [!]', command_extracted)
                 }
             } else {
@@ -105,8 +106,9 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
     }
     console.log("save commands >>"/* , `(${data_hex})` */, data_hex.constructor.name)
     let file_path = filename
-    if (add_path){
+    if (add_path) {
         file_path = QUEUE_COMMANDS_FILE_PATH + file_path
+        console.log("Adding file path to queue for processing:",  file_path)
     }
     write_file(file_path, `${data_hex}`, create)
     return this
@@ -128,7 +130,7 @@ function add_queue_commands(commands, update = true, filename = QUEUE_COMMANDS_F
         queue_commands.concat([commands])
     }
     if (update) {
-        save(commands,false,filename)
+        save(commands, false, filename)
     }
     return this
 }
@@ -151,7 +153,7 @@ function check_dir(path = '/home/node/data/', callback, strict = true) {
         } else if (err) {
             console.warn("check_dir->readdir ", path, folders, '\n\t ERROR:', err?.message)
         }
-        if (!exists){
+        if (!exists) {
             console.log('check_dir Not exists:', path)
         }
         if (/*exists/!*!== false*!/ &&*/ (callback)) {
@@ -195,7 +197,7 @@ function check_file(path = '/home/node/.worker', callback) {
         } else if (err) {
             console.warn("check_file->readdir ", path, files, "\n\t ERROR:", err?.message)
         }
-        if (!exists){
+        if (!exists) {
             console.log('check_file Not exists:', path)
         }
         if (/*exists/!*!== false*!/ &&*/ (callback)) {
@@ -219,14 +221,14 @@ function write_file(file_path = './.worker', data = false, create = false) {
         return false
     }
     if (!create) {
-       load((original)=>{
-        console.log('write_file: add', data, 'on beginning of', original)
-        save(data + "\n", true, file_path, false)
-        save(original, false, file_path, false)
-        load((result)=>{
-            console.log('write_file: prepend =>', result)
+        load((original) => {
+            console.log('write_file: add', data, 'on beginning of', original)
+            save(data + "\n", true, file_path, false)
+            save(original, false, file_path, false)
+            load((result) => {
+                console.log('write_file: prepend =>', result)
+            }, file_path, false)
         }, file_path, false)
-       },file_path, false)        
     } else {
         fs_mod.writeFileSync(
             file_path,
@@ -236,24 +238,24 @@ function write_file(file_path = './.worker', data = false, create = false) {
     return this
 }
 
-function shift_queue_commands(callback = false,filename = QUEUE_COMMANDS_FILE){
-    load((result)=>{
-        if (result && result.length > 0){
+function shift_queue_commands(callback = false, filename = QUEUE_COMMANDS_FILE) {
+    load((result) => {
+        if (result && result.length > 0) {
             data = result
-            if (data.constructor.name === 'Array'){
+            if (data.constructor.name === 'Array') {
                 data.shift()
-                if (data && data.length <= 0){                                        
+                if (data && data.length <= 0) {
                     console.log('queue commands ready for truncate[!]')
-                }else{
+                } else {
                     for (let command_value of data) {
                         let command_extracted = command_value
                             .toString(the_vars.UTF8_SETTING.encoding)
                         command_extracted = command_extracted
-                            .substring(15, command_extracted.length-3)                    
+                            .substring(15, command_extracted.length - 3)
                         console.log('ready to shift queue commands[!]:', command_extracted)
                     }
-                }                
-            }else{                
+                }
+            } else {
                 console.log('ready to shift queue commands:', data)
             }
             save(data, true, filename)
