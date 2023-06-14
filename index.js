@@ -131,6 +131,7 @@ function socket_handler(socket) {
       /** FORCE camreq */
       if (recent_response.toString(the_vars.HEX) !== "01"){
         socket.write(sender_mod.camreq())
+        console.log("SEND camreq")
       }
     /* command_writer(socket, TEST_MODE)
       .then((msg) => console.log(`running command_writer!!! => ${msg}`)) */
