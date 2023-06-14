@@ -131,12 +131,15 @@ function check_dir(path = '/home/node/data/', callback, strict = true) {
                 const isDirectory = fs_mod.lstatSync(inner_dir).isDirectory()
                 /*console.log('check_dir->exists?:', inner_dir, isDirectory)*/
                 if (isDirectory && path.indexOf(inner_dir) > -1) {
-                    console.log('check_dir->exists:', inner_dir, folder)
+                    /* console.log('check_dir->exists:', inner_dir, folder) */
                     exists = true
                 }
             })
         } else if (err) {
             console.warn("check_dir->readdir ", path, folders, '\n\t ERROR:', err)
+        }
+        if (!exists){
+            console.log('check_dir Not exists:', path)
         }
         if (/*exists/!*!== false*!/ &&*/ (callback)) {
             if (callback.constructor.name === 'Function') {
@@ -172,12 +175,15 @@ function check_file(path = '/home/node/.worker', callback) {
                 const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
                 /*console.log('check_file->exists?:', inner_file, !isDirectory)*/
                 if (!isDirectory && path.indexOf(inner_file) > -1) {
-                    console.log('check_file->exists:', inner_file, file)
+                    /* console.log('check_file->exists:', inner_file, file) */
                     exists = true
                 }
             })
         } else if (err) {
             console.warn("check_file->readdir ", path, files, "\n\t ERROR:", err)
+        }
+        if (!exists){
+            console.log('check_file Not exists:', path)
         }
         if (/*exists/!*!== false*!/ &&*/ (callback)) {
             if (callback.constructor.name === 'Function') {
