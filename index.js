@@ -121,8 +121,8 @@ function socket_handler(socket) {
     socket.write(response_write(data))
     console.log("\nAT:", new Date(), "\nRES:",
       recent_response.toString(the_vars.HEX) ?? recent_response)
-    command_writer(socket, TEST_MODE)
-      .then((msg) => console.log(`running command_writer!!! => ${msg}`))
+    /* command_writer(socket, TEST_MODE)
+      .then((msg) => console.log(`running command_writer!!! => ${msg}`)) */
   }
   function onSocketClose() {
     console.log('Communication from', remoteAddress,
