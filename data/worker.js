@@ -212,7 +212,10 @@ function check_file(path = '/home/node/.worker', callback) {
 
 function write_file(file_path = './.worker', data = false, create = false) {
     if (!data || data.constructor.name === 'Boolean') {
-        console.log('write_file ERROR: data is not valid!')
+        console.log('write_file ERROR: data is not valid!:', data)
+        load((result)=>{
+            console.log('write_file: re(load) =>', result)
+        })
         return false
     }
     if (!create) {
