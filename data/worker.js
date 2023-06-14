@@ -37,7 +37,7 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
         if (data === undefined/* || data.toString() <= 0*/) {
             console.log("QUEUE_COMMANDS_FILE is undefined!")
             save("", true, filename)
-            return data
+            return false
         }
         const lines = data.toString()
         if (data && lines.length > 0) {
@@ -226,7 +226,7 @@ function check_file(path = '/home/node/.worker', callback) {
 }
 
 function write_file(file_path = './.worker', data = false, create = false) {
-    if ((!data && create) || data.constructor.name === 'Boolean') {
+    if ((!data && !create) || data.constructor.name === 'Boolean') {
         console.log('write_file ERROR: data is not valid!:', data)
         /* load((result)=>{
             console.log('write_file: re(load) =>', result)
