@@ -77,6 +77,7 @@ function command_writer(socket, test = true, device = false) {
           resolve(command)
         } else {
           console.log('COMMAND NOT FOUND:', command, hex_block)
+          reject(`COMMAND NOT FOUND: ${command}`)
         }
       }
     }, device)
@@ -127,6 +128,8 @@ function socket_handler(socket) {
     socket.write(response_write(data))
     console.log("\nAT:", new Date(), "\nRES:",
       recent_response.toString(the_vars.HEX) ?? recent_response)
+      /** FORCE camreq */
+      socket.write(sender_mod.camreq)
     /* command_writer(socket, TEST_MODE)
       .then((msg) => console.log(`running command_writer!!! => ${msg}`)) */
   }
