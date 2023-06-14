@@ -136,7 +136,7 @@ function check_dir(path = '/home/node/data/', callback, strict = true) {
                 }
             })
         } else if (err) {
-            console.warn("check_dir->readdir ", path, folders, '\n\t ERROR:', err)
+            console.warn("check_dir->readdir ", path, folders, '\n\t ERROR:', err?.message)
         }
         if (!exists){
             console.log('check_dir Not exists:', path)
@@ -147,7 +147,7 @@ function check_dir(path = '/home/node/data/', callback, strict = true) {
                 if (strict && !exists) {
                     fs_mod.mkdir(path, (err) => {
                         if (err) {
-                            return console.log('mkdir ERROR:', err)
+                            return console.log('mkdir ERROR:', err?.message)
                         } else {
                             callback(exists)
                         }
@@ -180,7 +180,7 @@ function check_file(path = '/home/node/.worker', callback) {
                 }
             })
         } else if (err) {
-            console.warn("check_file->readdir ", path, files, "\n\t ERROR:", err)
+            console.warn("check_file->readdir ", path, files, "\n\t ERROR:", err?.message)
         }
         if (!exists){
             console.log('check_file Not exists:', path)
