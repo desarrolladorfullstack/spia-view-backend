@@ -5,6 +5,7 @@ var queue_commands = true
 const QUEUE_COMMANDS_FILE = '.worker'
 const connections = {}
 module.exports = {
+    "_ext": QUEUE_COMMANDS_FILE,
     "conn": connections,
     "load": load,
     "add": add_queue_commands,
@@ -14,21 +15,24 @@ module.exports = {
     "writeFile": write_file,
     "shift":shift_queue_commands
 }
-const QUEUE_COMMANDS_FILE_PATH = './'
+const QUEUE_COMMANDS_FILE_PATH = './extra/'
 
-function load(callback = false) {
+function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true) {
     /*fs_mod.readdir(QUEUE_COMMANDS_FILE_PATH, (err, files) => {
         files.forEach(file => {
             const media_file = path_mod.resolve(QUEUE_COMMANDS_FILE_PATH, file)
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
             if (!isDirectory) {*/
-    let queued_file_path = QUEUE_COMMANDS_FILE_PATH + QUEUE_COMMANDS_FILE
+    let queued_file_path = filename
+    if (add_path){
+        queued_file_path = QUEUE_COMMANDS_FILE_PATH + queued_file_path
+    }
     let reader_options = {}
     reader_options = the_vars.UTF8_SETTING
     fs_mod.readFile(queued_file_path, reader_options, function (err, data) {
         if (data === undefined/* || data.toString() <= 0*/) {
             console.log("QUEUE_COMMANDS_FILE is undefined!")
-            save("", true)
+            save("", true, filename)
             return data
         }
         const lines = data.toString()
@@ -39,7 +43,7 @@ function load(callback = false) {
         if (data && queued_buffered_command) {
             if (queued_buffered_command.length <= 0){
                 console.log("queued_buffered_command ??:",
-                `[${queued_buffered_command.toString(the_vars.HEX)}]`)
+                `${queued_buffered_command.toString(the_vars.HEX)}`)
             }else{                
             console.log("queued_buffered_command >> ",
                 `[${queued_buffered_command.length /* toString(the_vars.HEX) */}]`,
@@ -85,14 +89,14 @@ function load(callback = false) {
     return this
 }
 
-function save(commands, create = false) {
+function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path = true) {
     let data_hex = commands
     console.log("save commands ??:", commands.constructor.name)
     if (typeof commands == 'boolean') {
         data_hex = commands.toString()
     } else if (['Array', 'Object'].includes(commands.constructor.name)) {
         for (const command of commands) {
-            save(command, create)
+            save(command, create, filename, add_path)
         }
         return
     } else if (commands.constructor.name === 'Buffer') {
@@ -100,10 +104,14 @@ function save(commands, create = false) {
         /* console.log("data_hex >>", `${data_hex}`, data_hex) */
     }
     console.log("save commands >>"/* , `(${data_hex})` */, data_hex.constructor.name)
-    write_file(QUEUE_COMMANDS_FILE_PATH + QUEUE_COMMANDS_FILE, `${data_hex}`, create)
+    let file_path = filename
+    if (add_path){
+        file_path = QUEUE_COMMANDS_FILE_PATH + file_path
+    }
+    write_file(file_path, `${data_hex}`, create)
     return this
 }
-function add_queue_commands(commands, update = true) {
+function add_queue_commands(commands, update = true, filename = QUEUE_COMMANDS_FILE) {
     const queue_commands_type_name = queue_commands.constructor.name
     if (update) {
         console.log(`add_queue_commands T(${queue_commands_type_name}):`, commands,
@@ -120,7 +128,7 @@ function add_queue_commands(commands, update = true) {
         queue_commands.concat([commands])
     }
     if (update) {
-        save(commands)
+        save(commands,false,filename)
     }
     return this
 }
@@ -209,13 +217,13 @@ function write_file(file_path = './.worker', data = false, create = false) {
     }
     if (!create) {
        load((original)=>{
-        console.log('write_file: add', data, ' on beginning of ', original)
-        save(data + "\n", true)
-        save(original, false)
+        console.log('write_file: add', data, 'on beginning of', original)
+        save(data + "\n", true, file_path, false)
+        save(original, false, file_path, false)
         load((result)=>{
             console.log('write_file: prepend =>', result)
-        })
-       })        
+        }, file_path, false)
+       },file_path, false)        
     } else {
         fs_mod.writeFileSync(
             file_path,
@@ -225,7 +233,7 @@ function write_file(file_path = './.worker', data = false, create = false) {
     return this
 }
 
-function shift_queue_commands(callback = false){
+function shift_queue_commands(callback = false,filename = QUEUE_COMMANDS_FILE){
     load((result)=>{
         if (result && result.length > 0){
             data = result
@@ -245,10 +253,10 @@ function shift_queue_commands(callback = false){
             }else{                
                 console.log('ready to shift queue commands:', data)
             }
-            save(data, true)
+            save(data, true, filename)
             load(callback)
         }
-    })
+    }, filename)
     return this
 }
 

@@ -233,7 +233,7 @@ class DeviceEvent extends EventType {
                             if (result.constructor.name !== "Boolean"){
                                 const queue_commands = [sender_mod.delete()]
                                 console.log("add_queue_commands !", queue_commands)
-                                worker_mod.add(queue_commands)
+                                worker_mod.add(queue_commands,true, SPIA_DEVICE + worker_mod._ext)
                             }
                         })
                     }
