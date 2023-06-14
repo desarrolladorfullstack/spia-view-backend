@@ -125,7 +125,7 @@ function socket_handler(socket) {
       .then((msg) => console.log(`running command_writer!!! => ${msg}`)) */
   }
   function onSocketClose() {
-    console.log('Communication from', remoteAddress,
+    console.log('Communication from', `${remoteAddress}:${remotePort}`,
       'closed \n\tAT: ', new Date())
     parser_mod.files_reset()
   }
