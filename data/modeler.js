@@ -207,7 +207,7 @@ class DeviceEvent extends EventType {
             }
         }
         const spia_file_path = SPIA_DATA_PATH + SPIA_DEVICE + '/'        
-        SPIA_DEVICE = 'undefined'
+        /* SPIA_DEVICE = 'undefined' */
         worker_mod.checkDir(spia_file_path, (exists_spia_folder)=>{
             /* console.log('exists_spia_folder:', exists_spia_folder) */
             /*if(exists_spia_folder){*/
@@ -268,6 +268,7 @@ class Device extends Imei {
         this.#_type = any_type_id
     }
     constructor(imei_id = undefined, type_id = 1) {
+        SPIA_DEVICE = 'undefined'
         super(imei_id, type_id)
         this.imei = imei_id
         this.#_type = type_id
