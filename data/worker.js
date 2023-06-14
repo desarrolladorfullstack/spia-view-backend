@@ -37,9 +37,14 @@ function load(callback = false) {
         }
         let queued_buffered_command = Buffer.from(data, the_vars.HEX)
         if (data && queued_buffered_command) {
+            if (queued_buffered_command.length <= 0){
+                console.log("queued_buffered_command ??:",
+                `[${queued_buffered_command.toString(the_vars.HEX)}]`)
+            }else{                
             console.log("queued_buffered_command >> ",
                 `[${queued_buffered_command.length /* toString(the_vars.HEX) */}]`,
                 `=> ${queued_buffered_command.constructor.name}`)
+            }
         }
         if (queued_buffered_command.length > 0) {
             add_queue_commands(queued_buffered_command, false)
