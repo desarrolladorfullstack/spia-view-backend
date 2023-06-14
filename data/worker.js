@@ -143,11 +143,16 @@ function check_dir(path = '/home/node/data/', callback, strict = true) {
         if (!err && folders && folders.length > 0) {
             folders.forEach(folder => {
                 const inner_dir = path_mod.resolve(path_struct.dir, folder)
-                const isDirectory = fs_mod.lstatSync(inner_dir).isDirectory()
-                /*console.log('check_dir->exists?:', inner_dir, isDirectory)*/
-                if (isDirectory && path.indexOf(inner_dir) > -1) {
-                    /* console.log('check_dir->exists:', inner_dir, folder) */
-                    exists = true
+                try{ 
+                    const isDirectory = fs_mod.lstatSync(inner_dir).isDirectory()
+                    /*console.log('check_dir->exists?:', inner_dir, isDirectory)*/
+                    if (isDirectory && path.indexOf(inner_dir) > -1) {
+                        /* console.log('check_dir->exists:', inner_dir, folder) */
+                        exists = true
+                    }
+                }catch (lstatSync_e) {
+                    console.warn("check_dir->readdir:", path, folders,
+                        '\n\t lstatSync_e:', lstatSync_e?.message)
                 }
             })
         } else if (err) {
@@ -187,11 +192,16 @@ function check_file(path = '/home/node/.worker', callback) {
         if (!err && files && files.length > 0) {
             files.forEach(file => {
                 const inner_file = path_mod.resolve(path_struct.dir, file)
-                const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
-                /*console.log('check_file->exists?:', inner_file, !isDirectory)*/
-                if (!isDirectory && path.indexOf(inner_file) > -1) {
-                    /* console.log('check_file->exists:', inner_file, file) */
-                    exists = true
+                try {
+                    const isDirectory = fs_mod.lstatSync(inner_file).isDirectory()
+                    /*console.log('check_file->exists?:', inner_file, !isDirectory)*/
+                    if (!isDirectory && path.indexOf(inner_file) > -1) {
+                        /* console.log('check_file->exists:', inner_file, file) */
+                        exists = true
+                    }
+                }catch (lstatSync_e) {
+                    console.warn("check_file->readdir:", path, folders,
+                        '\n\t lstatSync_e:', lstatSync_e?.message)
                 }
             })
         } else if (err) {
