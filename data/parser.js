@@ -737,7 +737,7 @@ function read_block(bufferBlock) {
                         }
                     }
                     if (is_event_block) {
-                        console.log("Block event:", bufferBlock)
+                        console.log("read_block(Block event):", bufferBlock?.length)
                         build_device(bufferBlock)
                     }
                 }
