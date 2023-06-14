@@ -28,7 +28,10 @@ if (process && process?.argv != undefined && process.argv.length > 0) {
 const net = require('net')
 var KEEP_ALIVE = 360000
 const port = PORT_NUMBER ?? 80
-function command_writer(socket, test = true) {
+function command_writer(socket, test = true, device = false) {
+  if (device){
+    device = (device?._id + worker_mod._ext) ?? false
+  }
   return new Promise((resolve, reject) => {
     worker_mod.load(function (result) {
       if ((worker_mod?.queue_commands) || (result)) {
@@ -76,7 +79,7 @@ function command_writer(socket, test = true) {
           console.log('COMMAND NOT FOUND:', command, hex_block)
         }
       }
-    })
+    }, device)
   }).then((success) => {
     if (success.length > 0) {
       let command_value = success.toString(the_vars.UTF8_SETTING.encoding)
@@ -132,12 +135,14 @@ function socket_handler(socket) {
     console.log('Communication from', connection_client,
       'closed \n\tAT: ', new Date())
     parser_mod.files_reset()
+    let device_connection = false
     if (worker_mod.conn.hasOwnProperty(connection_client)){
+      device_connection = worker_mod.conn[connection_client]
       delete worker_mod.conn[connection_client]
       console.log('remove connection device:',
        !worker_mod.conn.hasOwnProperty(connection_client))
     }
-    command_writer(socket, TEST_MODE)
+    command_writer(socket, TEST_MODE, device_connection)
       .then((msg) => console.log(`running command_writer!!! => ${msg}`))
   }
   function onSocketError(err) {

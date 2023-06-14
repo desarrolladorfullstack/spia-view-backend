@@ -23,6 +23,9 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
             const media_file = path_mod.resolve(QUEUE_COMMANDS_FILE_PATH, file)
             const isDirectory = fs_mod.lstatSync(media_file).isDirectory()
             if (!isDirectory) {*/
+    if (!filename){
+        filename = QUEUE_COMMANDS_FILE
+    }
     let queued_file_path = filename
     if (add_path) {
         queued_file_path = QUEUE_COMMANDS_FILE_PATH + queued_file_path
