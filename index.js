@@ -129,7 +129,7 @@ function socket_handler(socket) {
     console.log("\nAT:", new Date(), "\nRES:",
       recent_response.toString(the_vars.HEX) ?? recent_response)
       /** FORCE camreq */
-      if (data.toString(the_vars.HEX) !== "01"){
+      if (recent_response.toString(the_vars.HEX) !== "01"){
         socket.write(sender_mod.camreq())
       }
     /* command_writer(socket, TEST_MODE)
