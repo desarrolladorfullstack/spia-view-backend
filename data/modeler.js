@@ -207,15 +207,15 @@ class DeviceEvent extends EventType {
         }
         const spia_file_path = SPIA_DATA_PATH + SPIA_DEVICE + '/'
         worker_mod.checkDir(spia_file_path, (exists_spia_folder)=>{
-            console.log('exists_spia_folder:', exists_spia_folder)
+            /* console.log('exists_spia_folder:', exists_spia_folder) */
             /*if(exists_spia_folder){*/
                 /*exists_spia_file = */
                 worker_mod.checkFile(spia_file_path+spia_file, (exists_spia_file)=>{
-                    console.log('exists_spia_file:', exists_spia_file)
                     if(!exists_spia_file){
                         worker_mod.writeFile(spia_file_path+spia_file,
                             data_hex + "\n~", !exists_spia_file)
                     }else if (loop < LOOP_SAVE_EVENT){
+                        console.log('exists_spia_file:', exists_spia_file)
                         this.event_timestamp += 1
                         this.saveEvent(loop+1)
                     }
