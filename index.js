@@ -127,10 +127,16 @@ function socket_handler(socket) {
     /* command_writer(socket, TEST_MODE)
       .then((msg) => console.log(`running command_writer!!! => ${msg}`)) */
   }
-  function onSocketClose() {
-    console.log('Communication from', `${remoteAddress}:${remotePort}`,
+  function onSocketClose() {    
+    const connection_client = `${remoteAddress}:${remotePort}`
+    console.log('Communication from', connection_client,
       'closed \n\tAT: ', new Date())
     parser_mod.files_reset()
+    if (worker_mod.conn.hasOwnProperty(connection_client)){
+      delete worker_mod.conn[connection_client]
+      console.log('remove connection device:',
+       !worker_mod.conn.hasOwnProperty(connection_client))
+    }
     command_writer(socket, TEST_MODE)
       .then((msg) => console.log(`running command_writer!!! => ${msg}`))
   }
