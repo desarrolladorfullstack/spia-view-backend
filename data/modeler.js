@@ -206,7 +206,8 @@ class DeviceEvent extends EventType {
                 data_hex += "\n" + `${prop_key}\t${prop_value}`
             }
         }
-        const spia_file_path = SPIA_DATA_PATH + SPIA_DEVICE + '/'
+        const spia_file_path = SPIA_DATA_PATH + SPIA_DEVICE + '/'        
+        SPIA_DEVICE = 'undefined'
         worker_mod.checkDir(spia_file_path, (exists_spia_folder)=>{
             /* console.log('exists_spia_folder:', exists_spia_folder) */
             /*if(exists_spia_folder){*/
