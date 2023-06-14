@@ -33,6 +33,7 @@ function command_wrapper(command_value){
     the_command = Buffer.concat([Buffer.alloc(4), the_command_size, the_command])
     return the_command
 }
+
 function command_camreq(record_time = 10, cam_mode = 0, cam_origin = 3) {
     CAM_COMMAND = 'camreq'
     const cam_timestamp = Math.round(new Date().getTime() / 1000)
@@ -51,7 +52,7 @@ function command_dout(option= 1, time= 60){
 
 function sendCommand(hex_block=false, test=false) {
     if (!hex_block && test){
-        hex_block = /*(test ? */command_camreq() /*: command_dout(1, 300))*/
+        hex_block = /*(test ? */command_dout() /*: command_dout(1, 300))*/
             ?? Buffer.from(example_hex_block, the_vars.HEX)
     }else if (hex_block.constructor.name === 'String'){
         hex_block = Buffer.from(hex_block, the_vars.HEX)
