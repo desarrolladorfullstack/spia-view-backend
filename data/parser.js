@@ -6,6 +6,7 @@ const the_vars = require('./vars')
 const fs_mod = require('fs')
 const path_mod = require('path')
 const { exec } = require('child_process')
+const net = require('net')
 const IMEI_BYTE_LENGTH = 8
 const CAM_INIT_BYTE_LENGTH = 4
 const CAM_SETTINGS_BYTE_LENGTH = 4
@@ -374,6 +375,46 @@ function getDeviceFromWorker() {
     }
     return recent_device
 }
+
+function track_device(input_block, mode = 1){
+    const block_length = input_block.length
+    if (block_length <= 0){
+        return false;
+    }
+    let device = getDeviceFromWorker()
+    /*console.log('build_device->response:', input_block.toString(the_vars.HEX))*/
+    if (device == undefined) {
+        console.warn('track_device: DEVICE=>undefined')
+        return false
+    }
+    let device_events = 0
+    if (device._events !== undefined) {
+        device_events = device._events.length
+    }
+    console.log(`track_device->device [Events:${device_events}]`)
+    var tracker_client = new net.Socket();
+    const tracker_port = 90
+    const tracker_host = 'localhost'
+    tracker_client.connect(tracker_port, tracker_host, function() {
+        console.log('[tracker_client] Connected');
+        tracker_client.write(device?.imei);
+        tracker_client.write(input_block);
+    });
+
+    tracker_client.on('data', function(data) {
+        console.log('[tracker_client] Received:', data);
+        if (data === 0x01){
+            tracker_client.destroy();
+        }
+    });
+
+    tracker_client.on('close', function() {
+        console.log('[tracker_client] Connection closed');
+    });
+    
+    return true;
+}
+
 function build_device(input_block, mode = 1) {
     const block_length = input_block.length
     let device = getDeviceFromWorker()
@@ -590,7 +631,8 @@ function build_device(input_block, mode = 1) {
             console.log('loop_events:', loop, 'ERROR:', loop_events_e)
         }
         console.log(`properties(json)[${Object.keys(properties_json).length}]:`, JSON.stringify(properties_json))
-        device.addEvent(properties_json)
+        /* device.addEvent(properties_json) */
+        track_device(input_block, mode)
         if (loop < events) {
             console.log('====== Events->LEFT:', events - loop, '======')
         }
