@@ -403,7 +403,7 @@ function track_device(input_block, mode = 1){
 
     tracker_client.on('data', function(data) {
         console.log('[tracker_client] Received:', data);
-        if (data === 0x01){
+        if (data !== 0x00){
             tracker_client.destroy();
         }
     });

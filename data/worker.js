@@ -247,10 +247,13 @@ function write_file(file_path = './.worker', data = false, create = false) {
         }, file_path, false)
     } else {        
         console.log('write_file create?:', file_path, data?.length)
-        fs_mod.writeFileSync(
+        try{ fs_mod.writeFileSync(
             file_path,
             data,
             (err) => handled_error_fs(err))
+        }catch(writeFileSync_e) {
+            handled_error_fs(writeFileSync_e)
+        }
     }
     return this
 }
