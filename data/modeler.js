@@ -4,7 +4,7 @@ const the_vars = require("./vars")
 var SPIA_DATA_PATH = '/home/node/data/'
 var SPIA_FILE_EXT = '.spia'
 var SPIA_DEVICE = 'undefined'
-var LOOP_SAVE_EVENT = 1
+var LOOP_SAVE_EVENT = 0
 class DeviceType {
     #_type_id = undefined
     #_DEVICES = ['gps', 'dualcam']
