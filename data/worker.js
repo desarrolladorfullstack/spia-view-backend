@@ -3,9 +3,11 @@ const path_mod = require("path")
 const the_vars = require("./vars")
 var queue_commands = true
 const QUEUE_COMMANDS_FILE = '.worker'
+const QUEUE_COMMANDS_FILE_PATH = '/opt/extra/'
 const connections = {}
 module.exports = {
     "_ext": QUEUE_COMMANDS_FILE,
+    "_path": QUEUE_COMMANDS_FILE_PATH,
     "conn": connections,
     "load": load,
     "add": add_queue_commands,
@@ -15,8 +17,6 @@ module.exports = {
     "writeFile": write_file,
     "shift": shift_queue_commands
 }
-const QUEUE_COMMANDS_FILE_PATH = './extra/'
-
 function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true) {
     /*fs_mod.readdir(QUEUE_COMMANDS_FILE_PATH, (err, files) => {
         files.forEach(file => {
@@ -287,7 +287,7 @@ function shift_queue_commands(callback = false, filename = QUEUE_COMMANDS_FILE) 
 
 function handled_error_fs(error) {
     if (error) {
-        console.error(['Error in handled_error_fs: ', error])
+        console.error('Error in handled_error_fs:', error?.message)
     } else {
         console.log("File content written successfully!", QUEUE_COMMANDS_FILE)
     }
