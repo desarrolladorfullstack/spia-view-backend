@@ -71,7 +71,7 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
                 }
             } else if (lines.length <= 0) {
                 queue_commands = false
-                console.log("lines 0 =>", queue_commands)
+                console.log(queued_file_path, ": lines 0 =>", queue_commands)
             }
         }else if (data === undefined/* || data.toString() <= 0*/) {
             console.log("QUEUE_COMMANDS_FILE is undefined!")
