@@ -636,7 +636,11 @@ function build_device(input_block, mode = 1) {
         }
         console.log(`properties(json)[${Object.keys(properties_json).length}]:`, JSON.stringify(properties_json))
         /* device.addEvent(properties_json) */
-        track_device(input_block, mode)
+        try{
+            track_device(input_block, mode)
+        }catch(track_device_e){
+            console.error('track_device_e:', track_device_e?.message)
+        }
         if (loop < events) {
             console.log('====== Events->LEFT:', events - loop, '======')
         }
