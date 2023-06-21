@@ -379,7 +379,7 @@ function getDeviceFromWorker() {
 function track_device(input_block, mode = 1){
     const block_length = input_block.length
     if (block_length <= 0){
-        return false;
+        return false
     }
     let device = getDeviceFromWorker()
     /*console.log('build_device->response:', input_block.toString(the_vars.HEX))*/
@@ -392,27 +392,31 @@ function track_device(input_block, mode = 1){
         device_events = device._events.length
     }
     console.log(`track_device->device [Events:${device_events}]`)
-    var tracker_client = new net.Socket();
+    var tracker_client = new net.Socket()
     const tracker_port = 90
     const tracker_host = 'localhost'
     tracker_client.connect(tracker_port, tracker_host, function() {
-        console.log('[tracker_client] Connected');
-        tracker_client.write(device?.imei);
-        tracker_client.write(input_block);
-    });
+        console.log('[tracker_client] Connected')
+        tracker_client.write(device?.imei)
+        tracker_client.write(input_block)
+    })
 
     tracker_client.on('data', function(data) {
-        console.log('[tracker_client] Received:', data);
+        console.log('[tracker_client] Received:', data)
         if (data !== 0x00){
-            tracker_client.destroy();
+            try{
+                tracker_client.destroy()
+            }catch(tracker_destroy_e){
+                console.error('tracker_destroy_e', tracker_destroy_e?.message)
+            }
         }
-    });
+    })
 
     tracker_client.on('close', function() {
-        console.log('[tracker_client] Connection closed');
-    });
+        console.log('[tracker_client] Connection closed')
+    })
     
-    return true;
+    return true
 }
 
 function build_device(input_block, mode = 1) {
