@@ -68,6 +68,9 @@ function command_writer(socket, test = true, device = false) {
         if (command) {
           try {
             socket.write(command)
+            if(!worker_commands || !hex_block){
+              worker_mod.add(command, true, device)
+            }
           } catch (socker_write_e) {
             console.log('SEND COMMAND:', command, 'ERROR:', socker_write_e)
           }
