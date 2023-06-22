@@ -81,15 +81,18 @@ function nextCommand(hex_block=false){
         command_extracted = command_extracted
             .substring(15, command_extracted.length - 3)
         console.log('nextCommand from?', command_extracted)
-        let command_next = Object.fromEntries(Object.entries(NEXT_COMMANDS)
-            .find(([next_type, next_value])=>{
-                if (command_extracted.indexOf(next_type) === 0){
-                    console.log("command_type occured:", next_type)
-                    return next_value
-                }
-            }))
+        let command_next = Object.values(
+            Object.fromEntries(
+                Object.entries(NEXT_COMMANDS).find(
+                    ([next_type])=>{
+                        if (command_extracted.indexOf(next_type) === 0){
+                            console.log("command_type occured:", next_type)
+                            return true
+                        }
+                        return false
+                    })))
         if (command_next && command_next.length > 0){
-            command_next = command_next[0]
+            command_next = command_next.shift()
             if (command_next.constructor.name === 'Function'){
                 command_next = command_next()
             }else if (command_next.constructor.name !== 'Buffer'){
