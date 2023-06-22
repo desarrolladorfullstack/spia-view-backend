@@ -59,9 +59,12 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
                     console.log('queue_commands added!!', command_extracted)
                 } else if (queue_commands.constructor.name === 'Array') {
                     for (let command_value of queue_commands) {
-                        const command_extracted = command_value
-                            .subarray(15, command_value.length - 5)
-                            .toString(the_vars.UTF8_SETTING.encoding)
+                        let command_extracted = command_value
+                        if (command_extracted.constructor.name === 'Buffer') {
+                            command_extracted = command_extracted
+                                .subarray(15, command_value.length - 5)
+                                    .toString(the_vars.UTF8_SETTING.encoding)
+                        }
                         console.log('queue_commands added [!]', command_extracted)
                     }
                 } else {
