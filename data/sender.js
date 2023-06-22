@@ -99,6 +99,8 @@ function nextCommand(hex_block=false){
             }
             console.log('command_next =>', command_next)
             return command_next
+        }else{
+            console.log('command_next (len:0)??', command_next)
         }
     }
     return command_dout()
