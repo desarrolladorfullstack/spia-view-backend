@@ -48,9 +48,12 @@ function command_writer(socket, test = true, device = false) {
           const command_type_name = worker_commands.constructor.name
           if (command_type_name === 'Array') {
             hex_block = Array.from(worker_commands).shift()
-            const command_extracted = hex_block
-              .subarray(15, hex_block.length - 5)
-                .toString(the_vars.UTF8_SETTING.encoding)
+            let command_extracted = hex_block
+            if (command_extracted.constructor.name === 'Buffer') {
+              command_extracted = command_extracted
+                .subarray(15, hex_block.length - 5)
+                  .toString(the_vars.UTF8_SETTING.encoding)
+            }
             console.log('queue_commands typeof is Array[!]:', command_extracted)
           } else if (command_type_name === 'Object') {
             console.log("queue_commands typeof is Object")
