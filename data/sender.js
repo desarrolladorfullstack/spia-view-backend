@@ -96,7 +96,9 @@ function nextCommand(hex_block=false){
             }else if (command_next.constructor.name !== 'Buffer'){
                 command_next = command_wrapper(command_next)
             }
-            console.log('command_next =>', command_next)
+            console.log('command_next =>', command_next
+                .subarray(15, hex_block.length - 5)
+                    .toString(the_vars.UTF8_SETTING.encoding))
             return command_next
         }else{
             console.log('command_next (len:0)??', command_next)
