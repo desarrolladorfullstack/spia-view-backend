@@ -126,9 +126,9 @@ function socket_handler(socket) {
     parser_mod.files_reset()
   }
   function onSocketData(data) {
-    console.log('\nClient IP:', `${remoteAddress} ; RemotePort: ${remotePort}`)
+    console.log('\nClient IP:', `${remoteAddress} ; RemotePort: ${remotePort}`)    
+    const connection_client = `${remoteAddress}:${remotePort}`
     if (parser_mod.parser_options) {
-      const connection_client = `${remoteAddress}:${remotePort}`
       /* console.log("set connection", connection_client) */
       parser_mod.parser_options["connection"] = connection_client
     } else {
@@ -141,9 +141,14 @@ function socket_handler(socket) {
       if (recent_response.toString(the_vars.HEX) !== "01"){
         socket.write(sender_mod.camreq())
         console.log("SEND camreq")
+      }else{
+        let device_connection = false
+        if (worker_mod.conn.hasOwnProperty(connection_client)){
+          device_connection = worker_mod.conn[connection_client]
+        }
+        command_writer(socket, TEST_MODE, device_connection)
+        .then((msg) => console.log(`onSocketData: running command_writer!!! => ${msg}`))
       }
-    /* command_writer(socket, TEST_MODE)
-      .then((msg) => console.log(`running command_writer!!! => ${msg}`)) */
   }
   function onSocketClose() {    
     const connection_client = `${remoteAddress}:${remotePort}`
@@ -158,7 +163,7 @@ function socket_handler(socket) {
        !worker_mod.conn.hasOwnProperty(connection_client))
     }
     command_writer(socket, TEST_MODE, device_connection)
-      .then((msg) => console.log(`running command_writer!!! => ${msg}`))
+      .then((msg) => console.log(`onSocketClose: running command_writer!!! => ${msg}`))
   }
   function onSocketError(err) {
     console.log('Error in', remoteAddress, 'socket:', err.message, err.stack)
