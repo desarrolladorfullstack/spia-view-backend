@@ -13,7 +13,7 @@ var TEST_MODE = true
 var PORT_NUMBER = 80
 if (process && process?.argv != undefined && process.argv.length > 0) {
   let arg_values = process.argv.slice(2)
-  const log_mode_arg = arg_values[0]
+  const log_mode_arg = Array.from(arg_values).shift()
   if (log_mode_arg != undefined) {
     LOG_MODE = parseInt(log_mode_arg)
     console.log("LOG_MODE =>", LOG_MODE, `'${log_mode_arg}'`)
@@ -47,15 +47,14 @@ function command_writer(socket, test = true, device = false) {
         if (worker_commands && worker_commands.length > 0) {
           const command_type_name = worker_commands.constructor.name
           if (command_type_name === 'Array') {
-            hex_block = worker_commands[0]
-            let command_extracted = hex_block
-              .toString(the_vars.UTF8_SETTING.encoding)
-            command_extracted = command_extracted
-              .substring(15, command_extracted.length - 3)
+            hex_block = Array.from(worker_commands).shift()
+            const command_extracted = hex_block
+              .subarray(15, hex_block.length - 5)
+                .toString(the_vars.UTF8_SETTING.encoding)
             console.log('queue_commands typeof is Array[!]:', command_extracted)
           } else if (command_type_name === 'Object') {
             console.log("queue_commands typeof is Object")
-            hex_block = Object.values(worker_commands)[0]
+            hex_block = Object.values(worker_commands).shift()
           } else if (command_type_name === 'Buffer') {
             console.log("queue_commands typeof is Buffer")
             hex_block = worker_commands
@@ -86,8 +85,8 @@ function command_writer(socket, test = true, device = false) {
     }, device)
   }).then((success) => {
     if (success.length > 0) {
-      let command_value = success.toString(the_vars.UTF8_SETTING.encoding)
-      command_value = command_value.substring(15, command_value.length - 4)
+      const command_value = success.subarray(15, success.length - 5)
+        .toString(the_vars.UTF8_SETTING.encoding)
       console.log("CMD:", command_value ?? success/* , success.constructor.name */)
       worker_mod.shift((updated)=>{
         console.log("worker_mod.shift:", updated)
@@ -99,7 +98,7 @@ function command_writer(socket, test = true, device = false) {
         }
         /* if (updated){ */
           /* return */ command_writer(socket, false)
-          return command_value
+        return command_value
         /* } */
       }, device)
     }else{      
@@ -126,7 +125,7 @@ function socket_handler(socket) {
     parser_mod.files_reset()
   }
   function onSocketData(data) {
-    console.log('\nClient IP:', `${remoteAddress} ; RemotePort: ${remotePort}`)    
+    console.log('\nClient IP:', `${remoteAddress} ; RemotePort: ${remotePort}`)
     const connection_client = `${remoteAddress}:${remotePort}`
     if (parser_mod.parser_options) {
       /* console.log("set connection", connection_client) */
@@ -137,20 +136,20 @@ function socket_handler(socket) {
     socket.write(response_write(data))
     console.log("\nAT:", new Date(), "\nRES:",
       recent_response.toString(the_vars.HEX) ?? recent_response)
-      /** FORCE camreq */
+    /** FORCE camreq */
       if (recent_response.toString(the_vars.HEX) !== "01"){
-        socket.write(sender_mod.camreq())
-        console.log("SEND camreq")
+      socket.write(sender_mod.camreq())
+      console.log("SEND camreq")
       }else{
-        let device_connection = false
+      let device_connection = false
         if (worker_mod.conn.hasOwnProperty(connection_client)){
-          device_connection = worker_mod.conn[connection_client]
-        }
-        command_writer(socket, TEST_MODE, device_connection)
-        .then((msg) => console.log(`onSocketData: running command_writer!!! => ${msg}`))
+        device_connection = worker_mod.conn[connection_client]
       }
+      command_writer(socket, TEST_MODE, device_connection)
+        .then((msg) => console.log(`onSocketData: running command_writer!!! => ${msg}`))
+    }
   }
-  function onSocketClose() {    
+  function onSocketClose() {
     const connection_client = `${remoteAddress}:${remotePort}`
     console.log('Communication from', connection_client,
       'closed \n\tAT: ', new Date())
@@ -160,7 +159,7 @@ function socket_handler(socket) {
       device_connection = worker_mod.conn[connection_client]
       delete worker_mod.conn[connection_client]
       console.log('remove connection device:',
-       !worker_mod.conn.hasOwnProperty(connection_client))
+        !worker_mod.conn.hasOwnProperty(connection_client))
     }
     command_writer(socket, TEST_MODE, device_connection)
       .then((msg) => console.log(`onSocketClose: running command_writer!!! => ${msg}`))

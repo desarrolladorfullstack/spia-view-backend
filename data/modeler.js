@@ -50,8 +50,8 @@ class EventProperty {
     parseProperty() {
         if (this.#_property_block !== undefined){
 
-        }else if (this.#_property_object !== undefined){
-            this._property_id = Object.keys(this.#_property_object)[0]
+        } else if (this.#_property_object !== undefined) {
+            this._property_id = Object.keys(this.#_property_object).shift()
             this._property_value = this.#_property_object[this._property_id]
         }
     }
@@ -206,38 +206,38 @@ class DeviceEvent extends EventType {
                 data_hex += "\n" + `${prop_key}\t${prop_value}`
             }
         }
-        const spia_file_path = SPIA_DATA_PATH + SPIA_DEVICE + '/'        
+        const spia_file_path = SPIA_DATA_PATH + SPIA_DEVICE + '/'
         /* SPIA_DEVICE = 'undefined' */
         worker_mod.checkDir(spia_file_path, (exists_spia_folder)=>{
             /* console.log('exists_spia_folder:', exists_spia_folder) */
             /*if(exists_spia_folder){*/
-                /*exists_spia_file = */
+            /*exists_spia_file = */
                 worker_mod.checkFile(spia_file_path+spia_file, (exists_spia_file)=>{
                     if(!exists_spia_file){
                         worker_mod.writeFile(spia_file_path+spia_file,
-                            data_hex + "\n~", !exists_spia_file)
+                        data_hex + "\n~", !exists_spia_file)
                     }else if (loop < LOOP_SAVE_EVENT){
-                        console.log('exists_spia_file:', exists_spia_file)
-                        this.event_timestamp += 1
+                    console.log('exists_spia_file:', exists_spia_file)
+                    this.event_timestamp += 1
                         this.saveEvent(loop+1)
                     }else{
-                        worker_mod.load(function (result) {
-                            if (result.constructor.name === 'Array' && result.length > 0){
-                                result = result[0]
-                                let command_value = result.toString(the_vars.UTF8_SETTING.encoding)
-                                command_value = command_value.substring(15, command_value.length-4)
-                                console.log("LOOP_SAVE_EVENT(callback): (command_value) =>", command_value)
+                    worker_mod.load(function (result) {
+                        if (result.constructor.name === 'Array' && result.length > 0) {
+                            const result_any = Array.from(result).shift()
+                            const command_value = result_any.subarray(15, result_any.length - 5)
+                                .toString(the_vars.UTF8_SETTING.encoding)
+                            console.log("LOOP_SAVE_EVENT(callback): (command_value) =>", command_value)
                             }else{
-                                console.log("LOOP_SAVE_EVENT(callback): (result) =>", result)                    
-                            }
+                            console.log("LOOP_SAVE_EVENT(callback): (result) =>", result)
+                        }
                             if (result.constructor.name !== "Boolean"){
-                                const queue_commands = [sender_mod.delete()]
-                                console.log("add_queue_commands !", queue_commands)
+                            const queue_commands = [sender_mod.delete()]
+                            console.log("add_queue_commands !", queue_commands)
                                 worker_mod.add(queue_commands,true, SPIA_DEVICE + worker_mod._ext)
-                            }
-                        })
-                    }
-                })
+                        }
+                    })
+                }
+            })
             /*}*/
         })
 
