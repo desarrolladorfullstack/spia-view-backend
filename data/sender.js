@@ -2,6 +2,9 @@ const the_vars = require('./vars')
 const calc = require('./calc')
 var IP_ADDRESS = 'dualcam.spia.com.co'
 var PORT_NUMBER = '9971'
+var NEXT_COMMANDS = {
+    'setdigout': command_camreq
+}
 const example_hex_block = command_wrapper(`camreq:1,1,5,${Math.round(new Date().getTime() / 1000)}`)
 let CAM_COMMAND = 'camreq'
 
@@ -68,8 +71,39 @@ function sendCommand(hex_block=false, test=false) {
     }
     return hex_block
 }
+function nextCommand(hex_block=false){
+    if (!hex_block || hex_block.length <= 0){
+        return false
+    }
+    if (hex_block.constructor.name === 'Buffer') {
+        let command_extracted = queue_commands
+            .toString(the_vars.UTF8_SETTING.encoding)
+        command_extracted = command_extracted
+            .substring(15, command_extracted.length - 3)
+        console.log('nextCommand from?', command_extracted)
+        let command_next = Object.fromEntries(Object.entries(NEXT_COMMANDS)
+            .find(([next_type, next_value])=>{
+                if (command_extracted.indexOf(next_type) === 0){
+                    console.log("command_type occured:", next_type)
+                    return next_value
+                }
+            }))
+        if (command_next && command_next.length > 0){
+            command_next = command_next[0]
+            if (command_next.constructor.name === 'Function'){
+                command_next = command_next()
+            }else if (command_next.constructor.name !== 'Buffer'){
+                command_next = command_wrapper(command_next)
+            }
+            console.log('command_next =>', command_next)
+            return command_next
+        }
+    }
+    return command_dout()
+}
 module.exports = {
-    "sendCommand":sendCommand,
+    "generate":sendCommand,
+    "next":nextCommand,
     "setdigout":command_dout,
     "camreq":command_camreq,
     "delete":command_del

@@ -64,7 +64,7 @@ function command_writer(socket, test = true, device = false) {
         if (test) {
           console.log('command_writer TEST:', test)
         }
-        const command = sender_mod.sendCommand(hex_block, test)
+        const command = sender_mod.generate(hex_block, test)
         if (command) {
           try {
             socket.write(command)
@@ -92,10 +92,10 @@ function command_writer(socket, test = true, device = false) {
       worker_mod.shift((updated)=>{
         console.log("worker_mod.shift:", updated)
         if (!updated) {
-          /* command_next = sender_mod.next(command)
+          command_next = sender_mod.next(command)
           if (command_next){
             worker_mod.add(command_next,true,device)
-          } */
+          }
         }
         /* if (updated){ */
           /* return */ command_writer(socket, false)
