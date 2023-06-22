@@ -90,7 +90,7 @@ function nextCommand(hex_block=false){
                         return false
                     })
                 )
-        if (command_next && command_next.length > 0){
+        if (command_next && Object.keys(command_next).length > 0){
             command_next =  Object.values(command_next).shift()
             if (command_next.constructor.name === 'Function'){
                 command_next = command_next()
