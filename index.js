@@ -91,6 +91,12 @@ function command_writer(socket, test = true, device = false) {
       console.log("CMD:", command_value ?? success/* , success.constructor.name */)
       worker_mod.shift((updated)=>{
         console.log("worker_mod.shift:", updated)
+        if (!updated) {
+          command_next = sender_mod.next(command)
+          if (command_next){
+            worker_mod.add(command_next,true,device)
+          }
+        }
         /* if (updated){ */
           /* return */ command_writer(socket, false)
           return command_value
