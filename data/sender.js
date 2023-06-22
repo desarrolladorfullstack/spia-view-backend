@@ -76,7 +76,7 @@ function nextCommand(hex_block=false){
         return false
     }
     if (hex_block.constructor.name === 'Buffer') {
-        let command_extracted = queue_commands
+        let command_extracted = hex_block
             .toString(the_vars.UTF8_SETTING.encoding)
         command_extracted = command_extracted
             .substring(15, command_extracted.length - 3)
