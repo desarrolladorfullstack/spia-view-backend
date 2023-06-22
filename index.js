@@ -88,8 +88,12 @@ function command_writer(socket, test = true, device = false) {
     }, device)
   }).then((success) => {
     if (success.length > 0) {
-      const command_value = success.subarray(15, success.length - 5)
-        .toString(the_vars.UTF8_SETTING.encoding)
+      let command_value = success
+      if (command_value.constructor.name === 'Buffer'){
+          command_value = command_value
+            .subarray(15, success.length - 5)
+              .toString(the_vars.UTF8_SETTING.encoding)
+      }
       console.log("CMD:", command_value ?? success/* , success.constructor.name */)
       worker_mod.shift((updated)=>{
         console.log("worker_mod.shift:", updated)
