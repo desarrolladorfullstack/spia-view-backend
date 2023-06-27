@@ -89,12 +89,26 @@ function command_writer(socket, test = true, device = false) {
   }).then((success) => {
     if (success.length > 0) {
       let command_value = success
-      if (command_value.constructor.name === 'Buffer'){
+      let command_type_name = command_value.constructor.name;
+      if (command_type_name === 'Buffer'){
           command_value = command_value
             .subarray(15, success.length - 5)
               .toString(the_vars.UTF8_SETTING.encoding)
+        console.log("CMD: =>", command_value)
       }
-      console.log("CMD:", command_value ?? success/* , success.constructor.name */)
+      else if (command_type_name === 'Array'){
+        for (let command of command_value) {
+          let command_extracted = command
+          if (command_extracted.constructor.name === 'Buffer') {
+            command_extracted = command_extracted
+                .subarray(15, command.length - 5)
+                .toString(the_vars.UTF8_SETTING.encoding)
+          }
+          console.log('CMD: [!]', command_extracted)
+        }
+      }else{
+        console.log("CMD:", success/* , success.constructor.name */)
+      }
       worker_mod.shift((updated)=>{
         console.log("worker_mod.shift:", updated, 'on:', device)
         if (!updated || updated.length <= 0) {
