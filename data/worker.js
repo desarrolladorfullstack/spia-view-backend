@@ -208,7 +208,7 @@ function check_file(path = '/home/node/.worker', callback) {
                         exists = true
                     }
                 }catch (lstatSync_e) {
-                    console.warn("check_file->readdir:", path, folders,
+                    console.warn("check_file->readdir:", path, files,
                         '\n\t lstatSync_e:', lstatSync_e?.message)
                 }
             })
