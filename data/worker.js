@@ -245,6 +245,19 @@ function write_file(file_path = './.worker', data = false, create = false) {
             save(data + "\n", true, file_path, false)
             save(original, false, file_path, false)
             load((result) => {
+                if (!result){
+                    console.log('write_file: prepend =>', result)
+                }else if (result.constructor.name === 'Array'){
+                    for (let command_value of result) {
+                        let command_extracted = command_value
+                        if (command_extracted.constructor.name === 'Buffer') {
+                            command_extracted = command_extracted
+                                .subarray(15, command_value.length - 5)
+                                .toString(the_vars.UTF8_SETTING.encoding)
+                        }
+                        console.log('write_file: prepend [!] =>', command_extracted)
+                    }
+                }
                 console.log('write_file: prepend =>', result)
             }, file_path, false)
         }, file_path, false)
