@@ -89,7 +89,6 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
             }
         }
     })
-
     /*        }
         })
     })*/
@@ -258,7 +257,7 @@ function write_file(file_path = './.worker', data = false, create = false) {
                         console.log('write_file: prepend [!] =>', command_extracted)
                     }
                 }
-                console.log('write_file: prepend =>', result)
+                /*console.log('write_file: prepend =>', result)*/
             }, file_path, false)
         }, file_path, false)
     } else {

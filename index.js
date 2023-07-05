@@ -89,7 +89,7 @@ function command_writer(socket, test = true, device = false) {
   }).then((success) => {
     if (success.length > 0) {
       let command_value = success
-      let command_type_name = command_value.constructor.name;
+      let command_type_name = command_value.constructor.name
       if (command_type_name === 'Buffer'){
           command_value = command_value
             .subarray(15, success.length - 5)
