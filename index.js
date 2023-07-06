@@ -82,7 +82,9 @@ function command_writer(socket, test = true, device = false) {
           resolve(command)
         } else {
           console.log('COMMAND NOT FOUND:', command, hex_block)
-          reject(`COMMAND NOT FOUND: ${command}`)
+          if (command !== false){
+            reject(`COMMAND NOT FOUND: ${command}`)
+          }
         }
       }
     }, device)
