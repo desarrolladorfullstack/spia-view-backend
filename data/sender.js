@@ -65,6 +65,8 @@ function sendCommand(hex_block=false, test=false) {
             ?? Buffer.from(example_hex_block, the_vars.HEX)
     }else if (hex_block.constructor.name === 'String'){
         hex_block = Buffer.from(hex_block, the_vars.HEX)
+    }else if (hex_block.constructor.name === 'Array'){
+        hex_block = sendCommand(Array.from(hex_block).shift())
     }
     if (hex_block.constructor.name !== 'Buffer'){
         console.log(`sendCommand T(${hex_block.constructor.name}):`, hex_block)

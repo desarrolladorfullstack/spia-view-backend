@@ -97,7 +97,6 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
 
 function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path = true) {
     let data_hex = commands
-    console.log("save commands ??:", commands.constructor.name)
     if (typeof commands == 'boolean') {
         data_hex = commands.toString()
     } else if (['Array', 'Object'].includes(commands.constructor.name)) {
@@ -108,6 +107,8 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
     } else if (commands.constructor.name === 'Buffer') {
         data_hex = commands.toString(the_vars.HEX)
         /* console.log("data_hex >>", `${data_hex}`, data_hex) */
+    }else{
+        console.log("save commands ??:", commands.constructor.name)
     }
     const timestamp = new Date().getTime()
     data_hex = `${data_hex}\t${timestamp}`
@@ -123,7 +124,7 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
 function add_queue_commands(commands, update = true, filename = QUEUE_COMMANDS_FILE) {
     const queue_commands_type_name = queue_commands.constructor.name
     if (update) {
-        console.log(`add_queue_commands T(${queue_commands_type_name}):`, commands,
+        console.log(`add_queue_commands T(${queue_commands_type_name}):`, commands?.length,
             /* "update:", update*/)
     }
     if (queue_commands_type_name === 'Boolean') {

@@ -746,13 +746,13 @@ function analyse_block(bufferBlock) {
                 console.log("(queue_commands) =>", worker_mod?.queue_commands)
                 const worker_file = getDeviceFromWorker()?._id + worker_mod._ext
                 if (result === false || result?.length <= 0) {
-                    const queue_commands = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
-                    console.log("add_queue_commands !", queue_commands)
-                    worker_mod.add(queue_commands, true, worker_file)
+                    const setdigout_queue_command = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
+                    console.log("add_queue_commands !", Array.from(setdigout_queue_command).shift())
+                    worker_mod.add(setdigout_queue_command, true, worker_file)
                 } else if (result === true) {
-                    const queue_commands = [sender_mod.camreq()]
-                    console.log("add_queue_commands !", queue_commands)
-                    worker_mod.add(queue_commands, true, worker_file)
+                    const camreq_queue_command = [sender_mod.camreq()]
+                    console.log("add_queue_commands !", Array.from(camreq_queue_command).shift())
+                    worker_mod.add(camreq_queue_command, true, worker_file)
                 }
             })
         } else {

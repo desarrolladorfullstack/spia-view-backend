@@ -231,9 +231,9 @@ class DeviceEvent extends EventType {
                             console.log("LOOP_SAVE_EVENT(callback): (result) =>", result)
                         }
                             if (result.constructor.name !== "Boolean"){
-                            const queue_commands = [sender_mod.delete()]
-                            console.log("add_queue_commands !", queue_commands)
-                                worker_mod.add(queue_commands,true, SPIA_DEVICE + worker_mod._ext)
+                            const delete_queue_command = [sender_mod.delete()]
+                            console.log("add_queue_commands !", Array.from(delete_queue_command).shift())
+                                worker_mod.add(delete_queue_command,true, SPIA_DEVICE + worker_mod._ext)
                         }
                     })
                 }
