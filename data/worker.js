@@ -241,7 +241,7 @@ function write_file(file_path = './.worker', data = false, create = false) {
     if (!create) {
         console.log('write_file prepend?:', file_path, data?.length)
         load((original) => {
-            console.log('write_file: add', data, 'on beginning of', original)
+            console.log('write_file: add', data, 'on beginning of', JSON.stringify(original))
             save(data + "\n", true, file_path, false)
             save(original, false, file_path, false)
             load((result) => {
