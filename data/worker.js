@@ -243,14 +243,23 @@ function write_file(file_path = './.worker', data = false, create = false) {
         load((original) => {
             let command_extracted = undefined
             if(original && original.constructor.name === 'Array'){
-                const command_extracted_buffer = command_extracted = Array.from(original).shift();
+                const command_extracted_buffer = command_extracted = Array.from(original).shift()
                 if (command_extracted.constructor.name === 'Buffer') {
                     command_extracted = command_extracted
                         .subarray(15, command_extracted_buffer.length - 5)
                         .toString(the_vars.UTF8_SETTING.encoding)
                 }
             }
-            console.log('write_file: add', data, 'on beginning of', original?.length, 'line(s):',
+            let data_extracted = data
+            if(data && data.constructor.name === 'String'){
+                const data_extracted_buffer = data_extracted = Buffer.from(data, the_vars.HEX)
+                if (data_extracted.constructor.name === 'Buffer') {
+                    data_extracted = data_extracted
+                        .subarray(15, data_extracted_buffer.length - 5)
+                        .toString(the_vars.UTF8_SETTING.encoding)
+                }
+            }
+            console.log('write_file: add', data_extracted, 'on beginning of', original?.length, 'line(s):',
                 command_extracted, '...')
             save(data + "\n", true, file_path, false)
             save(original, false, file_path, false)
