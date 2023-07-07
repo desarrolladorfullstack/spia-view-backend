@@ -107,7 +107,7 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
     } else if (commands.constructor.name === 'Buffer') {
         data_hex = commands.toString(the_vars.HEX)
         /* console.log("data_hex >>", `${data_hex}`, data_hex) */
-    }else{
+    }else if (commands.constructor.name !== 'String') {
         console.log("save commands ??:", commands.constructor.name)
     }
     const timestamp = new Date().getTime()
@@ -241,8 +241,17 @@ function write_file(file_path = './.worker', data = false, create = false) {
     if (!create) {
         console.log('write_file prepend?:', file_path, data?.length)
         load((original) => {
+            let command_extracted = undefined
+            if(original && original.constructor.name === 'Array'){
+                const command_extracted_buffer = command_extracted = Array.from(original).shift();
+                if (command_extracted.constructor.name === 'Buffer') {
+                    command_extracted = command_extracted
+                        .subarray(15, command_extracted_buffer.length - 5)
+                        .toString(the_vars.UTF8_SETTING.encoding)
+                }
+            }
             console.log('write_file: add', data, 'on beginning of', original?.length, 'line(s):',
-                Array.from(original).shift(), '...')
+                command_extracted, '...')
             save(data + "\n", true, file_path, false)
             save(original, false, file_path, false)
             load((result) => {
