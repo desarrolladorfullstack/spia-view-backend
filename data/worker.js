@@ -243,8 +243,9 @@ function write_file(file_path = './.worker', data = false, create = false) {
         load((original) => {
             let command_extracted = undefined
             if(original && original.constructor.name === 'Array'){
-                const command_extracted_buffer = command_extracted = Array.from(original).shift()
-                if (command_extracted.constructor.name === 'Buffer') {
+                let command_extracted_buffer = Array.from(original).shift()
+                command_extracted = command_extracted_buffer
+                if (command_extracted && command_extracted.constructor.name === 'Buffer') {
                     command_extracted = command_extracted
                         .subarray(15, command_extracted_buffer.length - 5)
                         .toString(the_vars.UTF8_SETTING.encoding)
