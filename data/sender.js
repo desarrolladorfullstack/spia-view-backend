@@ -63,6 +63,8 @@ function sendCommand(hex_block=false, test=false) {
     if (!hex_block && test){
         hex_block = /*(test ? */command_dout(1, 600) /*: command_dout(1, 300))*/
             ?? Buffer.from(example_hex_block, the_vars.HEX)
+        console.log('sendCommand(!hex_block, test) :', hex_block
+            .subarray(15, hex_block.length - 5).toString(the_vars.UTF8_SETTING.encoding))
     }else if (hex_block.constructor.name === 'String'){
         hex_block = Buffer.from(hex_block, the_vars.HEX)
     }else if (hex_block.constructor.name === 'Array'){
