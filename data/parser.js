@@ -419,6 +419,11 @@ function track_device(input_block, mode = 1){
     return true
 }
 
+function dispose_properties(properties_any) {
+    console.log('dispose_properties:', JSON.stringify(Object.keys(dispose_properties)))
+    return false
+}
+
 function build_device(input_block, mode = 1) {
     const block_length = input_block.length
     let device = getDeviceFromWorker()
@@ -636,6 +641,10 @@ function build_device(input_block, mode = 1) {
         }
         console.log(`properties(json)[${Object.keys(properties_json).length}]:`, JSON.stringify(properties_json))
         /* device.addEvent(properties_json) */
+        let response_of_properties = dispose_properties(properties_json)
+        if (response_of_properties) {
+            return response_of_properties
+        }
         try{
             track_device(input_block, mode)
         }catch(track_device_e){
