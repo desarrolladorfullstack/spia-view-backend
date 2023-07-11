@@ -427,10 +427,20 @@ function dispose_properties(properties_any) {
         const dualcam_object = Object.fromEntries(Object.entries(properties_any).filter(([key]) => {
             return [prop_dualcam,prop_dualcam_front,prop_dualcam_rear].includes(key)
         }))
-        const dualcam_value = Object.values(dualcam_object)
-        console.log('dualcam_value?:', dualcam_object)
+        let dualcam_values = false
+        if(dualcam_object && Object.keys(dualcam_object).length > 0) {
+            const din_1 = 1, din_2 = 2, card_mounted = 3
+            if (![din_1,din_2].includes(dualcam_object[prop_dualcam])){
+                return dualcam_values
+            }     
+            if (card_mounted != dualcam_object[prop_dualcam_front] && card_mounted != dualcam_object[prop_dualcam_rear]){
+                return dualcam_values
+            }     
+            /** TODO: return dualcam command flow value */              
+        }  
+        console.log('dualcam_object?:', dualcam_object)
     }
-    return false
+    return dualcam_values
 }
 
 function build_device(input_block, mode = 1) {
@@ -567,7 +577,7 @@ function build_device(input_block, mode = 1) {
                 let properties_keys = parseInt(
                     events_block.subarray(block_index + 26, block_index + 28)
                         .toString(HEX), RADIX_HEX)
-                console.log(`inner_properties K[${properties_keys}]`/*, 'loop:', loop+1*/)
+                /* console.log(`inner_properties K[${properties_keys}]`/*, 'loop:', loop+1* /) */
                 const properties = {}
                 if (properties_keys < 1) {
                     loop++
@@ -648,11 +658,12 @@ function build_device(input_block, mode = 1) {
         } catch (loop_events_e) {
             console.log('loop_events:', loop, 'ERROR:', loop_events_e)
         }
-        console.log(`properties(json)[${Object.keys(properties_json).length}]:`, JSON.stringify(properties_json))
         /* device.addEvent(properties_json) */
         let response_of_properties = dispose_properties(properties_json)
         if (response_of_properties) {
             return response_of_properties
+        }else {
+            console.log(`properties(json)[${Object.keys(properties_json).length}]:`, JSON.stringify(properties_json))
         }
         try{
             track_device(input_block, mode)
