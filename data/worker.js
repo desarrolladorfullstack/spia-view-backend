@@ -111,9 +111,11 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
         console.log("save commands ??:", commands.constructor.name)
     }
     if (data_hex && data_hex.length > 0){
+        const extracted_data_hex = Buffer.from(data_hex.substring(30, data_hex.length - 10), the_vars.HEX).toString()
         const timestamp = new Date().getTime()
+        console.log("save commands >>", `(${extracted_data_hex} ${timestamp})`, data_hex.constructor.name)
         data_hex = `${data_hex}\t${timestamp}`
-        console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name)
+        /* console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name) */
     }
     let file_path = filename
     if (add_path) {
@@ -245,12 +247,12 @@ function write_file(file_path = './.worker', data = false, create = false) {
     if (!create) {
         console.log('write_file prepend?:', file_path, data?.length)
         load((original) => {
-            let command_extracted = undefined
+            let original_extracted = undefined
             if(original && original.constructor.name === 'Array'){
                 let command_extracted_buffer = Array.from(original).shift()
-                command_extracted = command_extracted_buffer
-                if (command_extracted && command_extracted.constructor.name === 'Buffer') {
-                    command_extracted = command_extracted
+                original_extracted = command_extracted_buffer
+                if (original_extracted && original_extracted.constructor.name === 'Buffer') {
+                    original_extracted = original_extracted
                         .subarray(15, command_extracted_buffer.length - 5)
                         .toString(the_vars.UTF8_SETTING.encoding)
                 }
@@ -264,26 +266,28 @@ function write_file(file_path = './.worker', data = false, create = false) {
                         .toString(the_vars.UTF8_SETTING.encoding)
                 }
             }
-            console.log('write_file: add', data_extracted, 'on beginning of', original?.length, 'line(s):',
-                command_extracted, '...')
-            save(data + "\n", true, file_path, false)
-            save(original, false, file_path, false)
-            load((result) => {
-                if (!result){
-                    console.log('write_file: prepend =>', result)
-                }else if (result.constructor.name === 'Array'){
-                    for (let command_value of result) {
-                        let command_extracted = command_value
-                        if (command_extracted.constructor.name === 'Buffer') {
-                            command_extracted = command_extracted
-                                .subarray(15, command_value.length - 5)
-                                .toString(the_vars.UTF8_SETTING.encoding)
+            if (data_extracted !== original_extracted){
+                console.log('write_file: add', data_extracted, 'on beginning of', original?.length, 'line(s):',
+                original_extracted, '...')
+                save(data + "\n", true, file_path, false)
+                save(original, false, file_path, false)
+                load((result) => {
+                    if (!result){
+                        console.log('write_file: prepend =>', result)
+                    }else if (result.constructor.name === 'Array'){
+                        for (let command_value of result) {
+                            let command_extracted = command_value
+                            if (command_extracted.constructor.name === 'Buffer') {
+                                command_extracted = command_extracted
+                                    .subarray(15, command_value.length - 5)
+                                    .toString(the_vars.UTF8_SETTING.encoding)
+                            }
+                            console.log('write_file: prepend [!] =>', command_extracted)
                         }
-                        console.log('write_file: prepend [!] =>', command_extracted)
                     }
-                }
-                /*console.log('write_file: prepend =>', result)*/
-            }, file_path, false)
+                    /*console.log('write_file: prepend =>', result)*/
+                }, file_path, false)
+            }            
         }, file_path, false)
     } else {
         console.log('write_file create?:', file_path, data?.length)
