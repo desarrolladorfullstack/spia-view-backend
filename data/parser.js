@@ -420,7 +420,7 @@ function track_device(input_block, mode = 1){
 }
 
 function dispose_properties(properties_any) {
-    console.log('dispose_properties:', JSON.stringify(Object.keys(dispose_properties)))
+    console.log('dispose_properties:', JSON.stringify(Object.keys(properties_any)))
     return false
 }
 

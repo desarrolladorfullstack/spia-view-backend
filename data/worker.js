@@ -44,7 +44,7 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
                 if (queued_buffered_command.length <= 0) {
                     console.log("queued_buffered_command ??:",
                         `${queued_buffered_command.toString(the_vars.HEX)}`)
-                } else {
+                } else if (queued_buffered_command.constructor.name !== 'Buffer'){
                     console.log("queued_buffered_command >> ",
                         `[${queued_buffered_command.length /* toString(the_vars.HEX) */}]`,
                         `=> ${queued_buffered_command.constructor.name}`)
