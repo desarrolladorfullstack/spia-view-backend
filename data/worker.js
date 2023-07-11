@@ -113,7 +113,7 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
     if (data_hex && data_hex.length > 0){
         const extracted_data_hex = Buffer.from(data_hex.substring(30, data_hex.length - 10), the_vars.HEX).toString()
         const timestamp = new Date().getTime()
-        console.log("save commands >>", `(${extracted_data_hex} ${timestamp})`, data_hex.constructor.name)
+        console.log("save commands >>", `([${extracted_data_hex}][\\t][${timestamp}])`, data_hex.constructor.name)
         data_hex = `${data_hex}\t${timestamp}`
         /* console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name) */
     }
