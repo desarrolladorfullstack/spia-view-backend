@@ -29,7 +29,7 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
     let queued_file_path = filename
     if (add_path) {
         queued_file_path = QUEUE_COMMANDS_FILE_PATH + queued_file_path
-        console.log("Adding file path in load():", queued_file_path)
+        /* console.log("Adding file path in load():", queued_file_path) */
     }
     let reader_options = {}
     reader_options = the_vars.UTF8_SETTING
@@ -110,13 +110,17 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
     }else if (commands.constructor.name !== 'String') {
         console.log("save commands ??:", commands.constructor.name)
     }
-    const timestamp = new Date().getTime()
-    data_hex = `${data_hex}\t${timestamp}`
-    console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name)
+    if (data_hex && data_hex.length > 0){
+        const timestamp = new Date().getTime()
+        data_hex = `${data_hex}\t${timestamp}`
+        console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name)
+    }
     let file_path = filename
     if (add_path) {
         file_path = QUEUE_COMMANDS_FILE_PATH + file_path
-        console.log("Adding file path to queue for processing:",  file_path)
+        if (!data_hex || data_hex.length <= 0){
+            console.log("Adding file path to queue for processing:",  file_path)
+        }
     }
     write_file(file_path, `${data_hex}`, create)
     return this
