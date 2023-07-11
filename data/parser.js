@@ -421,13 +421,14 @@ function track_device(input_block, mode = 1){
 
 function dispose_properties(properties_any) {
     console.log('dispose_properties:', JSON.stringify(Object.keys(properties_any)))
-    const prop_dualcam = '499'
+    const prop_dualcam = '499', prop_dualcam_front = '498', prop_dualcam_rear = '497'
     const isDualcamProperty = Object.keys(properties_any).includes(prop_dualcam)
     if (isDualcamProperty){
-        const dualcam_value = Object.values(Object.fromEntries(Object.entries(properties_any).filter(([key])=>{
-            key === prop_dualcam
-        })))
-        console.log('dualcam_value?:', dualcam_value)
+        const dualcam_object = Object.fromEntries(Object.entries(properties_any).filter(([key]) => {
+            [prop_dualcam,prop_dualcam_front,prop_dualcam_rear].includes(key)
+        }))
+        const dualcam_value = Object.values(dualcam_object)
+        console.log('dualcam_value?:', dualcam_object)
     }
     return false
 }
