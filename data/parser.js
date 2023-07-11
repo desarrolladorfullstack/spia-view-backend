@@ -421,6 +421,14 @@ function track_device(input_block, mode = 1){
 
 function dispose_properties(properties_any) {
     console.log('dispose_properties:', JSON.stringify(Object.keys(properties_any)))
+    const prop_dualcam = '499'
+    const isDualcamProperty = Object.keys(properties_any).includes(prop_dualcam)
+    if (isDualcamProperty){
+        const dualcam_value = Object.values(Object.fromEntries(Object.entries(properties_any).filter(([key])=>{
+            key === prop_dualcam
+        })))
+        console.log('dualcam_value?:', dualcam_value)
+    }
     return false
 }
 
