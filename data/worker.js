@@ -284,8 +284,8 @@ function write_file(file_path = './.worker', data = false, create = false) {
                 }else{
                     console.log('write_file: first line', data_extracted, '.')
                 }
-                const newline = !isNewLine ? "" : "\n"
-                save(data + newline, true, file_path, false)
+                const data_line = !isNewLine ? data : data + "\n"
+                save(data_line, true, file_path, false)
                 save(original, false, file_path, false)
                 load((result) => {
                     if (!result){
