@@ -37,7 +37,7 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
         if (data !== undefined /* && data.toString() > 0 */){
             const lines = data.toString()
             if (data && lines.length > 0) {
-                console.log(`lines of QUEUE_COMMANDS_FILE >> [${data.length}] => [${lines.length}]`)
+                console.log(`lines of ${QUEUE_COMMANDS_FILE} >> [${data.length}] => [${lines.length}]`)
             }
             if (lines.indexOf("\n") !== -1){
                 console.log('data lines:', lines)
