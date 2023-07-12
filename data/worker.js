@@ -41,6 +41,7 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
             }
             if (lines.indexOf("\n") !== -1){
                 console.log('data lines:', lines)
+                console.log('readFile.queue_commands:', queue_commands)
             }
             let queued_buffered_command = Buffer.from(data, the_vars.HEX)
             if (data && queued_buffered_command) {
