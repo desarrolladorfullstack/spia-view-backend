@@ -439,8 +439,9 @@ function dispose_properties(properties_any) {
             /** TODO: return dualcam command flow value */              
         }  
         console.log('dualcam_object?:', dualcam_object)
+        return dualcam_values
     }
-    return dualcam_values
+    return false
 }
 
 function build_device(input_block, mode = 1) {
