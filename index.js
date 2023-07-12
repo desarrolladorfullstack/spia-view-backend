@@ -40,7 +40,7 @@ function command_writer(socket, test = true, device = false) {
       if (worker_mod?.queue_commands !== undefined || result) {
         let worker_commands = worker_mod?.queue_commands
         if ((worker_commands === undefined || !worker_commands) && (result)) {
-          console.log('worker_command is result > ', result.constructor.name)
+          console.log('worker_command is result >', result.constructor.name)
           worker_commands = result
         }
         let hex_block = false

@@ -39,6 +39,9 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
             if (data && lines.length > 0) {
                 console.log(`lines of QUEUE_COMMANDS_FILE >> [${data.length}] => [${lines.length}]`)
             }
+            if (lines.indexOf("\n") !== -1){
+                console.log('data lines:', lines)
+            }
             let queued_buffered_command = Buffer.from(data, the_vars.HEX)
             if (data && queued_buffered_command) {
                 if (queued_buffered_command.length <= 0) {
@@ -60,6 +63,9 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
                 } else if (queue_commands.constructor.name === 'Array') {
                     for (let command_value of queue_commands) {
                         let command_extracted = command_value
+                        if (command_extracted.constructor.name === 'Array') {
+                            command_extracted = Array.from(command_value).shift()
+                        }
                         if (command_extracted.constructor.name === 'Buffer') {
                             command_extracted = command_extracted
                                 .subarray(15, command_value.length - 5)
