@@ -60,6 +60,10 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
                 } else if (queue_commands.constructor.name === 'Array') {
                     for (let command_value of queue_commands) {
                         let command_extracted = command_value
+                        if (command_extracted.constructor.name === 'Array') {
+                            command_extracted = Array.from(command_value).shift()
+                            console.log('queue_commands shift(!)', JSON.stringify(command_value))
+                        }
                         if (command_extracted.constructor.name === 'Buffer') {
                             command_extracted = command_extracted
                                 .subarray(15, command_value.length - 5)
