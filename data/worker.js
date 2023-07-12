@@ -277,9 +277,15 @@ function write_file(file_path = './.worker', data = false, create = false) {
                 }
             }
             if (data_extracted !== original_extracted){
-                console.log('write_file: add', data_extracted, 'on beginning of', original?.length, 'line(s):',
-                original_extracted, '...')
-                save(data + "\n", true, file_path, false)
+                const isNewLine = original?.length != undefined
+                if(isNewLine){
+                    console.log('write_file: add', data_extracted,
+                        'on beginning of', original.length, 'line(s):', original_extracted, '...')
+                }else{
+                    console.log('write_file: first line', data_extracted, '.')
+                }
+                const newline = !isNewLine ? "" : "\n"
+                save(data + newline, true, file_path, false)
                 save(original, false, file_path, false)
                 load((result) => {
                     if (!result){
