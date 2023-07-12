@@ -106,7 +106,10 @@ function load(callback = false, filename = QUEUE_COMMANDS_FILE, add_path = true)
 function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path = true) {
     let data_hex = commands
     if (typeof commands == 'boolean') {
-        console.log('data_hex is Boolean:', data_hex)
+        console.log('data_hex is Boolean:', data_hex, 'create:', create)
+        if (!create){
+            return this
+        }
     } else if (['Array', 'Object'].includes(commands.constructor.name)) {
         for (const command of commands) {
             save(command, create, filename, add_path)
