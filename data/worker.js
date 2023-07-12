@@ -115,8 +115,10 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
     } else if (commands.constructor.name === 'Buffer') {
         data_hex = commands.toString(the_vars.HEX)
         /* console.log("data_hex >>", `${data_hex}`, data_hex) */
-    }else if (commands.constructor.name !== 'String') {
+    } else if (commands.constructor.name !== 'String') {
         console.log("save commands ??:", commands.constructor.name)
+    } else  {
+        console.log("save command (HEX STRING):", data_hex)
     }
     if (data_hex && data_hex.length > 0){
         const data_buffer = Buffer.from(data_hex, the_vars.HEX)
@@ -124,7 +126,6 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
         const timestamp = new Date().getTime()
         console.log("save commands >>", `([${extracted_data_hex}][\\t][${timestamp}])`, data_hex.constructor.name)
         data_hex = `${data_hex}\t${timestamp}`
-        /* console.log("save commands >>", `(${data_hex})`, data_hex.constructor.name) */
     }
     let file_path = filename
     if (add_path) {
@@ -300,10 +301,8 @@ function write_file(file_path = './.worker', data = false, create = false) {
         }, file_path, false)
     } else {
         console.log('write_file create?:', file_path, data?.length)
-        try{ fs_mod.writeFileSync(
-                file_path,
-                data,
-                (err) => handled_error_fs(err))
+        try{ 
+            fs_mod.writeFileSync( file_path, data, (err) => handled_error_fs(err))
         }catch(writeFileSync_e) {
             handled_error_fs(writeFileSync_e)
         }
