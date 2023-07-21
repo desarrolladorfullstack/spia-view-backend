@@ -122,7 +122,7 @@ function command_writer(socket, test = true, device = false) {
           }
         }
         /* if (updated){ */
-          /* return */ command_writer(socket, false)
+          /* return */ /* command_writer(socket, false) */
         return command_value
         /* } */
       }, device)
