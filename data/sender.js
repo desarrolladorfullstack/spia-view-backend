@@ -37,7 +37,7 @@ function command_wrapper(command_value){
     return the_command
 }
 
-function command_camreq(record_time = 10, cam_mode = 0, cam_origin = 3) {
+function command_camreq(record_time = 5, cam_mode = 0, cam_origin = 3) {
     CAM_COMMAND = 'camreq'
     const cam_timestamp = Math.round(new Date().getTime() / 1000)
     const cam_params = `${cam_mode},${cam_origin}`
@@ -47,7 +47,7 @@ function command_camreq(record_time = 10, cam_mode = 0, cam_origin = 3) {
     return command_wrapper(command_value) ?? null
 }
 
-function command_dout(option= 1, time= 60){
+function command_dout(option= 1, time= 1200){
     CAM_COMMAND = 'setdigout'
     let command_value = `${CAM_COMMAND} ${option} ${time}`
     return command_wrapper(command_value) ?? null
