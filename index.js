@@ -75,6 +75,8 @@ function command_writer(socket, test = true, device = false) {
             }
           } catch (socker_write_e) {
             console.log('SEND COMMAND:', command, 'ERROR:', socker_write_e)
+            socket.write(sender_mod.camreq())
+            console.log("SEND camreq command_writer->socker_write_e")
           }
           if (test) {
             worker_mod.queue_commands = false
@@ -162,14 +164,14 @@ function socket_handler(socket) {
     /** FORCE camreq */
       if (recent_response.toString(the_vars.HEX) !== "01"){
       socket.write(sender_mod.camreq())
-      console.log("SEND camreq")
+      console.log("SEND camreq onSocketData()")
       }else{
       let device_connection = false
         if (worker_mod.conn.hasOwnProperty(connection_client)){
         device_connection = worker_mod.conn[connection_client]
       }
-      /* command_writer(socket, TEST_MODE, device_connection)
-        .then((msg) => console.log(`onSocketData: running command_writer!!! => ${msg}`)) */
+      command_writer(socket, TEST_MODE, device_connection)
+        .then((msg) => console.log(`onSocketData: running command_writer!!! => ${msg}`))
     }
   }
   function onSocketClose() {

@@ -820,6 +820,30 @@ function read_block(bufferBlock) {
                     if (is_event_block) {
                         console.log("read_block(Block event):", bufferBlock?.length)
                         build_device(bufferBlock)
+                        worker_mod.load(function (result) {
+                            if (result.constructor.name === 'Array' && result.length > 0) {
+                                const result_any = Array.from(result).shift()
+                                const command_value = result_any.subarray(15, result_any.length - 5)
+                                    .toString(the_vars.UTF8_SETTING.encoding)
+                                console.log("COMMAND read_block(callback): (command_value) =>", command_value)
+                            }else{
+                                console.log("COMMAND read_block(callback): (result) =>", result)
+                            }
+                            console.log("(queue_commands) =>", worker_mod?.queue_commands)
+                            const worker_file = getDeviceFromWorker()?._id + worker_mod._ext
+                            /* if (result === false || result?.length <= 0) {
+                                const setdigout_queue_command = [sender_mod.setdigout(DIGOUT_ON, DIGOUT_TIMEOUT)]
+                                console.log("add_queue_commands !", Array.from(setdigout_queue_command).shift())
+                                worker_mod.add(setdigout_queue_command, true, worker_file)
+                            } else if (result === true) {
+                                const camreq_queue_command = [sender_mod.camreq()]
+                                console.log("add_queue_commands !", Array.from(camreq_queue_command).shift())
+                                worker_mod.add(camreq_queue_command, true, worker_file)
+                            } */
+                            const camreq_queue_command = [sender_mod.delete()]
+                            console.log("add_queue_commands !", Array.from(camreq_queue_command).shift())
+                            worker_mod.add(camreq_queue_command, true, worker_file)
+                        })
                     }
                 }
             }
