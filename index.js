@@ -168,8 +168,8 @@ function socket_handler(socket) {
         if (worker_mod.conn.hasOwnProperty(connection_client)){
         device_connection = worker_mod.conn[connection_client]
       }
-      command_writer(socket, TEST_MODE, device_connection)
-        .then((msg) => console.log(`onSocketData: running command_writer!!! => ${msg}`))
+      /* command_writer(socket, TEST_MODE, device_connection)
+        .then((msg) => console.log(`onSocketData: running command_writer!!! => ${msg}`)) */
     }
   }
   function onSocketClose() {
@@ -184,8 +184,8 @@ function socket_handler(socket) {
       console.log('remove connection device:',
         !worker_mod.conn.hasOwnProperty(connection_client))
     }
-    /* command_writer(socket, TEST_MODE, device_connection)
-      .then((msg) => console.log(`onSocketClose: running command_writer!!! => ${msg}`)) */
+    command_writer(socket, TEST_MODE, device_connection)
+      .then((msg) => console.log(`onSocketClose: running command_writer!!! => ${msg}`))
   }
   function onSocketError(err) {
     console.log('Error in', remoteAddress, 'socket:', err.message, err.stack)
