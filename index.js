@@ -127,7 +127,7 @@ function command_writer(socket, test = true, device = false) {
         /* } */
       }, device)
     }else{      
-      /* return */ command_writer(socket, false)
+      /* return */ /* command_writer(socket, false) */
       return success
     }
   }).catch((failed) => {
