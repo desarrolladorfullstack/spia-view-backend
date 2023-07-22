@@ -157,24 +157,25 @@ function socket_handler(socket) {
       parser_mod.parser_options["connection"] = connection_client
     } else {
       console.log("parser_options??", parser_mod.parser_options)
-    }    
-    command_writer(socket, TEST_MODE, device_connection)
-     .then((msg) => {
-      console.log(`onSocketData: running command_writer!!! => ${connection_client}`)
-      socket.write(response_write(data))
-      console.log("\nAT:", new Date(), "\nRES:",
-        recent_response.toString(the_vars.HEX) ?? recent_response)
-      /** FORCE camreq */
-      if (recent_response.toString(the_vars.HEX) !== "01"){
-        socket.write(sender_mod.camreq())
-        console.log("SEND camreq onSocketData()")
-      }else{
-        let device_connection = false
-          if (worker_mod.conn.hasOwnProperty(connection_client)){
-          device_connection = worker_mod.conn[connection_client]
-        }
-      }
-    })    
+    }
+    const response_data = response_write(data)
+    /** FORCE camreq */
+    if (recent_response.toString(the_vars.HEX) !== "01"){
+      socket.write(sender_mod.camreq())
+      console.log("SEND camreq onSocketData()")
+    }else{
+      let device_connection = false
+      if (worker_mod.conn.hasOwnProperty(connection_client)){
+        device_connection = worker_mod.conn[connection_client]
+      }            
+      command_writer(socket, TEST_MODE, device_connection)
+      .then((msg) => {
+        console.log(`onSocketData: running command_writer!!! => ${connection_client}`)
+        socket.write(response_data)
+        console.log("\nAT:", new Date(), "\nRES:",
+            recent_response.toString(the_vars.HEX) ?? recent_response)
+      })
+    }   
   }
   function onSocketClose() {
     const connection_client = `${remoteAddress}:${remotePort}`
