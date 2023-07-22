@@ -59,6 +59,12 @@ function command_del(){
     return command_wrapper(command_value) ?? null
 }
 
+function command_reset(){
+    CAM_COMMAND = 'cpureset'
+    let command_value = `${CAM_COMMAND}`
+    return command_wrapper(command_value) ?? null
+}
+
 function sendCommand(hex_block=false, test=false) {
     if (!hex_block && test){
         hex_block = /*(test ? */command_dout(1, 600) /*: command_dout(1, 300))*/
@@ -115,5 +121,6 @@ module.exports = {
     "next":nextCommand,
     "setdigout":command_dout,
     "camreq":command_camreq,
-    "delete":command_del
+    "delete":command_del,
+    "reset":command_reset,
 }
