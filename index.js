@@ -159,23 +159,23 @@ function socket_handler(socket) {
       console.log("parser_options??", parser_mod.parser_options)
     }
     const response_data = response_write(data)
+    let device_connection = false
+    if (worker_mod.conn.hasOwnProperty(connection_client)){
+      device_connection = worker_mod.conn[connection_client]
+    } 
     /** FORCE camreq */
-    if (recent_response.toString(the_vars.HEX) !== "01"){
+    /* if (recent_response.toString(the_vars.HEX) !== "01"){
       socket.write(sender_mod.camreq())
       console.log("SEND camreq onSocketData()")
-    }else{
-      let device_connection = false
-      if (worker_mod.conn.hasOwnProperty(connection_client)){
-        device_connection = worker_mod.conn[connection_client]
-      }            
+    }else{  */          
       command_writer(socket, TEST_MODE, device_connection)
-      .then((msg) => {
-        console.log(`onSocketData: running command_writer!!! => ${connection_client}`)
+       .then((msg) => {
+        console.log(`onSocketData: running command_writer!!! => ${device_connection}`)
         socket.write(response_data)
         console.log("\nAT:", new Date(), "\nRES:",
             recent_response.toString(the_vars.HEX) ?? recent_response)
       })
-    }   
+    /* }  */  
   }
   function onSocketClose() {
     const connection_client = `${remoteAddress}:${remotePort}`
