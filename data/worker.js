@@ -129,7 +129,7 @@ function save(commands, create = false, filename = QUEUE_COMMANDS_FILE, add_path
         const extracted_data_hex = data_buffer.subarray(15, data_buffer.length - 5).toString()
         const timestamp = new Date().getTime()
         console.log("save commands >>", `([${extracted_data_hex}][\\t][${timestamp}])`, 'in', filename)
-        data_hex = `${data_hex}\t${timestamp}`
+        /* data_hex = `${data_hex}\t${timestamp}` */
     }
     let file_path = filename
     if (add_path) {
