@@ -840,9 +840,9 @@ function read_block(bufferBlock) {
                                 console.log("add_queue_commands !", Array.from(camreq_queue_command).shift())
                                 worker_mod.add(camreq_queue_command, true, worker_file)
                             } */
-                            const camreq_queue_command = [sender_mod.reset()]
+                            /* const camreq_queue_command = [sender_mod.reset()]
                             console.log("add_queue_commands !", Array.from(camreq_queue_command).shift())
-                            worker_mod.add(camreq_queue_command, true, worker_file)
+                            worker_mod.add(camreq_queue_command, true, worker_file) */
                         })
                     }
                 }
