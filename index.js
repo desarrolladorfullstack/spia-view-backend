@@ -164,10 +164,9 @@ function socket_handler(socket) {
       device_connection = worker_mod.conn[connection_client]
     } 
     /** FORCE camreq */
-    /* if (recent_response.toString(the_vars.HEX) !== "01"){
-      socket.write(sender_mod.camreq())
-      console.log("SEND camreq onSocketData()")
-    }else{  */          
+    if (recent_response.toString(the_vars.HEX) !== "01"){
+      /* socket.write(sender_mod.camreq())
+      console.log("SEND camreq onSocketData()") */
       command_writer(socket, TEST_MODE, device_connection)
        .then((msg) => {
         console.log(`onSocketData: running command_writer!!! => ${device_connection}`)
@@ -175,7 +174,11 @@ function socket_handler(socket) {
         console.log("\nAT:", new Date(), "\nRES:",
             recent_response.toString(the_vars.HEX) ?? recent_response)
       })
-    /* }  */  
+    }else{      
+      socket.write(response_data)
+      console.log("\nAT:", new Date(), "\nRES:",
+          recent_response.toString(the_vars.HEX) ?? recent_response)
+    }   
   }
   function onSocketClose() {
     const connection_client = `${remoteAddress}:${remotePort}`
