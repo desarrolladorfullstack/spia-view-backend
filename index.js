@@ -170,9 +170,9 @@ function socket_handler(socket) {
       command_writer(socket, TEST_MODE, device_connection)
        .then((msg) => {
         console.log(`onSocketData: running command_writer!!! => ${device_connection}`)
-        socket.write(response_data)
+        /* socket.write(response_data)
         console.log("\nAT:", new Date(), "\nRES:",
-            recent_response.toString(the_vars.HEX) ?? recent_response)
+            recent_response.toString(the_vars.HEX) ?? recent_response) */
       })
     }else{      
       socket.write(response_data)
